@@ -1,4 +1,4 @@
-using AutoParts.Entidades;
+using AutoParts.Entity;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -27,15 +27,14 @@ namespace AutoParts.DataAccess
 
                     conn.Open();
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
                         while (dr.Read())
                         {
-                            Estado entity = new Estado()
-                            {
-                                EstadoId = Convert.ToInt32(dr["EstadoId"]),
-                                Nombre = dr["Nombre"].ToString()
-                            };
+                            Estado entity = new Estado();
+
+                            entity.EstadoId = dr.GetInt32(0);
+                            entity.Nombre = dr.GetString(1);
 
                             result.Add(entity);
                         }

@@ -20,6 +20,9 @@
 	  <None Remove="Web\login.html" />
 	  <None Remove="Web\modulos\categorias-nuevo.html" />
 	  <None Remove="Web\modulos\categorias.html" />
+	  <None Remove="Web\modulos\estados.html" />
+	  <None Remove="Web\modulos\roles-nuevo.html" />
+	  <None Remove="Web\modulos\roles.html" />
 	  <None Remove="Web\styles.css" />
 	</ItemGroup>
 
@@ -55,6 +58,15 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\modulos\categorias.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\estados.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\roles-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\roles.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\styles.css">

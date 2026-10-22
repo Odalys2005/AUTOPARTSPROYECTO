@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
-using AutoParts.Entidades;
+using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;

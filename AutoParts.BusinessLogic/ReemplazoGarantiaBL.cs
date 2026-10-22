@@ -1,5 +1,4 @@
 ﻿using AutoParts.DataAccess;
-using AutoParts.Entidades;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;

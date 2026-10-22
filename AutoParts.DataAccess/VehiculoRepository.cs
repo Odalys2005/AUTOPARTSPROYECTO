@@ -36,8 +36,8 @@ namespace AutoParts.DataAccess
                             Vehiculo entity = new Vehiculo();
 
                             entity.VehiculoId = dr.GetInt32(0);
-                            entity.Anio = dr.GetString(1);
-                            entity.Cilindrada = dr.GetString(2);
+                            entity.Anio = dr.GetInt16(dr.GetOrdinal("Anio"));
+                            entity.Cilindrada = dr.GetDecimal(dr.GetOrdinal("Cilindrada"));
                             entity.TipoMotor = dr.GetString(3);
                             entity.ModeloId = dr.GetInt32(4);
 

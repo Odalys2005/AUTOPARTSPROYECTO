@@ -42,7 +42,6 @@ namespace AutoParts.DataAccess
                             entity.DUI = dr.GetString(4);
                             entity.Telefono = dr.GetString(5);
                             entity.Correo = dr.GetString(6);
-                            entity.Direccion = dr.GetString(7);
                             entity.EstadoId = dr.GetInt32(8);
 
                             result.Add(entity);
@@ -70,7 +69,6 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.AddWithValue("@DUI", entity.DUI);
                     cmd.Parameters.AddWithValue("@Telefono", entity.Telefono);
                     cmd.Parameters.AddWithValue("@Correo", entity.Correo);
-                    cmd.Parameters.AddWithValue("@Direccion", entity.Direccion);
                     cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
 
                     conn.Open();

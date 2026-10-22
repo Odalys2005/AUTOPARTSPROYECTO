@@ -41,7 +41,7 @@ namespace AutoParts.DataAccess
                             entity.Cantidad = dr.GetInt32(3);
                             entity.PrecioUnitario = dr.GetDecimal(4);
                             entity.Descuento = dr.GetDecimal(5);
-                            entity.SubTotal = dr.GetDecimal(6);
+                            entity.Subtotal = dr.GetDecimal(6);
                             entity.DiasGarantiaVenta = dr.GetInt32(7);
 
                             result.Add(entity);
@@ -68,7 +68,7 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.AddWithValue("@Cantidad", entity.Cantidad);
                     cmd.Parameters.AddWithValue("@PrecioUnitario", entity.PrecioUnitario);
                     cmd.Parameters.AddWithValue("@Descuento", entity.Descuento);
-                    cmd.Parameters.AddWithValue("@SubTotal", entity.SubTotal);
+                    cmd.Parameters.AddWithValue("@Subtotal", entity.Subtotal);
                     cmd.Parameters.AddWithValue("@DiasGarantiaVenta", entity.DiasGarantiaVenta);
 
                     conn.Open();

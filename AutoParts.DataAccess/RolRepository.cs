@@ -1,5 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
-using AutoParts.Entidades;
+﻿
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,7 +18,7 @@ namespace AutoParts.DataAccess
 
         public List<Rol> SelectAll()
         {
-            List<Rol> result = null;
+            List<Rol> result = new List<Rol>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,8 +30,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Rol>();
-
                         while (dr.Read())
                         {
                             Rol entity = new Rol();
@@ -57,11 +56,12 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

@@ -1,5 +1,5 @@
-﻿using AutoParts.DataAccess;
-using AutoParts.Entidades;
+﻿
+using AutoParts.DataAccess;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -23,9 +23,9 @@ namespace AutoParts.BusinessLogic
             {
                 result = _repository.SelectAll();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message);
+                throw;
             }
 
             return result;
@@ -39,9 +39,9 @@ namespace AutoParts.BusinessLogic
             {
                 result = _repository.Insert(entity);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message);
+                throw;
             }
 
             return result;

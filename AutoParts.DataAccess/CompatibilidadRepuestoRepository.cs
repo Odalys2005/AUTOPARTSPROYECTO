@@ -35,7 +35,7 @@ namespace AutoParts.DataAccess
                         {
                             CompatibilidadRepuesto entity = new CompatibilidadRepuesto();
 
-                            entity.CompatibilidadRepuestoId = dr.GetInt32(0);
+                            entity.CompatibilidadId = dr.GetInt32(0);
                             entity.ProductoId = dr.GetInt32(1);
                             entity.VehiculoId = dr.GetInt32(2);
 

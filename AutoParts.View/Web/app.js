@@ -1,26 +1,3 @@
-
-/* ============================================================
-   AUTOPARTS - DASHBOARD PRINCIPAL
-   Archivo: app.js
-
-   - Navegación del Dashboard
-   - Iconos SVG
-   - Accesos rápidos
-   - Perfil de usuario
-   - Buscador general
-   - Comunicación con Windows Forms mediante WebView2
-
-   IMPORTANTE:
-   Categorías se abre en frmCategorias.
-   Nueva categoría se abre desde frmCategoriasNuevo.
-   Ya NO se utiliza un modal JavaScript para categorías.
-   ============================================================ */
-
-
-/* ============================================================
-   1. ICONOS SVG
-   ============================================================ */
-
 const icons = {
 
     home: '<path d="m3 10 9-7 9 7v11h-6v-7H9v7H3z"/>',
@@ -280,6 +257,10 @@ const moduleDescriptions = {
 
     Categorías: 'Administración de categorías de repuestos.',
 
+    Estados: 'Consulta de estados registrados en el sistema.',
+
+    Roles: 'Administración de roles y permisos del sistema.',
+
     Marcas: 'Marcas registradas en el catálogo.',
 
     Proveedores: 'Directorio de proveedores de repuestos.',
@@ -326,6 +307,29 @@ function abrirFormularioCategorias() {
 
 }
 
+/* Estados es de solo lectura; se abre al seleccionar el módulo. */
+function abrirFormularioEstados() {
+
+    enviarACSharp({
+
+        type: 'estados:abrirLista'
+
+    });
+
+}
+
+
+/* Roles se abre únicamente al seleccionar el módulo. */
+function abrirFormularioRoles() {
+
+    enviarACSharp({
+
+        type: 'roles:abrirLista'
+
+    });
+
+}
+
 
 /* ============================================================
    7. NAVEGACIÓN PRINCIPAL
@@ -341,6 +345,25 @@ function showSection(section) {
     if (key === 'Categorías') {
 
         abrirFormularioCategorias();
+
+        return;
+
+    }
+
+    /* ESTADOS SOLO SE ABRE AL HACER CLIC EN EL MENÚ */
+    if (key === 'Estados') {
+
+        abrirFormularioEstados();
+
+        return;
+
+    }
+
+
+    /* ROLES SOLO SE ABRE AL HACER CLIC EN EL MENÚ */
+    if (key === 'Roles') {
+
+        abrirFormularioRoles();
 
         return;
 
@@ -556,8 +579,6 @@ function toast(mensaje) {
 const search = document.getElementById('searchInput');
 
 const results = document.getElementById('searchResults');
-
-
 search.addEventListener('input', () => {
 
     const texto = search.value
@@ -683,8 +704,3 @@ document.addEventListener('keydown', evento => {
     }
 
 });
-
-
-/* ============================================================
-   FIN DE APP.JS
-   ============================================================ */

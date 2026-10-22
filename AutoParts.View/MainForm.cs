@@ -12,16 +12,22 @@ namespace AutoParts.View
     {
         private readonly CategoriaBL _categoriaBL;
         private readonly EstadoBL _estadoBL;
+        private readonly RolBL _rolBL;
 
-        // Constructor con inyección de dependencias
+        // ==========================================
+        // CONSTRUCTOR CON INYECCIÓN DE DEPENDENCIAS
+        // ==========================================
+
         public MainForm(
             CategoriaBL categoriaBL,
-            EstadoBL estadoBL)
+            EstadoBL estadoBL,
+            RolBL rolBL)
         {
             InitializeComponent();
 
             _categoriaBL = categoriaBL;
             _estadoBL = estadoBL;
+            _rolBL = rolBL;
 
             // Configuración de la ventana principal
             StartPosition = FormStartPosition.CenterScreen;
@@ -44,10 +50,9 @@ namespace AutoParts.View
         {
             try
             {
-                // Inicializar WebView2
                 await webViewMain.EnsureCoreWebView2Async();
 
-                // Escuchar mensajes enviados desde JavaScript
+                // Escuchar mensajes desde JavaScript
                 webViewMain.CoreWebView2.WebMessageReceived +=
                     WebViewMain_WebMessageReceived;
 
@@ -71,7 +76,7 @@ namespace AutoParts.View
                     return;
                 }
 
-                // Mostrar Dashboard en WebView2
+                // Mostrar el Dashboard
                 webViewMain.Source = new Uri(ruta);
             }
             catch (Exception ex)
@@ -106,11 +111,12 @@ namespace AutoParts.View
 
                 switch (tipo)
                 {
-                    // Abrir el listado de categorías
+                    // ==================================
+                    // ABRIR CATEGORÍAS
+                    // ==================================
+
                     case "categorias:abrirLista":
 
-                        // Ejecutar la apertura después
-                        // del evento de WebView2
                         BeginInvoke(new Action(() =>
                         {
                             try
@@ -121,6 +127,58 @@ namespace AutoParts.View
                             {
                                 MessageBox.Show(
                                     "Error al abrir Categorías:\n" +
+                                    ex.Message,
+                                    "AutoParts",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
+                            }
+                        }));
+
+                        break;
+
+                    // ==================================
+                    // ABRIR ESTADOS
+                    // ==================================
+
+                    case "estados:abrirLista":
+
+                        BeginInvoke(new Action(() =>
+                        {
+                            try
+                            {
+                                AbrirEstados();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(
+                                    "Error al abrir Estados:\n" +
+                                    ex.Message,
+                                    "AutoParts",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
+                            }
+                        }));
+
+                        break;
+
+                    // ==================================
+                    // ABRIR ROLES
+                    // ==================================
+
+                    case "roles:abrirLista":
+
+                        BeginInvoke(new Action(() =>
+                        {
+                            try
+                            {
+                                AbrirRoles();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(
+                                    "Error al abrir Roles:\n" +
                                     ex.Message,
                                     "AutoParts",
                                     MessageBoxButtons.OK,
@@ -153,6 +211,32 @@ namespace AutoParts.View
                 new frmCategorias(
                     _categoriaBL,
                     _estadoBL))
+            {
+                formulario.ShowDialog(this);
+            }
+        }
+
+        // ==========================================
+        // ABRIR frmEstados
+        // ==========================================
+
+        private void AbrirEstados()
+        {
+            using (frmEstados formulario =
+                new frmEstados(_estadoBL))
+            {
+                formulario.ShowDialog(this);
+            }
+        }
+
+        // ==========================================
+        // ABRIR frmRoles
+        // ==========================================
+
+        private void AbrirRoles()
+        {
+            using (frmRoles formulario =
+                new frmRoles(_rolBL))
             {
                 formulario.ShowDialog(this);
             }
