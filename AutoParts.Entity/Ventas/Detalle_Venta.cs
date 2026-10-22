@@ -11,16 +11,19 @@ namespace AutoParts.Entity
         public int ProductoId { get; set; }
         public int Cantidad { get; set; }
         public decimal PrecioUnitario { get; set; }
-        public decimal Descuento { get; set; }
-        public decimal SubTotal { get; set; }
-        public int DiasGarantiaVenta { get; set; }
+        public decimal? Descuento { get; set; }
+        public decimal Subtotal { get; set; }
+        public int? DiasGarantiaVenta { get; set; }
 
         public Detalle_Venta()
         {
 
         }
 
-        public Detalle_Venta(int detalleVentaId, int ventaId, int productoId, int cantidad, decimal precioUnitario, decimal descuento, decimal subTotal, int diasGarantiaVenta)
+        public Detalle_Venta(int detalleVentaId, int ventaId,
+                             int productoId, int cantidad,
+                             decimal precioUnitario, decimal? descuento,
+                             decimal subtotal, int? diasGarantiaVenta)
         {
             DetalleVentaId = detalleVentaId;
             VentaId = ventaId;
@@ -28,7 +31,7 @@ namespace AutoParts.Entity
             Cantidad = cantidad;
             PrecioUnitario = precioUnitario;
             Descuento = descuento;
-            SubTotal = subTotal;
+            Subtotal = subtotal;
             DiasGarantiaVenta = diasGarantiaVenta;
         }
     }

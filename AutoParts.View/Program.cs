@@ -46,10 +46,11 @@ namespace AutoParts.View
             services.AddTransient<MainForm>();
             services.AddTransient<frmCategoriasNuevo>();
             services.AddTransient<frmCategorias>();
+            services.AddTransient<Login>();
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var mainForm = serviceProvider.GetRequiredService<MainForm>();
+            var mainForm = serviceProvider.GetRequiredService<Login>();
 
             Application.Run(mainForm);
         }

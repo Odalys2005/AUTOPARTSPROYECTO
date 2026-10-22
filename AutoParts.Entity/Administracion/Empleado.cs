@@ -13,7 +13,6 @@ namespace AutoParts.Entity
         public string DUI { get; set; }
         public string Telefono { get; set; }
         public string Correo { get; set; }
-        public string Direccion { get; set; }
         public int EstadoId { get; set; }
 
         public Empleado()
@@ -21,7 +20,9 @@ namespace AutoParts.Entity
 
         }
 
-        public Empleado(int empleadoId, int puestoId, string nombre, string apellido, string dUI, string telefono, string correo, string direccion, int estadoId)
+        public Empleado(int empleadoId, int puestoId, string nombre,
+                        string apellido, string dUI, string telefono,
+                        string correo, int estadoId)
         {
             EmpleadoId = empleadoId;
             PuestoId = puestoId;
@@ -30,7 +31,6 @@ namespace AutoParts.Entity
             DUI = dUI;
             Telefono = telefono;
             Correo = correo;
-            Direccion = direccion;
             EstadoId = estadoId;
         }
     }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using System;
+
 namespace AutoParts.Entity
 {
     public class Venta
@@ -12,13 +14,16 @@ namespace AutoParts.Entity
         public string NumeroFactura { get; set; }
         public DateTime FechaVenta { get; set; }
         public decimal Total { get; set; }
+        public int EstadoId { get; set; }
 
         public Venta()
         {
 
         }
 
-        public Venta(int ventaId, int clienteId, int empleadoId, string numeroFactura, DateTime fechaVenta, decimal total)
+        public Venta(int ventaId, int clienteId, int empleadoId,
+                     string numeroFactura, DateTime fechaVenta,
+                     decimal total, int estadoId)
         {
             VentaId = ventaId;
             ClienteId = clienteId;
@@ -26,6 +31,7 @@ namespace AutoParts.Entity
             NumeroFactura = numeroFactura;
             FechaVenta = fechaVenta;
             Total = total;
+            EstadoId = estadoId;
         }
     }
 }

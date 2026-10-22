@@ -1,4 +1,4 @@
-namespace AutoParts.Entidades
+namespace AutoParts.Entity
 {
     public class Puesto
     {

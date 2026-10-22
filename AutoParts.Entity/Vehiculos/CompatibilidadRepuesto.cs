@@ -6,18 +6,19 @@ namespace AutoParts.Entity
 {
     public class CompatibilidadRepuesto
     {
-        public int CompatibilidadRepuestoId { get; set; }
+        public int CompatibilidadId { get; set; }
         public int ProductoId { get; set; }
-        public int VehiculoId { get; set; }
+        public int? VehiculoId { get; set; }
 
         public CompatibilidadRepuesto()
         {
 
         }
 
-        public CompatibilidadRepuesto(int compatibilidadRepuestoId, int productoId, int vehiculoId)
+        public CompatibilidadRepuesto(int compatibilidadId,
+                                      int productoId, int? vehiculoId)
         {
-            CompatibilidadRepuestoId = compatibilidadRepuestoId;
+            CompatibilidadId = compatibilidadId;
             ProductoId = productoId;
             VehiculoId = vehiculoId;
         }

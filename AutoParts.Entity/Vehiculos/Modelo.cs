@@ -7,6 +7,7 @@ namespace AutoParts.Entity
     public class Modelo
     {
         public int ModeloId { get; set; }
+        public int MarcaId { get; set; }
         public string Nombre { get; set; }
         public int EstadoId { get; set; }
 
@@ -15,9 +16,10 @@ namespace AutoParts.Entity
 
         }
 
-        public Modelo(int modeloId, string nombre, int estadoId)
+        public Modelo(int modeloId, int marcaId, string nombre, int estadoId)
         {
             ModeloId = modeloId;
+            MarcaId = marcaId;
             Nombre = nombre;
             EstadoId = estadoId;
         }

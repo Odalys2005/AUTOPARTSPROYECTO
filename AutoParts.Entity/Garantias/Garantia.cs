@@ -1,6 +1,6 @@
 using System;
 
-namespace AutoParts.Entidades
+namespace AutoParts.Entity
 {
     public class Garantia
     {
@@ -10,16 +10,22 @@ namespace AutoParts.Entidades
         public DateTime FechaSolicitud { get; set; }
         public int CantidadReclamada { get; set; }
         public string DescripcionFalla { get; set; }
-        public string ResultadoEvaluacion { get; set; }
+        public string? ResultadoEvaluacion { get; set; }
         public DateTime? FechaResolucion { get; set; }
-        public string Observaciones { get; set; }
+        public string? Observaciones { get; set; }
         public int EstadoId { get; set; }
 
         public Garantia()
         {
+
         }
 
-        public Garantia(int garantiaId, int detalleVentaId, int empleadoId, DateTime fechaSolicitud, int cantidadReclamada, string descripcionFalla, string resultadoEvaluacion, DateTime? fechaResolucion, string observaciones, int estadoId)
+        public Garantia(int garantiaId, int detalleVentaId,
+                        int empleadoId, DateTime fechaSolicitud,
+                        int cantidadReclamada, string descripcionFalla,
+                        string? resultadoEvaluacion,
+                        DateTime? fechaResolucion,
+                        string? observaciones, int estadoId)
         {
             GarantiaId = garantiaId;
             DetalleVentaId = detalleVentaId;

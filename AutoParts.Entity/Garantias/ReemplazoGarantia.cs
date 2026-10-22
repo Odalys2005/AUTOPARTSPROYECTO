@@ -1,6 +1,6 @@
 using System;
 
-namespace AutoParts.Entidades
+namespace AutoParts.Entity
 {
     public class ReemplazoGarantia
     {
