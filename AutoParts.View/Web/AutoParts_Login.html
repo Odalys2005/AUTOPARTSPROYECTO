@@ -1,0 +1,770 @@
+
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AutoParts | Iniciar sesión</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+            font-family: Segoe UI, Inter, Arial, sans-serif;
+            color: #fff;
+            background: #070507;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* FONDO PRINCIPAL */
+
+        .stage {
+            position: relative;
+            isolation: isolate;
+
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            padding: 20px clamp(18px, 5vw, 70px);
+
+            background:
+                radial-gradient(
+                    ellipse at 70% 35%,
+                    #32100f 0%,
+                    transparent 50%
+                ),
+                linear-gradient(
+                    110deg,
+                    #080608,
+                    #180a0a 65%,
+                    #100705
+                );
+        }
+
+        /* IMAGEN DEL CARRO */
+
+        .car {
+            position: absolute;
+            left: 0;
+            top: 0;
+
+            width: 70%;
+            height: 100%;
+
+            background-image: url('img/carro.jpg');
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .car::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            background: linear-gradient(
+                90deg,
+                rgba(0,0,0,.05) 0%,
+                rgba(0,0,0,.10) 50%,
+                rgba(12,7,9,.65) 80%,
+                #0c0709 100%
+            );
+        }
+
+        /* CAPAS DECORATIVAS */
+
+        .stage::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            z-index: 1;
+            pointer-events: none;
+
+            background: linear-gradient(
+                90deg,
+                transparent 35%,
+                rgba(11,5,7,.15) 55%,
+                rgba(16,7,8,.70) 100%
+            );
+        }
+
+        .stage::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            z-index: 1;
+            pointer-events: none;
+
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0 125px,
+                rgba(255,175,25,.012) 126px 127px
+            );
+        }
+
+        /* BORDE NEON DEL FORMULARIO */
+
+        .login-edge {
+            position: relative;
+            isolation: isolate;
+            z-index: 2;
+
+            width: min(100%, 420px);
+            flex-shrink: 0;
+
+            border-radius: 29px;
+            padding: 2px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 0 28px #ff17264b,
+                0 0 45px #ffb3191f,
+                0 25px 85px #0009;
+        }
+
+        .login-edge::before {
+            content: "";
+            position: absolute;
+
+            z-index: -1;
+            inset: -60%;
+
+            background: conic-gradient(
+                from 10deg,
+                #ff2525 0deg,
+                #ffbd1d 40deg,
+                #fff3b1 51deg,
+                #ffb700 58deg,
+                transparent 85deg,
+                transparent 158deg,
+                #ff1d2a 200deg,
+                #ff4800 227deg,
+                #ffc400 241deg,
+                transparent 268deg,
+                #f71928 338deg,
+                #ff2525 360deg
+            );
+
+            animation: orbit 4.6s linear infinite;
+        }
+
+        @keyframes orbit {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* FORMULARIO TRANSPARENTE */
+
+        .login {
+            background: rgba(12,10,13,.88);
+
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: 27px;
+
+            padding: 26px 30px 18px;
+
+            backdrop-filter: blur(21px);
+            -webkit-backdrop-filter: blur(21px);
+
+            text-align: center;
+        }
+
+        /* LOGOTIPO */
+
+        .logo {
+            font-size: 36px;
+            line-height: 1;
+            font-weight: 850;
+            letter-spacing: -2px;
+            font-style: italic;
+
+            margin: 5px 0 3px;
+
+            text-shadow: 0 1px 20px #000;
+        }
+
+        .logo em {
+            font-style: italic;
+            color: #ff253d;
+        }
+
+        .speed {
+            font-size: 29px;
+            line-height: 1;
+            color: #f62b38;
+
+            letter-spacing: -10px;
+
+            display: inline-block;
+            transform: rotate(-11deg);
+
+            margin-bottom: 5px;
+        }
+
+        .speed span {
+            color: #ffba13;
+        }
+
+        .tag {
+            font-size: 9px;
+            letter-spacing: 1.7px;
+            color: #bbb;
+
+            white-space: nowrap;
+            margin-bottom: 19px;
+        }
+
+        /* TITULOS */
+
+        h1 {
+            font-size: 24px;
+            letter-spacing: -.6px;
+
+            margin: 0 0 7px;
+        }
+
+        .sub {
+            font-size: 12px;
+            color: #a7a2a5;
+
+            margin: 0 0 20px;
+        }
+
+        /* ETIQUETAS */
+
+        label {
+            display: block;
+            text-align: left;
+
+            margin: 0 0 7px;
+
+            font-size: 12px;
+            color: #c9c1c3;
+            font-weight: 600;
+        }
+
+        /* CAMPOS DE TEXTO */
+
+        .field {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .field input {
+            display: block;
+            width: 100%;
+
+            background: #161517;
+            color: #fff;
+
+            border: 1px solid #494248;
+            border-radius: 12px;
+
+            padding: 12px 44px;
+
+            outline: none;
+            transition: .25s;
+        }
+
+        .field input::placeholder {
+            color: #787478;
+        }
+
+        .field input:focus {
+            border-color: #ffbd24;
+
+            box-shadow:
+                0 0 0 3px #ffb90018,
+                0 0 16px #f22a2629;
+        }
+
+        /* ICONOS */
+
+        .fi {
+            position: absolute;
+            top: 12px;
+            left: 14px;
+
+            color: #ffb82d;
+            font-size: 19px;
+        }
+
+        /* MOSTRAR CONTRASEÑA */
+
+        .reveal {
+            position: absolute;
+            right: 12px;
+            top: 9px;
+
+            border: 0;
+            background: none;
+            color: #bdb8bd;
+
+            cursor: pointer;
+
+            padding: 3px 5px;
+            font-size: 18px;
+        }
+
+        /* OPCIONES */
+
+        .options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+            margin: 7px 0 19px;
+
+            font-size: 12px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            color: #bbb;
+            cursor: pointer;
+        }
+
+        .remember input {
+            accent-color: #ffb90c;
+        }
+
+        .forgot {
+            color: #ffc529;
+            text-decoration: none;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
+        /* BOTON INICIAR SESION */
+
+        .submit {
+            width: 100%;
+
+            background: linear-gradient(
+                105deg,
+                #fa142f 0%,
+                #ff4b20 48%,
+                #ffcb19 100%
+            );
+
+            border: 0;
+            border-radius: 12px;
+
+            padding: 14px;
+
+            font-size: 14px;
+            font-weight: 850;
+            letter-spacing: .5px;
+
+            color: #160909;
+            cursor: pointer;
+
+            box-shadow: 0 8px 25px #ff572840;
+
+            transition:
+                transform .2s,
+                box-shadow .2s;
+        }
+
+        .submit:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 7px 35px #ffad2670;
+        }
+
+        .submit:active {
+            transform: translateY(0);
+        }
+
+        /* MENSAJES */
+
+        .secure {
+            color: #a5a0a5;
+            font-size: 12px;
+
+            margin: 17px 0 0;
+        }
+
+        .msg {
+            min-height: 18px;
+
+            font-size: 12px;
+            color: #ffcd45;
+
+            margin: 10px 0 0;
+        }
+
+        /* ADAPTACION A VENTANAS MEDIANAS */
+
+        @media (max-width: 950px) {
+
+            .stage {
+                justify-content: flex-end;
+                padding: 18px 35px;
+            }
+
+            .car {
+                width: 75%;
+                background-position: 40% center;
+            }
+
+            .login-edge {
+                width: min(100%, 400px);
+            }
+        }
+
+        /* ADAPTACION A VENTANAS ESTRECHAS */
+
+        @media (max-width: 650px) {
+
+            .stage {
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .car {
+                width: 100%;
+                opacity: .65;
+                background-position: 35% center;
+            }
+
+            .stage::before {
+                background: rgba(5,3,4,.40);
+            }
+
+            .login-edge {
+                width: min(100%, 390px);
+            }
+
+            .login {
+                padding: 22px 23px 17px;
+            }
+        }
+
+        /* ADAPTACION A POCA ALTURA */
+
+        @media (max-height: 750px) {
+
+            .stage {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+
+            .login {
+                padding-top: 16px;
+                padding-bottom: 12px;
+            }
+
+            .speed {
+                font-size: 25px;
+                margin-bottom: 3px;
+            }
+
+            .logo {
+                font-size: 31px;
+            }
+
+            .tag {
+                margin-bottom: 12px;
+            }
+
+            h1 {
+                font-size: 21px;
+                margin-bottom: 5px;
+            }
+
+            .sub {
+                margin-bottom: 13px;
+            }
+
+            .field {
+                margin-bottom: 10px;
+            }
+
+            .field input {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .fi {
+                top: 10px;
+            }
+
+            .reveal {
+                top: 7px;
+            }
+
+            .options {
+                margin: 5px 0 12px;
+            }
+
+            .submit {
+                padding: 11px;
+            }
+
+            .secure {
+                margin-top: 10px;
+            }
+
+            .msg {
+                margin-top: 6px;
+            }
+        }
+
+        /* VENTANAS MUY PEQUEÑAS */
+
+        @media (max-height: 550px) {
+
+            .stage {
+                align-items: flex-start;
+            }
+
+            .login {
+                padding-top: 12px;
+                padding-bottom: 10px;
+            }
+
+            .tag {
+                margin-bottom: 8px;
+            }
+
+            .sub {
+                margin-bottom: 9px;
+            }
+
+            .options {
+                margin-bottom: 9px;
+            }
+        }
+
+        @media (max-width: 450px) {
+
+            .tag {
+                font-size: 8px;
+                letter-spacing: 1px;
+            }
+
+            .logo {
+                font-size: 30px;
+            }
+
+            h1 {
+                font-size: 21px;
+            }
+
+            .options {
+                font-size: 11px;
+            }
+        }
+
+        /* ACCESIBILIDAD */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .login-edge::before {
+                animation: none;
+            }
+
+            *, *::before, *::after {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="stage">
+
+        <div class="car" aria-hidden="true"></div>
+
+        <section class="login-edge">
+
+            <div class="login">
+
+                <div class="speed" aria-hidden="true">
+                    ◢◢◢<span>◢</span>
+                </div>
+
+                <div class="logo">
+                    Auto<em>Parts</em>
+                </div>
+
+                <div class="tag">
+                    SISTEMA DE GESTIÓN AUTOMOTRIZ
+                </div>
+
+                <h1>Bienvenido de nuevo</h1>
+
+                <p class="sub">
+                    Ingresa tus credenciales para continuar
+                </p>
+
+                <form id="form">
+
+                    <label for="usuario">
+                        Usuario
+                    </label>
+
+                    <div class="field">
+
+                        <span class="fi">♙</span>
+
+                        <input
+                            id="usuario"
+                            name="usuario"
+                            type="text"
+                            autocomplete="username"
+                            placeholder="Ingresa tu usuario"
+                            required
+                        >
+                    </div>
+
+                    <label for="clave">
+                        Contraseña
+                    </label>
+
+                    <div class="field">
+
+                        <span class="fi">♧</span>
+
+                        <input
+                            id="clave"
+                            name="clave"
+                            type="password"
+                            autocomplete="current-password"
+                            placeholder="Ingresa tu contraseña"
+                            required
+                        >
+
+                        <button
+                            class="reveal"
+                            id="reveal"
+                            type="button"
+                            aria-label="Mostrar contraseña"
+                        >
+                            ◉
+                        </button>
+                    </div>
+
+                    <div class="options">
+
+                        <label class="remember">
+                            <input
+                                type="checkbox"
+                                id="remember"
+                            >
+                            Recordarme
+                        </label>
+
+                        <a
+                            class="forgot"
+                            href="#"
+                            id="forgot"
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+
+                    <button
+                        class="submit"
+                        type="submit"
+                    >
+                        INICIAR SESIÓN &nbsp; ➜
+                    </button>
+
+                    <div
+                        class="msg"
+                        id="msg"
+                        role="status"
+                        aria-live="polite"
+                    ></div>
+
+                </form>
+
+                <p class="secure">
+                    ♢ &nbsp; Acceso seguro al sistema
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+
+        const clave = document.querySelector('#clave');
+        const rev = document.querySelector('#reveal');
+        const msg = document.querySelector('#msg');
+
+        rev.onclick = () => {
+
+            let show = clave.type === 'password';
+
+            clave.type = show ? 'text' : 'password';
+
+            rev.textContent = show ? '◌' : '◉';
+
+            rev.setAttribute(
+                'aria-label',
+                show
+                    ? 'Ocultar contraseña'
+                    : 'Mostrar contraseña'
+            );
+        };
+
+        document.querySelector('#form')
+            .addEventListener('submit', e => {
+
+                e.preventDefault();
+
+                msg.textContent =
+                    'Diseño de prueba: falta conectar la autenticación con C# y SQL Server.';
+            });
+
+        document.querySelector('#forgot')
+            .addEventListener('click', e => {
+
+                e.preventDefault();
+
+                msg.textContent =
+                    'La recuperación de contraseña se implementará al conectar C#.';
+            });
+
+    </script>
+
+</body>
+</html>

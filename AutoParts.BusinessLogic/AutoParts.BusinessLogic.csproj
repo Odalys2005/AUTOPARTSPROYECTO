@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AutoParts.DataAccess\AutoParts.DataAccess.csproj" />
+    <ProjectReference Include="..\AutoParts.Entity\AutoParts.Entity.csproj" />
+  </ItemGroup>
+
 </Project>

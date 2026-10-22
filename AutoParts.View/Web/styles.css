@@ -1,0 +1,1104 @@
+/* ===== CONFIGURACIÓN GENERAL Y VARIABLES ===== */
+:root {
+    font-family:Inter,'Segoe UI',Arial,sans-serif;
+    color:#f5f5f7;
+    background:#060608;
+    font-synthesis:none
+}
+
+* {
+    box-sizing:border-box
+}
+
+body {
+    margin:0;
+    min-width:340px;
+    background:radial-gradient(ellipse at 85% 0%,#28090a 0%,transparent 28%),#08090b
+}
+
+button,input {
+    font:inherit
+}
+
+button {
+    cursor:pointer
+}
+
+button:focus-visible,a:focus-visible,input:focus-visible {
+    outline:2px solid #ffc13a;
+    outline-offset:3px
+}
+
+a {
+    text-decoration:none;
+    color:inherit
+}
+
+[hidden] {
+    display:none!important
+}
+
+/* ===== ESTRUCTURA PRINCIPAL DE LA APLICACIÓN ===== */
+.app-shell {
+    display:grid;
+    grid-template-columns:246px minmax(0,1fr);
+    min-height:100vh
+}
+
+/* ===== BARRA LATERAL (SIDEBAR) ===== */
+.sidebar {
+    position:sticky;
+    top:0;
+    height:100vh;
+    min-height:790px;
+    display:flex;
+    flex-direction:column;
+    background:linear-gradient(100deg,#101113,#070708 77%);
+    border-right:1px solid #611214;
+    border-top-right-radius:14px;
+    border-bottom-right-radius:14px;
+    box-shadow:inset -3px 0 8px #d500164a,4px 0 22px #000;
+    overflow:hidden;
+    z-index:10
+}
+
+.sidebar:before {
+    content:'';
+    position:absolute;
+    top:0;
+    left:12px;
+    width:1px;
+    height:95px;
+    background:#f94c52;
+    box-shadow:0 0 14px 3px #d90824;
+    pointer-events:none
+}
+
+
+/* ===== LOGOTIPO Y MARCA ===== */
+
+.brand {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 29px;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: -1px;
+    line-height: .8;
+    color: #FFFFFF; /* Auto en blanco */
+}
+
+.brand span span {
+    color: #FFCC00; /* Parts en amarillo */
+}
+
+.brand-car {
+    width: 164px;
+    height: 43px;
+    margin-bottom: -10px;
+}
+
+
+/* ===== COLORES DEL LOGO AUTOPARTS ===== */
+
+/* Auto en blanco */
+.brand-main {
+    color: #FFFFFF !important;
+}
+
+/* Parts en amarillo */
+.brand-main span {
+    color: #FFCC00 !important;
+}
+
+/* ===== MENÚ DE NAVEGACIÓN ===== */
+.nav {
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    padding:5px 13px;
+    overflow-y:auto;
+    scrollbar-width:thin;
+    scrollbar-color:#471114 transparent
+}
+
+.nav-link {
+    min-height:47px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:10px 15px;
+    border:1px solid transparent;
+    border-radius:8px;
+    color:#dbdce1;
+    font-size:14px;
+    transition:.15s
+}
+
+.nav-link:hover {
+    background:#2a1519;
+    color:white
+}
+
+.nav-link.active {
+    background:linear-gradient(95deg,#750a0d9c,#2b0e12);
+    border-color:#fd252b;
+    box-shadow:inset 0 0 14px #ff20201e,0 0 13px #f415254d;
+    color:white
+}
+
+.nav-link [data-icon] svg {
+    width:23px;
+    height:23px;
+    stroke-width:1.9
+}
+
+/* ===== PARTE INFERIOR DE LA BARRA LATERAL ===== */
+.sidebar-footer {
+    margin-top:auto;
+    position:relative;
+    min-height:185px;
+    padding:74px 30px 16px;
+    font-size:11px;
+    line-height:1.7;
+    letter-spacing:4px;
+    color:#c5c7cf
+}
+
+.footer-car {
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg,#070708 3%,transparent 35%,#070708 100%),url('img/sidebar-repuestos.png') center top/cover;
+    opacity:.65;
+    pointer-events:none
+}
+
+.sidebar-footer p,.sidebar-footer i {
+    position:relative
+}
+
+.sidebar-footer i {
+    display:block;
+    width:31px;
+    height:3px;
+    background:#ff3840;
+    box-shadow:0 0 10px red
+}
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.main {
+    min-width:0;
+    padding:10px 16px 20px
+}
+
+/* ===== BARRA SUPERIOR ===== */
+.topbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    margin:0 0 17px;
+    min-height:47px
+}
+
+/* ===== BOTÓN DE MENÚ PARA MÓVILES ===== */
+.menu-toggle {
+    display:none;
+    border:0;
+    background:#171719;
+    color:white;
+    padding:9px
+}
+
+/* ===== BUSCADOR GENERAL ===== */
+.search-wrap {
+    position:relative;
+    margin-left:16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    max-width:675px;
+    width:57%;
+    border:1px solid #5a585e;
+    background:linear-gradient(#131317,#0c0c0f);
+    border-radius:9px;
+    height:45px;
+    padding:0 16px;
+    box-shadow:0 0 15px #0009
+}
+
+.search-wrap>span svg {
+    width:22px;
+    color:#b7bac7
+}
+
+.search-wrap input {
+    flex:1;
+    min-width:0;
+    border:0;
+    outline:none;
+    background:transparent;
+    color:#eee;
+    font-size:14px
+}
+
+.search-wrap input::placeholder {
+    color:#adaeba
+}
+
+.search-wrap kbd {
+    white-space:nowrap;
+    color:#babac4;
+    border:1px solid #595862;
+    background:#232328;
+    padding:3px 6px;
+    border-radius:5px;
+    font-size:12px
+}
+
+.search-results {
+    position:absolute;
+    top:calc(100% + 7px);
+    left:0;
+    right:0;
+    z-index:20;
+    border:1px solid #7b2930;
+    border-radius:9px;
+    background:#151519;
+    box-shadow:0 10px 25px #000;
+    max-height:320px;
+    overflow:auto
+}
+
+.search-results button {
+    display:block;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:0;
+    color:#eee;
+    padding:12px 15px;
+    border-bottom:1px solid #333
+}
+
+.search-results button:hover {
+    background:#332024
+}
+
+.search-results small {
+    display:block;
+    color:#aaa;
+    margin-top:3px
+}
+
+.search-results>p {
+    padding:6px 16px;
+    color:#aaa
+}
+
+/* ===== PERFIL DE USUARIO ===== */
+.profile-wrap {
+    position:relative;
+    margin-left:auto
+}
+
+.profile {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:white;
+    border:0;
+    background:transparent;
+    padding:0 3px
+}
+
+.avatar {
+    height:46px;
+    width:46px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    font-weight:700;
+    font-size:17px;
+    background:linear-gradient(140deg,#58030a,#c1171a 70%,#250000);
+    border:2px solid #ffbb22;
+    box-shadow:0 0 15px #e7132890
+}
+
+.profile-info {
+    text-align:left;
+    min-width:90px
+}
+
+.profile-info strong {
+    font-size:13px;
+    display:block
+}
+
+.profile-info small {
+    font-size:12px;
+    color:#b8b8c0
+}
+
+.profile [data-icon] svg {
+    width:17px
+}
+
+.profile-menu {
+    position:absolute;
+    right:0;
+    top:60px;
+    min-width:210px;
+    background:#17171b;
+    border:1px solid #673038;
+    padding:14px;
+    border-radius:9px;
+    z-index:15;
+    box-shadow:0 10px 30px #000
+}
+
+.profile-menu strong,.profile-menu small {
+    display:block
+}
+
+.profile-menu small {
+    color:#aaa;
+    margin-top:5px
+}
+
+.profile-menu button {
+    display:block;
+    border:0;
+    background:#272227;
+    padding:9px;
+    width:100%;
+    color:#eee;
+    text-align:left;
+    margin-top:10px;
+    border-radius:5px
+}
+
+/* ===== BORDES Y EFECTOS NEÓN ===== */
+.neon-frame {
+    position:relative;
+    border:2px solid #fd3331;
+    box-shadow:0 0 13px #e62b3da0, inset 0 0 10px #b9072444;
+    border-radius:13px;
+    overflow:hidden
+}
+
+.neon-frame:after,.data-panel:after {
+    content:'';
+    position:absolute;
+    bottom:-2px;
+    left:0;
+    width:34%;
+    height:2px;
+    background:linear-gradient(90deg,#ffe36c,#ff4b2d,transparent);
+    box-shadow:0 0 12px #ffd151
+}
+
+/* ===== PANEL DE BIENVENIDA ===== */
+.welcome {
+    min-height:272px;
+    display:flex;
+    align-items:center;
+    background:linear-gradient(90deg,#020304 0%,#060506 45%,#170507 100%)
+}
+
+
+/* =========================================
+   PANEL DE BIENVENIDA
+   ========================================= */
+
+.welcome {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 200px;
+    height: 200px;
+
+    background: #050507;
+    overflow: hidden;
+}
+
+/* =========================================
+   IMAGEN DE FONDO
+   ========================================= */
+
+.welcome-image {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(0, 0, 0, .96) 0%,
+            rgba(0, 0, 0, .85) 25%,
+            rgba(0, 0, 0, .35) 48%,
+            transparent 72%
+        ),
+        url('img/Muscle car roja bajo luces de neón.png');
+
+    background-position: center, right center;
+    background-size: cover, cover;
+    background-repeat: no-repeat;
+
+    filter: saturate(1.2);
+    opacity: 1;
+}
+
+/* =========================================
+   TEXTO DEL PANEL
+   ========================================= */
+
+.welcome-copy {
+    position: relative;
+    z-index: 1;
+
+    padding: 15px 4.5%;
+    max-width: 650px;
+
+    text-shadow: 0 2px 6px #000;
+}
+
+.welcome h1 {
+    margin: 0 0 4px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    font-size: clamp(28px, 3vw, 42px);
+}
+
+.welcome h2 {
+    margin: 0;
+    color: #ffbd27;
+    font-size: clamp(15px, 1.5vw, 21px);
+}
+
+.welcome p {
+    line-height: 1.45;
+    color: #d0cdd0;
+    font-size: 13px;
+    margin: 10px 0 13px;
+}
+
+
+.welcome-copy {
+    position:relative;
+    z-index:1;
+    padding:28px 4.7%;
+    max-width:690px;
+    text-shadow:0 2px 6px #000
+}
+
+.welcome h1 {
+    margin:0 0 1px;
+    font-weight:800;
+    letter-spacing:-1.7px;
+    font-size:clamp(32px,3.4vw,55px)
+}
+
+.welcome h1 em {
+    font-style:normal;
+    color:#ff2835
+}
+
+.welcome h2 {
+    margin:0;
+    color:#ffbd27;
+    font-size:clamp(17px,1.65vw,26px);
+    letter-spacing:-.5px
+}
+
+.welcome p {
+    line-height:1.5;
+    color:#d0cdd0;
+    font-size:clamp(13px,1.03vw,16px);
+    margin:12px 0 17px
+}
+
+.accent-line {
+    width:37px;
+    height:3px;
+    background:#ff352d;
+    box-shadow:0 0 14px red
+}
+
+.welcome-vertical {
+    position:absolute;
+    right:18px;
+    top:75px;
+    color:#d0c0c2;
+    letter-spacing:5px;
+    font-size:10px;
+    line-height:1.9;
+    text-align:left;
+    text-shadow:0 2px 6px black
+}
+
+/* ===== ESTILOS GENERALES DE PANELES ===== */
+.panel {
+    border:1px solid #5c4c4a;
+    background:linear-gradient(140deg,#151416,#0a0c0e 50%,#121011);
+    border-radius:11px
+}
+
+/* ===== ACCESOS RÁPIDOS ===== */
+.shortcuts {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    margin-top:18px;
+    padding:15px 16px
+}
+
+.shortcut-heading {
+    display:flex;
+    align-items:flex-start;
+    gap:17px;
+    min-width:350px
+}
+
+.bolt {
+    font-weight:900;
+    font-size:41px;
+    line-height:1;
+    color:#ffc63d;
+    text-shadow:0 0 19px #fa8200
+}
+
+.shortcut-heading h3,.panel-heading h3 {
+    font-size:18px;
+    line-height:1.15;
+    margin:3px 0 6px
+}
+
+.shortcut-heading p,.panel-heading p {
+    font-size:13px;
+    color:#b7b7bd;
+    margin:0
+}
+
+.shortcut-buttons {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:15px;
+    flex:1
+}
+
+.shortcut {
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:15px 18px;
+    border-radius:10px;
+    background:#1b0c0c;
+    border:1px solid #f51d2f;
+    color:#fff;
+    text-align:left;
+    box-shadow:inset 0 0 13px #b10d1930,0 0 12px #df0c2529;
+    transition:transform .15s,filter .15s
+}
+
+.shortcut:hover {
+    transform:translateY(-3px);
+    filter:brightness(1.2)
+}
+
+.shortcut>[data-icon] svg {
+    width:34px;
+    height:34px
+}
+
+.shortcut>span:nth-child(2) {
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    flex:1
+}
+
+.shortcut strong {
+    font-size:15px
+}
+
+.shortcut small {
+    white-space:nowrap;
+    color:#bdbbc0;
+    font-size:12px
+}
+
+.shortcut b svg {
+    width:20px;
+    height:20px
+}
+
+.shortcut.red {
+    color:#ff3c46;
+    border-color:#ee1727
+}
+
+.shortcut.red strong {
+    color:#fff
+}
+
+.shortcut.yellow {
+    color:#ffcc29;
+    border-color:#b78604;
+    background:#201908
+}
+
+.shortcut.yellow strong {
+    color:#fff
+}
+
+.shortcut.orange {
+    color:#ff9d15;
+    border-color:#c86c0a;
+    background:#201007
+}
+
+.shortcut.orange strong {
+    color:#fff
+}
+
+/* ===== CONTENEDOR DE TABLAS ===== */
+.tables-grid {
+    display:grid;
+    grid-template-columns:1.05fr 1fr;
+    gap:14px;
+    margin-top:13px
+}
+
+/* ===== TARJETAS DE TABLAS ===== */
+.data-panel {
+    position:relative;
+    min-width:0;
+    border:1px solid #626061;
+    border-radius:12px;
+    padding:16px 15px 17px;
+    background:linear-gradient(140deg,#151619,#080a0c 70%);
+    overflow:hidden;
+    box-shadow:inset 0 0 14px #0005
+}
+
+.data-panel.sales {
+    border-left:2px solid #ff4634;
+    box-shadow:-2px 0 11px #ef292c55,inset 0 0 10px #0006
+}
+
+.data-panel.stock {
+    border-right:2px solid #ff482b;
+    box-shadow:2px 0 11px #ff391d77,inset 0 0 10px #0006
+}
+
+.data-panel.stock:after {
+    left:auto;
+    right:0
+}
+
+/* ===== ENCABEZADOS DE TABLAS ===== */
+.panel-heading {
+    display:flex;
+    gap:19px;
+    align-items:flex-start;
+    min-height:58px;
+    margin:0 3px 3px
+}
+
+.heading-icon svg {
+    width:33px;
+    height:33px
+}
+
+.yellow-text {
+    color:#ffbd26;
+    filter:drop-shadow(0 0 8px #fd870066)
+}
+
+.panel-heading>div {
+    flex:1;
+    min-width:0
+}
+
+.see-all {
+    display:flex;
+    align-items:center;
+    gap:9px;
+    white-space:nowrap;
+    background:#16191d;
+    color:#ededf0;
+    border:1px solid #575b62;
+    border-radius:7px;
+    padding:8px 12px;
+    font-size:12px
+}
+
+.see-all:hover {
+    border-color:#e73d32
+}
+
+.see-all svg {
+    width:15px;
+    height:15px
+}
+
+/* ===== TABLAS DE DATOS ===== */
+.table-scroll {
+    overflow:auto;
+    border:1px solid #333438;
+    border-radius:9px
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px
+}
+
+th {
+    text-align:left;
+    background:#191b1f;
+    color:#e3e3e6;
+    font-weight:500;
+    white-space:nowrap;
+    padding:9px 15px
+}
+
+td {
+    padding:7px 15px;
+    border-top:1px solid #27282a;
+    color:#e0dfe4;
+    white-space:nowrap
+}
+
+tbody tr:nth-child(odd) {
+    background:#0b0d0f
+}
+
+tbody tr:nth-child(even) {
+    background:#121417
+}
+
+tbody tr:hover {
+    background:#291b1d
+}
+
+/* ===== ETIQUETAS DE ESTADO ===== */
+.status {
+    display:inline-block;
+    text-align:center;
+    min-width:102px;
+    background:#064526;
+    color:#90f9b8;
+    border-radius:20px;
+    padding:5px 9px;
+    border:1px solid #085c34;
+    font-size:11px
+}
+
+.status.pending {
+    background:#4a2b04;
+    color:#ffd552;
+    border-color:#724905
+}
+
+/* ===== INDICADORES DE STOCK BAJO ===== */
+.stock-low {
+    color:#ff343a;
+    font-weight:800
+}
+
+/* ===== PRODUCTOS DE INVENTARIO ===== */
+.product-info {
+    display:flex;
+    align-items:center;
+    gap:9px
+}
+
+.product-symbol {
+    display:grid;
+    place-items:center;
+    font-size:20px;
+    min-width:39px;
+    height:28px;
+    border-radius:4px;
+    background:#25272c
+}
+
+.product-info strong,.product-info small {
+    display:block;
+    white-space:normal
+}
+
+.product-info strong {
+    font-size:11px;
+    font-weight:500
+}
+
+.product-info small {
+    font-size:10px;
+    color:#a8a9b0;
+    margin-top:2px
+}
+
+/* ===== VISTAS DE LOS MÓDULOS ===== */
+.section-view {
+    padding:32px;
+    min-height:65vh
+}
+
+.back-button {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:none;
+    border:0;
+    color:#ffb833;
+    font-size:14px
+}
+
+.back-button svg {
+    width:18px
+}
+
+.section-heading {
+    margin:35px 0 27px
+}
+
+.section-heading p {
+    color:#f55b43;
+    letter-spacing:3px;
+    font-size:11px
+}
+
+.section-heading h1 {
+    font-size:43px;
+    margin:0 0 9px
+}
+
+.section-heading span {
+    color:#bbb
+}
+
+.section-placeholder {
+    padding:25px;
+    background:#0b0d10;
+    border:1px solid #383135;
+    border-radius:11px;
+    color:#bfbfc5
+}
+
+.section-placeholder h3 {
+    color:#fff;
+    margin-top:0
+}
+
+.section-placeholder button {
+    padding:11px 18px;
+    background:#831522;
+    border:1px solid #f33;
+    color:white;
+    border-radius:6px
+}
+
+/* ===== LEYENDA DE DEMOSTRACIÓN ===== */
+.demo-label {
+    font-size:10px;
+    letter-spacing:.5px;
+    color:#696970;
+    text-align:right;
+    margin:12px 0
+}
+
+/* ===== MENSAJES EMERGENTES ===== */
+.toast {
+    position:fixed;
+    bottom:18px;
+    right:20px;
+    z-index:30;
+    background:#231519;
+    border:1px solid #e2393b;
+    color:#fff;
+    padding:12px 18px;
+    border-radius:8px;
+    box-shadow:0 0 20px #000;
+    max-width:360px;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(12px);
+    transition:.2s
+}
+
+.toast.visible {
+    opacity:1;
+    transform:translateY(0)
+}
+
+/* ===== DISEÑO ADAPTABLE: PANTALLAS HASTA 1450 PX ===== */
+@media(max-width:1450px) {
+    .shortcut-heading {
+        min-width:270px
+    }
+    .shortcuts {
+        align-items:stretch
+    }
+    .shortcut-buttons {
+        gap:8px
+    }
+    .shortcut {
+        padding:12px 9px;
+        gap:9px
+    }
+    .shortcut small {
+        font-size:11px
+    }
+    .welcome-vertical {
+        display:none
+    }
+}
+
+/* ===== DISEÑO ADAPTABLE: PANTALLAS HASTA 1150 PX ===== */
+@media(max-width:1150px) {
+    .shortcuts {
+        display:block
+    }
+    .shortcut-heading {
+        margin-bottom:15px
+    }
+    .tables-grid {
+        grid-template-columns:1fr
+    }
+    .sidebar {
+        min-height:0
+    }
+    .welcome-image {
+        inset:0 0 0 32%
+    }
+}
+
+/* ===== DISEÑO ADAPTABLE: PANTALLAS HASTA 740 PX ===== */
+@media(max-width:740px) {
+    .app-shell {
+        display:block
+    }
+    .sidebar {
+        position:fixed;
+        left:0;
+        top:0;
+        width:250px;
+        height:100dvh;
+        transform:translateX(-105%);
+        transition:transform .2s
+    }
+    .sidebar.open {
+        transform:translateX(0)
+    }
+    .main {
+        padding:8px 10px
+    }
+    .menu-toggle {
+        display:block
+    }
+    .topbar {
+        gap:8px
+    }
+    .search-wrap {
+        margin:0;
+        flex:1;
+        width:auto;
+        padding:0 9px
+    }
+    .search-wrap kbd,.profile-info,.profile [data-icon] {
+        display:none
+    }
+    .avatar {
+        width:39px;
+        height:39px;
+        font-size:14px
+    }
+    .welcome {
+        min-height:290px
+    }
+    .welcome-image {
+        inset:0;
+        opacity:.5
+    }
+    .welcome-copy {
+        padding:26px 18px
+    }
+    .welcome h1 {
+        font-size:36px
+    }
+    .welcome h2 {
+        font-size:19px
+    }
+    .welcome p {
+        font-size:13px
+    }
+    .desktop-break {
+        display:none
+    }
+    .shortcut-buttons {
+        grid-template-columns:1fr
+    }
+    .shortcut {
+        padding:14px
+    }
+    .shortcut-heading {
+        min-width:0
+    }
+    .data-panel {
+        padding:12px 8px
+    }
+    .panel-heading {
+        gap:9px
+    }
+    .panel-heading h3 {
+        font-size:15px
+    }
+    .panel-heading p {
+        font-size:11px
+    }
+    .see-all {
+        padding:7px
+    }
+    .heading-icon svg {
+        width:26px
+    }
+    td,th {
+        padding:9px
+    }
+    .section-view {
+        padding:20px
+    }
+    .section-heading h1 {
+        font-size:32px
+    }
+}
+
+/** Quitar línea roja vertical izquierda del sidebar **/
+
+.sidebar::before,
+
+.sidebar::after,
+
+.brand::before,
+
+.brand::after {
+    content: none !important;
+    display: none !important;
+}
+
+/** Quitar borde o línea lateral **/
+
+.sidebar {
+    border-left: none !important;
+    box-shadow: none !important;
+}

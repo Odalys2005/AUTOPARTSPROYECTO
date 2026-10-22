@@ -11,23 +11,28 @@ namespace AutoParts.Entity
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public decimal PrecioVenta { get; set; }
-        public int TiempoGarantia { get; set; }
+        public int DiasGarantia { get; set; }
 
-        public int CategoriaId { get; set; }
+        public int SubcategoriaId { get; set; }
         public int EstadoId { get; set; }
+
         public Producto()
         {
-                
+
         }
-        public Producto(int productoId, string codigoOEM, string nombre, string descripcion, decimal precioVenta, int tiempoGarantia, int categoriaId, int estadoId)
+
+        public Producto(int productoId, string codigoOEM,
+                        string nombre, string descripcion,
+                        decimal precioVenta, int diasGarantia,
+                        int subcategoriaId, int estadoId)
         {
             ProductoId = productoId;
             CodigoOEM = codigoOEM;
             Nombre = nombre;
             Descripcion = descripcion;
             PrecioVenta = precioVenta;
-            TiempoGarantia = tiempoGarantia;
-            CategoriaId = categoriaId;
+            DiasGarantia = diasGarantia;
+            SubcategoriaId = subcategoriaId;
             EstadoId = estadoId;
         }
     }

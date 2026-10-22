@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>AutoParts | Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="brand-meter"></div><div class="brand-main">Auto<span>Parts</span></div></div>
+      <nav class="nav" aria-label="Menú principal">
+        <a class="nav-link active" href="#dashboard" data-section="Dashboard"><span data-icon="home"></span>Inicio</a>
+        <a class="nav-link" href="#productos" data-section="Productos"><span data-icon="box"></span> Productos</a>
+        <a class="nav-link" href="#categorias" data-section="Categorías"><span data-icon="grid"></span> Categorías</a>
+        <a class="nav-link" href="#marcas" data-section="Marcas"><span data-icon="tag"></span> Marcas</a>
+        <a class="nav-link" href="#inventario" data-section="Inventario"><span data-icon="package"></span> Inventario</a>
+        <a class="nav-link" href="#proveedores" data-section="Proveedores"><span data-icon="truck"></span> Proveedores</a>
+        <a class="nav-link" href="#compras" data-section="Compras"><span data-icon="cart"></span> Compras</a>
+        <a class="nav-link" href="#ventas" data-section="Ventas"><span data-icon="chart"></span> Ventas</a>
+        <a class="nav-link" href="#clientes" data-section="Clientes"><span data-icon="users"></span> Clientes</a>
+        <a class="nav-link" href="#empleados" data-section="Empleados"><span data-icon="user"></span> Empleados</a>
+        <a class="nav-link" href="#garantias" data-section="Garantías"><span data-icon="shield"></span> Garantías</a>
+        <a class="nav-link" href="#usuarios" data-section="Usuarios"><span data-icon="users"></span> Usuarios</a>
+        <a class="nav-link" href="#configuracion" data-section="Configuración"><span data-icon="settings"></span> Configuración</a>
+      </nav>
+       <div class="sidebar-footer"><div class="footer-car"></div><p>POTENCIA TU NEGOCIO<br>CONTROL TOTAL EN TUS MANOS</p><i></i></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><span data-icon="menu"></span></button>
+        <div class="search-wrap"><span data-icon="search"></span><input id="searchInput" type="search" placeholder="Buscar productos, clientes, facturas..." autocomplete="off" aria-label="Buscar"/><div id="searchResults" class="search-results" hidden></div></div>
+        <div class="profile-wrap"><button class="profile" id="profileButton" aria-expanded="false"><span class="avatar">AM</span><span class="profile-info"><strong>ADMIN</strong><small>Administrador</small></span><span data-icon="chevron"></span></button><div class="profile-menu" id="profileMenu" hidden><strong>Odalys</strong><small>Sesión de demostración</small><button id="profileSettings">Configuración</button><button id="logoutButton">Cerrar sesión (demo)</button></div></div>
+      </header>
+
+      <div id="dashboardContent" class="dashboard-content">
+        <section class="welcome neon-frame" aria-label="Bienvenida"><div class="welcome-image"></div><div class="welcome-copy"><h1>Bienvenido, <em></em></h1><h2>Control total de tu negocio automotriz</h2><p>Gestiona tus productos, ventas e inventario desde<br class="desktop-break"> un solo lugar. Mantén tu negocio siempre en movimiento.</p><div class="accent-line"></div></div><div class="welcome-vertical">AUTO PARTS<br>DRIVES<br>BUSINESS<br>FORWARD</div></section>
+        <section class="shortcuts panel"><div class="shortcut-heading"><div><h3>Accesos rápidos</h3><p>Ir directamente a las funciones principales de tu sistema.</p></div></div><div class="shortcut-buttons"><button class="shortcut red" data-open="Productos"><span data-icon="box"></span><span><strong>Productos</strong><small>Ver y gestionar productos</small></span><b data-icon="arrow"></b></button><button class="shortcut yellow" data-open="Ventas"><span data-icon="cart"></span><span><strong>Ventas</strong><small>Crear y consultar ventas</small></span><b data-icon="arrow"></b></button><button class="shortcut orange" data-open="Inventario"><span data-icon="package"></span><span><strong>Inventario</strong><small>Revisar stock y existencias</small></span><b data-icon="arrow"></b></button></div></section>
+        <section class="tables-grid"><article class="data-panel sales"><div class="panel-heading"><span class="heading-icon yellow-text" data-icon="cart"></span><div><h3>Ventas recientes</h3><p>Últimas facturas registradas en el sistema.</p></div><button class="see-all" data-open="Ventas">Ver todas <span data-icon="arrow"></span></button></div><div class="table-scroll"><table><thead><tr><th># Factura</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th></tr></thead><tbody id="salesRows"></tbody></table></div></article><article class="data-panel stock"><div class="panel-heading"><span class="heading-icon yellow-text" data-icon="package"></span><div><h3>Productos con bajo stock</h3><p>Productos que están por debajo del stock mínimo.</p></div><button class="see-all" data-open="Inventario">Ver todos <span data-icon="arrow"></span></button></div><div class="table-scroll"><table><thead><tr><th>Producto</th><th>SKU</th><th>Stock actual</th><th>Stock mínimo</th></tr></thead><tbody id="stockRows"></tbody></table></div></article></section>
+      </div>
+      <section id="sectionView" class="section-view panel" hidden><button class="back-button" id="backButton"><span data-icon="arrow-left"></span> Volver al Dashboard</button><div class="section-heading"><p>AUTOPARTS · PANEL DE ADMINISTRACIÓN</p><h1 id="sectionTitle">Productos</h1><span id="sectionDescription">Módulo listo para integrar a tu sistema.</span></div><div id="sectionBody"></div></section>
+      <p class="demo-label">Vista de demostración · Datos de ejemplo; no está conectada a SQL Server.</p>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

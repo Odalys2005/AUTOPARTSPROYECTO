@@ -1,15 +1,84 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
-  </ItemGroup>
+	<ItemGroup>
+	  <None Remove="Web\app.js" />
+	  <None Remove="Web\AutoParts_Login.html" />
+	  <None Remove="Web\img\auto-banner.jpg" />
+	  <None Remove="Web\img\auto-sidebar.jpg" />
+	  <None Remove="Web\img\carro.jpg" />
+	  <None Remove="Web\img\Muscle car roja bajo luces de neón.png" />
+	  <None Remove="Web\img\sidebar-repuestos.png" />
+	  <None Remove="Web\index.html" />
+	  <None Remove="Web\login.html" />
+	  <None Remove="Web\modulos\categorias-nuevo.html" />
+	  <None Remove="Web\modulos\categorias.html" />
+	  <None Remove="Web\styles.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Web\app.js">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\AutoParts_Login.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\img\auto-banner.jpg">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\img\auto-sidebar.jpg">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\img\carro.jpg">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\img\Muscle car roja bajo luces de neón.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\img\sidebar-repuestos.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\index.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\login.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\categorias-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\categorias.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\styles.css">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\AutoParts.BusinessLogic\AutoParts.BusinessLogic.csproj" />
+	  <ProjectReference Include="..\AutoParts.DataAccess\AutoParts.DataAccess.csproj" />
+	  <ProjectReference Include="..\AutoParts.Entity\AutoParts.Entity.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 
 </Project>

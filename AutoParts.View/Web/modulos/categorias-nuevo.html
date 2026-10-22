@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoParts | Nueva categoría</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 100% 0%, #581016 0%, transparent 45%), #0a0a0d;
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .contenedor { padding: 29px; }
+        .encabezado {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .subtitulo {
+            color: #ffbd35;
+            font-size: 11px;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 27px;
+        }
+        .descripcion {
+            color: #a9a7ae;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .icono {
+            width: 47px;
+            height: 47px;
+            border: 1px solid #ee3642;
+            border-radius: 12px;
+            background: #5c111a;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            color: #ffc42f;
+            box-shadow: 0 0 20px #ca263044;
+            flex-shrink: 0;
+        }
+        .panel {
+            background: linear-gradient(145deg, #171418, #0e0e12);
+            border: 1px solid #5a3139;
+            border-radius: 14px;
+            padding: 25px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+        .campo { margin-bottom: 21px; }
+        input, select {
+            width: 100%;
+            padding: 13px 14px;
+            background: #111216;
+            color: white;
+            border: 1px solid #554c55;
+            border-radius: 9px;
+            font: inherit;
+            outline: none;
+        }
+        input:focus, select:focus {
+            border-color: #ff3d46;
+            box-shadow: 0 0 10px #e41b303b;
+        }
+        input::placeholder { color: #85858f; }
+        select:disabled { opacity: .6; }
+        .ayuda {
+            color: #898a94;
+            font-size: 11px;
+            margin-top: 7px;
+        }
+        .requerido { color: #ff4753; }
+        .mensaje {
+            color: #ffb64e;
+            min-height: 18px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+        .acciones {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 22px;
+        }
+        button {
+            padding: 13px 23px;
+            border-radius: 9px;
+            font-weight: 700;
+            border: 0;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .cancelar {
+            background: #242328;
+            color: #e5e5e5;
+            border: 1px solid #56535b;
+        }
+        .cancelar:hover { background: #353039; }
+        .guardar {
+            color: #140c0d;
+            background: linear-gradient(105deg, #ff3543, #ffbd2b);
+            box-shadow: 0 0 16px #e5233533;
+        }
+        .guardar:hover:not(:disabled) {
+            filter: brightness(1.12);
+            transform: translateY(-2px);
+        }
+        .guardar:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+        @media (max-width: 500px) {
+            .contenedor { padding: 17px; }
+            .panel { padding: 18px; }
+            .acciones { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <div class="encabezado">
+            <div>
+                <div class="subtitulo">AUTOPARTS · ADMINISTRACIÓN</div>
+                <h1>Nueva categoría</h1>
+                <p class="descripcion">Registra una nueva categoría de repuestos en el sistema.</p>
+            </div>
+            <div class="icono">+</div>
+        </div>
+
+        <div class="panel">
+            <form id="formCategoria">
+                <div class="campo">
+                    <label for="nombre">Nombre de la categoría <span class="requerido">*</span></label>
+                    <input type="text" id="nombre" maxlength="100" placeholder="Ej. Sistemas de frenos" required>
+                    <div class="ayuda">Ingresa el nombre que identificará la categoría.</div>
+                </div>
+
+                <div class="campo">
+                    <label for="estado">Estado <span class="requerido">*</span></label>
+                    <select id="estado" required disabled>
+                        <option value="">Cargando estados...</option>
+                    </select>
+                    <div class="ayuda">Selecciona el estado de la categoría.</div>
+                </div>
+
+                <div id="mensaje" class="mensaje" role="alert"></div>
+
+                <div class="acciones">
+                    <button class="cancelar" type="button" id="cancelar">Cancelar</button>
+                    <button class="guardar" type="submit" id="guardar" disabled>Guardar categoría</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const formulario = document.getElementById("formCategoria");
+        const nombre = document.getElementById("nombre");
+        const estado = document.getElementById("estado");
+        const guardar = document.getElementById("guardar");
+        const mensaje = document.getElementById("mensaje");
+
+        function enviar(datos) {
+            if (window.chrome?.webview?.postMessage) {
+                window.chrome.webview.postMessage(datos);
+                return true;
+            }
+            mensaje.textContent = "No hay conexión con Windows Forms.";
+            return false;
+        }
+
+        document.getElementById("cancelar").onclick = () => {
+            enviar({ type: "cancelar" });
+        };
+
+        formulario.addEventListener("submit", e => {
+            e.preventDefault();
+            const nombreValor = nombre.value.trim();
+            const estadoId = Number(estado.value);
+
+            if (!nombreValor || !Number.isInteger(estadoId) || estadoId <= 0) {
+                mensaje.textContent = "Ingresa el nombre y selecciona un estado.";
+                return;
+            }
+
+            guardar.disabled = true;
+            guardar.textContent = "Guardando...";
+            mensaje.textContent = "";
+
+            const enviado = enviar({
+                type: "guardar",
+                data: {
+                    Nombre: nombreValor,
+                    EstadoId: estadoId
+                }
+            });
+
+            if (!enviado) {
+                guardar.disabled = false;
+                guardar.textContent = "Guardar categoría";
+            }
+        });
+
+        if (window.chrome?.webview?.addEventListener) {
+            window.chrome.webview.addEventListener("message", e => {
+                let respuesta = e.data;
+
+                if (typeof respuesta === "string") {
+                    try {
+                        respuesta = JSON.parse(respuesta);
+                    } catch {
+                        return;
+                    }
+                }
+
+                if (!respuesta || typeof respuesta !== "object") return;
+
+                if (respuesta.type === "estados") {
+                    const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+                    estado.innerHTML = "";
+
+                    const opcionInicial = document.createElement("option");
+                    opcionInicial.value = "";
+                    opcionInicial.textContent = "Selecciona un estado";
+                    estado.appendChild(opcionInicial);
+
+                    for (const item of lista) {
+                        const id = item.EstadoId ?? item.estadoId;
+                        const texto = item.Nombre ?? item.nombre;
+                        const opcion = document.createElement("option");
+                        opcion.value = id;
+                        opcion.textContent = texto;
+                        estado.appendChild(opcion);
+                    }
+
+                    estado.disabled = lista.length === 0;
+                    guardar.disabled = lista.length === 0;
+
+                    if (!lista.length) {
+                        mensaje.textContent = "No hay estados disponibles.";
+                    } else {
+                        mensaje.textContent = "";
+                    }
+                }
+
+                if (respuesta.type === "error") {
+                    mensaje.textContent = respuesta.message || "No se pudo guardar la categoría.";
+                    guardar.disabled = estado.disabled;
+                    guardar.textContent = "Guardar categoría";
+                }
+            });
+        }
+
+        enviar({ type: "obtenerEstados" });
+    </script>
+</body>
+</html>
