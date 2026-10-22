@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿
+using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace AutoParts.DataAccess
 
         public List<Puesto> SelectAll()
         {
-            List<Puesto> result = null;
+            List<Puesto> result = new List<Puesto>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,15 +30,15 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Puesto>();
-
                         while (dr.Read())
                         {
                             Puesto entity = new Puesto();
 
                             entity.PuestoId = dr.GetInt32(0);
                             entity.Nombre = dr.GetString(1);
-                            entity.Descripcion = dr.IsDBNull(2) ? null : dr.GetString(2);
+                            entity.Descripcion = dr.IsDBNull(2)
+                                ? null
+                                : dr.GetString(2);
                             entity.EstadoId = dr.GetInt32(3);
 
                             result.Add(entity);
@@ -59,13 +60,24 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
-                    cmd.Parameters.AddWithValue("@Descripcion", (object)entity.Descripcion ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
+                    cmd.Parameters.AddWithValue(
+                        "@Nombre",
+                        entity.Nombre
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Descripcion",
+                        (object?)entity.Descripcion ?? DBNull.Value
+                    );
+
+                    cmd.Parameters.Add(
+                        "@EstadoId",
+                        SqlDbType.Int
+                    ).Value = entity.EstadoId;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

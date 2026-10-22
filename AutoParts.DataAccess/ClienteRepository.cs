@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿
+using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace AutoParts.DataAccess
 
         public List<Cliente> SelectAll()
         {
-            List<Cliente> result = null;
+            List<Cliente> result = new List<Cliente>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,20 +30,18 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Cliente>();
-
                         while (dr.Read())
                         {
                             Cliente entity = new Cliente();
 
                             entity.ClienteId = dr.GetInt32(0);
-                            entity.Nombre = dr.GetString(1);
-                            entity.Apellido = dr.GetString(2);
-                            entity.DUI = dr.GetString(3);
-                            entity.NIT = dr.GetString(4);
-                            entity.Telefono = dr.GetString(5);
-                            entity.Correo = dr.GetString(6);
-                            entity.Direccion = dr.GetString(7);
+                            entity.Nombre = dr.IsDBNull(1) ? "" : dr.GetString(1);
+                            entity.Apellido = dr.IsDBNull(2) ? "" : dr.GetString(2);
+                            entity.DUI = dr.IsDBNull(3) ? "" : dr.GetString(3);
+                            entity.NIT = dr.IsDBNull(4) ? "" : dr.GetString(4);
+                            entity.Telefono = dr.IsDBNull(5) ? "" : dr.GetString(5);
+                            entity.Correo = dr.IsDBNull(6) ? "" : dr.GetString(6);
+                            entity.Direccion = dr.IsDBNull(7) ? "" : dr.GetString(7);
 
                             result.Add(entity);
                         }
@@ -66,14 +65,18 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
                     cmd.Parameters.AddWithValue("@Apellido", entity.Apellido);
                     cmd.Parameters.AddWithValue("@DUI", entity.DUI);
-                    cmd.Parameters.AddWithValue("@NIT", entity.NIT);
-                    cmd.Parameters.AddWithValue("@Telefono", entity.Telefono);
-                    cmd.Parameters.AddWithValue("@Correo", entity.Correo);
-                    cmd.Parameters.AddWithValue("@Direccion", entity.Direccion);
+                    cmd.Parameters.AddWithValue("@NIT",
+                        (object?)entity.NIT ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Telefono",
+                        (object?)entity.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Correo",
+                        (object?)entity.Correo ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Direccion",
+                        (object?)entity.Direccion ?? DBNull.Value);
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

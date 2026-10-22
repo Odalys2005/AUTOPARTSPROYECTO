@@ -20,10 +20,36 @@
 	  <None Remove="Web\login.html" />
 	  <None Remove="Web\modulos\categorias-nuevo.html" />
 	  <None Remove="Web\modulos\categorias.html" />
+	  <None Remove="Web\modulos\clientes-nuevo.html" />
+	  <None Remove="Web\modulos\clientes.html" />
 	  <None Remove="Web\modulos\estados.html" />
+	  <None Remove="Web\modulos\marcas-nuevo.html" />
+	  <None Remove="Web\modulos\marcas.html" />
+	  <None Remove="Web\modulos\proveedores-nuevo.html" />
+	  <None Remove="Web\modulos\proveedores.html" />
+	  <None Remove="Web\modulos\puestos-nuevo.html" />
+	  <None Remove="Web\modulos\puestos.html" />
 	  <None Remove="Web\modulos\roles-nuevo.html" />
 	  <None Remove="Web\modulos\roles.html" />
 	  <None Remove="Web\styles.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Web\modulos\clientes-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\clientes.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\marcas-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\marcas.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\proveedores-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -61,6 +87,15 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\modulos\estados.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\proveedores.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\puestos-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\puestos.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\modulos\roles-nuevo.html">

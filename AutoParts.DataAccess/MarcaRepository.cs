@@ -18,7 +18,7 @@ namespace AutoParts.DataAccess
 
         public List<Marca> SelectAll()
         {
-            List<Marca> result = null;
+            List<Marca> result = new List<Marca>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -30,8 +30,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Marca>();
-
                         while (dr.Read())
                         {
                             Marca entity = new Marca();
@@ -59,12 +57,15 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
-                    cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoParts | Nuevo cliente</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 100% 0%, #581016 0%, transparent 45%), #0a0a0d;
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .contenedor { max-width: 900px; margin: auto; padding: 29px; }
+        .encabezado {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .subtitulo {
+            color: #ffbd35;
+            font-size: 11px;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        h1 { margin: 0; font-size: 27px; }
+        .descripcion { color: #a9a7ae; font-size: 13px; line-height: 1.5; }
+        .icono {
+            width: 47px;
+            height: 47px;
+            border: 1px solid #ee3642;
+            border-radius: 12px;
+            background: #5c111a;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            color: #ffc42f;
+            box-shadow: 0 0 20px #ca263044;
+            flex-shrink: 0;
+        }
+        .panel {
+            background: linear-gradient(145deg, #171418, #0e0e12);
+            border: 1px solid #5a3139;
+            border-radius: 14px;
+            padding: 25px;
+        }
+        .campos {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0 18px;
+        }
+        .campo { margin-bottom: 21px; min-width: 0; }
+        .campo.ancho { grid-column: 1 / -1; }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 13px 14px;
+            background: #111216;
+            color: white;
+            border: 1px solid #554c55;
+            border-radius: 9px;
+            font: inherit;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        textarea { min-height: 86px; resize: vertical; }
+        input:focus, textarea:focus {
+            border-color: #ff3d46;
+            box-shadow: 0 0 10px #e41b303b;
+        }
+        input::placeholder, textarea::placeholder { color: #85858f; }
+        .ayuda { color: #898a94; font-size: 11px; margin-top: 7px; }
+        .requerido { color: #ff4753; }
+        .mensaje { color: #ffb64e; min-height: 18px; font-size: 12px; margin-bottom: 12px; }
+        .acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
+        button {
+            padding: 13px 23px;
+            border-radius: 9px;
+            font-weight: 700;
+            border: 0;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .cancelar { background: #242328; color: #e5e5e5; border: 1px solid #56535b; }
+        .cancelar:hover { background: #353039; }
+        .guardar {
+            color: #140c0d;
+            background: linear-gradient(105deg, #ff3543, #ffbd2b);
+            box-shadow: 0 0 16px #e5233533;
+        }
+        .guardar:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-2px); }
+        .guardar:disabled { opacity: .55; cursor: not-allowed; }
+        @media (max-width: 620px) {
+            .contenedor { padding: 17px; }
+            .panel { padding: 18px; }
+            .campos { grid-template-columns: 1fr; }
+            .acciones { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <div class="encabezado">
+            <div>
+                <div class="subtitulo">AUTOPARTS · ADMINISTRACIÓN</div>
+                <h1>Nuevo cliente</h1>
+                <p class="descripcion">Registra los datos de un nuevo cliente en el sistema.</p>
+            </div>
+            <div class="icono">+</div>
+        </div>
+
+        <div class="panel">
+            <form id="formCliente">
+                <div class="campos">
+                    <div class="campo">
+                        <label for="nombre">Nombre <span class="requerido">*</span></label>
+                        <input id="nombre" type="text" maxlength="100" autocomplete="given-name" placeholder="Ej. María" required>
+                    </div>
+                    <div class="campo">
+                        <label for="apellido">Apellido <span class="requerido">*</span></label>
+                        <input id="apellido" type="text" maxlength="100" autocomplete="family-name" placeholder="Ej. Rodríguez" required>
+                    </div>
+                    <div class="campo">
+                        <label for="dui">DUI <span class="requerido">*</span></label>
+                        <input id="dui" type="text" maxlength="20" placeholder="Ej. 01234567-8" required>
+                    </div>
+                    <div class="campo">
+                        <label for="nit">NIT</label>
+                        <input id="nit" type="text" maxlength="20" placeholder="NIT del cliente (opcional)">
+                    </div>
+                    <div class="campo">
+                        <label for="telefono">Teléfono</label>
+                        <input id="telefono" type="tel" maxlength="25" autocomplete="tel" placeholder="Ej. 7777-8888">
+                    </div>
+                    <div class="campo">
+                        <label for="correo">Correo electrónico</label>
+                        <input id="correo" type="email" maxlength="150" autocomplete="email" placeholder="Ej. cliente@correo.com">
+                    </div>
+                    <div class="campo ancho">
+                        <label for="direccion">Dirección</label>
+                        <textarea id="direccion" maxlength="250" autocomplete="street-address" placeholder="Dirección del cliente (opcional)"></textarea>
+                        <div class="ayuda">Los campos marcados con * son obligatorios.</div>
+                    </div>
+                </div>
+
+                <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
+
+                <div class="acciones">
+                    <button class="cancelar" type="button" id="cancelar">Cancelar</button>
+                    <button class="guardar" type="submit" id="guardar">Guardar cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const formulario = document.getElementById("formCliente");
+        const guardar = document.getElementById("guardar");
+        const mensaje = document.getElementById("mensaje");
+
+        function valor(id) {
+            return document.getElementById(id).value.trim();
+        }
+
+        function enviar(datos) {
+            if (window.chrome?.webview?.postMessage) {
+                window.chrome.webview.postMessage(datos);
+                return true;
+            }
+            mensaje.textContent = "No hay conexión con Windows Forms.";
+            return false;
+        }
+
+        document.getElementById("cancelar").addEventListener("click", () => {
+            enviar({ type: "cancelar" });
+        });
+
+        formulario.addEventListener("submit", e => {
+            e.preventDefault();
+
+            const datos = {
+                Nombre: valor("nombre"),
+                Apellido: valor("apellido"),
+                DUI: valor("dui"),
+                NIT: valor("nit") || null,
+                Telefono: valor("telefono") || null,
+                Correo: valor("correo") || null,
+                Direccion: valor("direccion") || null
+            };
+
+            if (!datos.Nombre || !datos.Apellido || !datos.DUI) {
+                mensaje.textContent = "Completa el nombre, apellido y DUI.";
+                return;
+            }
+
+            guardar.disabled = true;
+            guardar.textContent = "Guardando...";
+            mensaje.textContent = "";
+
+            if (!enviar({ type: "guardar", data: datos })) {
+                guardar.disabled = false;
+                guardar.textContent = "Guardar cliente";
+            }
+        });
+
+        if (window.chrome?.webview?.addEventListener) {
+            window.chrome.webview.addEventListener("message", e => {
+                let respuesta = e.data;
+
+                if (typeof respuesta === "string") {
+                    try {
+                        respuesta = JSON.parse(respuesta);
+                    } catch {
+                        return;
+                    }
+                }
+
+                if (!respuesta || typeof respuesta !== "object") return;
+
+                if (respuesta.type === "error") {
+                    mensaje.textContent = respuesta.message || "No se pudo guardar el cliente.";
+                    guardar.disabled = false;
+                    guardar.textContent = "Guardar cliente";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

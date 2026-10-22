@@ -13,36 +13,37 @@ namespace AutoParts.View
         private readonly CategoriaBL _categoriaBL;
         private readonly EstadoBL _estadoBL;
         private readonly RolBL _rolBL;
-
-        // ==========================================
-        // CONSTRUCTOR CON INYECCIÓN DE DEPENDENCIAS
-        // ==========================================
+        private readonly ProveedorBL _proveedorBL;
+        private readonly ClienteBL _clienteBL;
+        private readonly MarcaBL _marcaBL;
+        private readonly PuestoBL _puestoBL;
 
         public MainForm(
             CategoriaBL categoriaBL,
             EstadoBL estadoBL,
-            RolBL rolBL)
+            RolBL rolBL,
+            ProveedorBL proveedorBL,
+            ClienteBL clienteBL,
+            MarcaBL marcaBL,
+            PuestoBL puestoBL)
         {
             InitializeComponent();
 
             _categoriaBL = categoriaBL;
             _estadoBL = estadoBL;
             _rolBL = rolBL;
+            _proveedorBL = proveedorBL;
+            _clienteBL = clienteBL;
+            _marcaBL = marcaBL;
+            _puestoBL = puestoBL;
 
-            // Configuración de la ventana principal
             StartPosition = FormStartPosition.CenterScreen;
             WindowState = FormWindowState.Maximized;
 
-            // WebView2 ocupa todo el formulario
             webViewMain.Dock = DockStyle.Fill;
 
-            // Evento para cargar el Dashboard
             Load += MainForm_Load;
         }
-
-        // ==========================================
-        // CARGAR EL DASHBOARD
-        // ==========================================
 
         private async void MainForm_Load(
             object? sender,
@@ -52,18 +53,15 @@ namespace AutoParts.View
             {
                 await webViewMain.EnsureCoreWebView2Async();
 
-                // Escuchar mensajes desde JavaScript
                 webViewMain.CoreWebView2.WebMessageReceived +=
                     WebViewMain_WebMessageReceived;
 
-                // Ruta del Dashboard
                 string ruta = Path.Combine(
                     AppContext.BaseDirectory,
                     "Web",
                     "index.html"
                 );
 
-                // Verificar que exista el HTML
                 if (!File.Exists(ruta))
                 {
                     MessageBox.Show(
@@ -76,7 +74,6 @@ namespace AutoParts.View
                     return;
                 }
 
-                // Mostrar el Dashboard
                 webViewMain.Source = new Uri(ruta);
             }
             catch (Exception ex)
@@ -89,10 +86,6 @@ namespace AutoParts.View
                 );
             }
         }
-
-        // ==========================================
-        // RECIBIR MENSAJES DESDE APP.JS
-        // ==========================================
 
         private void WebViewMain_WebMessageReceived(
             object? sender,
@@ -111,10 +104,6 @@ namespace AutoParts.View
 
                 switch (tipo)
                 {
-                    // ==================================
-                    // ABRIR CATEGORÍAS
-                    // ==================================
-
                     case "categorias:abrirLista":
 
                         BeginInvoke(new Action(() =>
@@ -136,10 +125,6 @@ namespace AutoParts.View
                         }));
 
                         break;
-
-                    // ==================================
-                    // ABRIR ESTADOS
-                    // ==================================
 
                     case "estados:abrirLista":
 
@@ -163,10 +148,6 @@ namespace AutoParts.View
 
                         break;
 
-                    // ==================================
-                    // ABRIR ROLES
-                    // ==================================
-
                     case "roles:abrirLista":
 
                         BeginInvoke(new Action(() =>
@@ -179,6 +160,94 @@ namespace AutoParts.View
                             {
                                 MessageBox.Show(
                                     "Error al abrir Roles:\n" +
+                                    ex.Message,
+                                    "AutoParts",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
+                            }
+                        }));
+
+                        break;
+
+                    case "proveedores:abrirLista":
+
+                        BeginInvoke(new Action(() =>
+                        {
+                            try
+                            {
+                                AbrirProveedores();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(
+                                    "Error al abrir Proveedores:\n" +
+                                    ex.Message,
+                                    "AutoParts",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
+                            }
+                        }));
+
+                        break;
+
+                    case "clientes:abrirLista":
+
+                        BeginInvoke(new Action(() =>
+                        {
+                            try
+                            {
+                                AbrirClientes();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(
+                                    "Error al abrir Clientes:\n" +
+                                    ex.Message,
+                                    "AutoParts",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
+                            }
+                        }));
+
+                        break;
+
+                    case "marcas:abrirLista":
+
+                        BeginInvoke(new Action(() =>
+                        {
+                            try
+                            {
+                                AbrirMarcas();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(
+                                    "Error al abrir Marcas:\n" +
+                                    ex.Message,
+                                    "AutoParts",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
+                            }
+                        }));
+
+                        break;
+
+                    case "puestos:abrirLista":
+
+                        BeginInvoke(new Action(() =>
+                        {
+                            try
+                            {
+                                AbrirPuestos();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(
+                                    "Error al abrir Puestos:\n" +
                                     ex.Message,
                                     "AutoParts",
                                     MessageBoxButtons.OK,
@@ -201,24 +270,14 @@ namespace AutoParts.View
             }
         }
 
-        // ==========================================
-        // ABRIR frmCategorias
-        // ==========================================
-
         private void AbrirCategorias()
         {
             using (frmCategorias formulario =
-                new frmCategorias(
-                    _categoriaBL,
-                    _estadoBL))
+                new frmCategorias(_categoriaBL, _estadoBL))
             {
                 formulario.ShowDialog(this);
             }
         }
-
-        // ==========================================
-        // ABRIR frmEstados
-        // ==========================================
 
         private void AbrirEstados()
         {
@@ -229,10 +288,6 @@ namespace AutoParts.View
             }
         }
 
-        // ==========================================
-        // ABRIR frmRoles
-        // ==========================================
-
         private void AbrirRoles()
         {
             using (frmRoles formulario =
@@ -242,9 +297,41 @@ namespace AutoParts.View
             }
         }
 
-        // ==========================================
-        // EVENTOS EXISTENTES DEL DISEÑADOR
-        // ==========================================
+        private void AbrirProveedores()
+        {
+            using (frmProveedores formulario =
+                new frmProveedores(_proveedorBL))
+            {
+                formulario.ShowDialog(this);
+            }
+        }
+
+        private void AbrirClientes()
+        {
+            using (frmClientes formulario =
+                new frmClientes(_clienteBL))
+            {
+                formulario.ShowDialog(this);
+            }
+        }
+
+        private void AbrirMarcas()
+        {
+            using (frmMarcas formulario =
+                new frmMarcas(_marcaBL, _estadoBL))
+            {
+                formulario.ShowDialog(this);
+            }
+        }
+
+        private void AbrirPuestos()
+        {
+            using (frmPuestos formulario =
+                new frmPuestos(_puestoBL, _estadoBL))
+            {
+                formulario.ShowDialog(this);
+            }
+        }
 
         private void webView21_Click(
             object sender,

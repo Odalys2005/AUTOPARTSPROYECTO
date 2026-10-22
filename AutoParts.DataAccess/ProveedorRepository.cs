@@ -18,7 +18,7 @@ namespace AutoParts.DataAccess
 
         public List<Proveedor> SelectAll()
         {
-            List<Proveedor> result = null;
+            List<Proveedor> result = new List<Proveedor>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -30,8 +30,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Proveedor>();
-
                         while (dr.Read())
                         {
                             Proveedor entity = new Proveedor();
@@ -62,15 +60,24 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@NombreEmpresa", entity.NombreEmpresa);
-                    cmd.Parameters.AddWithValue("@NIT", entity.NIT);
-                    cmd.Parameters.AddWithValue("@Telefono", entity.Telefono);
-                    cmd.Parameters.AddWithValue("@Correo", entity.Correo);
-                    cmd.Parameters.AddWithValue("@Contacto", entity.Contacto);
+                    cmd.Parameters.Add("@NombreEmpresa", SqlDbType.VarChar, 100)
+                        .Value = entity.NombreEmpresa;
+
+                    cmd.Parameters.Add("@NIT", SqlDbType.VarChar, 20)
+                        .Value = entity.NIT;
+
+                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
+                        .Value = entity.Telefono;
+
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
+                        .Value = entity.Correo;
+
+                    cmd.Parameters.Add("@Contacto", SqlDbType.VarChar, 100)
+                        .Value = entity.Contacto;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

@@ -38,11 +38,19 @@ namespace AutoParts.View
             services.AddTransient<MarcaRepository>();
             services.AddTransient<EstadoRepository>();
             services.AddTransient<RolRepository>();
+            services.AddTransient<ClienteRepository>();
+            services.AddTransient<MarcaRepository>();
+            services.AddTransient<PuestoRepository>();
 
             // BL
             services.AddScoped<CategoriaBL>();
             services.AddScoped<EstadoBL>();
             services.AddScoped<RolBL>();
+            services.AddScoped<ProveedorBL>();
+            services.AddScoped<ClienteBL>();
+            services.AddScoped<MarcaBL>();
+            services.AddScoped<PuestoBL>();
+
 
             // Form
             services.AddTransient<MainForm>();
@@ -52,6 +60,14 @@ namespace AutoParts.View
             services.AddTransient<frmEstados>();
             services.AddTransient<frmRoles>();
             services.AddTransient<frmRolesNuevo>();
+            services.AddTransient<frmProveedores>();
+            services.AddTransient<frmProveedoresNuevo>();
+            services.AddTransient<frmClientes>();
+            services.AddTransient<frmClientesNuevo>();
+            services.AddTransient<frmMarcas>();
+            services.AddTransient<frmMarcasNuevo>();
+            services.AddTransient<frmPuestos>();
+            services.AddTransient<frmPuestosNuevo>();
 
             var serviceProvider = services.BuildServiceProvider();
 

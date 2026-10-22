@@ -329,7 +329,26 @@ function abrirFormularioRoles() {
     });
 
 }
-
+function abrirFormularioProveedores() {
+    enviarACSharp({
+        type: 'proveedores:abrirLista'
+    });
+}
+function abrirFormularioClientes() {
+    enviarACSharp({
+        type: 'clientes:abrirLista'
+    });
+}
+function abrirFormularioMarcas() {
+    enviarACSharp({
+        type: 'marcas:abrirLista'
+    });
+}
+function abrirFormularioPuestos() {
+    enviarACSharp({
+        type: 'puestos:abrirLista'
+    });
+}
 
 /* ============================================================
    7. NAVEGACIÓN PRINCIPAL
@@ -369,7 +388,22 @@ function showSection(section) {
 
     }
 
-
+    if (key === 'Proveedores') {
+    abrirFormularioProveedores();
+    return;
+    }
+    if (key === 'Clientes') {
+    abrirFormularioClientes();
+    return;
+    }
+    if (key === 'Marcas') {
+    abrirFormularioMarcas();
+    return;
+    }
+    if (key === 'Puestos') {
+    abrirFormularioPuestos();
+    return;
+}
     /* RESTO DE NAVEGACIÓN DEL DASHBOARD */
 
     const esDashboard = key === 'Dashboard';
@@ -431,6 +465,7 @@ function showSection(section) {
             .replace(/[\u0300-\u036f]/g, '');
 
 }
+
 
 
 /* ============================================================
