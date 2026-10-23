@@ -113,7 +113,6 @@
                     <input type="text" id="nombre" maxlength="100" placeholder="Ej. Toyota" required>
                     <div class="ayuda">Ingresa el nombre con el que se identificará la marca.</div>
                 </div>
-
                 <div class="campo">
                     <label for="estado">Estado <span class="requerido">*</span></label>
                     <select id="estado" required disabled>
@@ -121,9 +120,7 @@
                     </select>
                     <div class="ayuda">Selecciona el estado de la marca.</div>
                 </div>
-
-                <div id="mensaje" class="mensaje" role="alert"></div>
-
+                <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
                 <div class="acciones">
                     <button class="cancelar" type="button" id="cancelar">Cancelar</button>
                     <button class="guardar" type="submit" id="guardar" disabled>Guardar marca</button>
@@ -138,8 +135,13 @@
         const estado = document.getElementById("estado");
         const guardar = document.getElementById("guardar");
         const mensaje = document.getElementById("mensaje");
+        let guardando = false;
 
         function enviar(datos) {
+            if (window.parent !== window) {
+                window.parent.postMessage(datos, "*");
+                return true;
+            }
             if (window.chrome?.webview?.postMessage) {
                 window.chrome.webview.postMessage(datos);
                 return true;
@@ -148,85 +150,82 @@
             return false;
         }
 
+        function actualizarBoton() {
+            guardar.disabled = guardando || estado.disabled;
+        }
+
         document.getElementById("cancelar").addEventListener("click", () => {
             enviar({ type: "cancelar" });
         });
 
         formulario.addEventListener("submit", e => {
             e.preventDefault();
+            if (guardando) return;
 
             const nombreValor = nombre.value.trim();
             const estadoId = Number(estado.value);
 
-            if (!nombreValor || !Number.isInteger(estadoId) || estadoId <= 0) {
+            if (!nombreValor || nombreValor.length > 100 || !Number.isInteger(estadoId) || estadoId <= 0) {
                 mensaje.textContent = "Ingresa el nombre y selecciona un estado.";
                 return;
             }
 
-            guardar.disabled = true;
+            guardando = true;
+            actualizarBoton();
             guardar.textContent = "Guardando...";
             mensaje.textContent = "";
 
-            const enviado = enviar({
+            if (!enviar({
                 type: "guardar",
-                data: {
-                    Nombre: nombreValor,
-                    EstadoId: estadoId
-                }
-            });
-
-            if (!enviado) {
-                guardar.disabled = false;
+                data: { Nombre: nombreValor, EstadoId: estadoId }
+            })) {
+                guardando = false;
+                actualizarBoton();
                 guardar.textContent = "Guardar marca";
             }
         });
 
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", e => {
-                let respuesta = e.data;
+        function recibirRespuesta(e) {
+            let respuesta = e.data;
+            if (typeof respuesta === "string") {
+                try { respuesta = JSON.parse(respuesta); } catch { return; }
+            }
+            if (!respuesta || typeof respuesta !== "object") return;
 
-                if (typeof respuesta === "string") {
-                    try {
-                        respuesta = JSON.parse(respuesta);
-                    } catch {
-                        return;
-                    }
+            if (respuesta.type === "estados") {
+                const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+                estado.innerHTML = "";
+
+                const opcionInicial = document.createElement("option");
+                opcionInicial.value = "";
+                opcionInicial.textContent = "Selecciona un estado";
+                estado.appendChild(opcionInicial);
+
+                for (const item of lista) {
+                    const id = item.EstadoId ?? item.estadoId;
+                    const texto = item.Nombre ?? item.nombre;
+                    if (id == null) continue;
+                    const opcion = document.createElement("option");
+                    opcion.value = id;
+                    opcion.textContent = texto ?? "";
+                    estado.appendChild(opcion);
                 }
 
-                if (!respuesta || typeof respuesta !== "object") return;
+                estado.disabled = estado.options.length <= 1;
+                actualizarBoton();
+                mensaje.textContent = estado.disabled ? "No hay estados disponibles." : "";
+            }
 
-                if (respuesta.type === "estados") {
-                    const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
-                    estado.innerHTML = "";
-
-                    const opcionInicial = document.createElement("option");
-                    opcionInicial.value = "";
-                    opcionInicial.textContent = "Selecciona un estado";
-                    estado.appendChild(opcionInicial);
-
-                    for (const item of lista) {
-                        const id = item.EstadoId ?? item.estadoId;
-                        const texto = item.Nombre ?? item.nombre;
-                        if (id == null) continue;
-                        const opcion = document.createElement("option");
-                        opcion.value = id;
-                        opcion.textContent = texto ?? "";
-                        estado.appendChild(opcion);
-                    }
-
-                    estado.disabled = estado.options.length <= 1;
-                    guardar.disabled = estado.disabled;
-                    mensaje.textContent = estado.disabled ? "No hay estados disponibles." : "";
-                }
-
-                if (respuesta.type === "error") {
-                    mensaje.textContent = respuesta.message || "No se pudo guardar la marca.";
-                    guardar.disabled = estado.disabled;
-                    guardar.textContent = "Guardar marca";
-                }
-            });
+            if (respuesta.type === "error") {
+                mensaje.textContent = respuesta.message || "No se pudo guardar la marca.";
+                guardando = false;
+                actualizarBoton();
+                guardar.textContent = "Guardar marca";
+            }
         }
 
+        window.addEventListener("message", recibirRespuesta);
+        window.chrome?.webview?.addEventListener?.("message", recibirRespuesta);
         enviar({ type: "obtenerEstados" });
     </script>
 </body>

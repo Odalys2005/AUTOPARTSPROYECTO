@@ -372,14 +372,22 @@
 			return "";
 			}
 
+
 			function enviarACSharp(mensaje) {
+			if (window.parent !== window) {
+			window.parent.postMessage(mensaje, "*");
+			return true;
+			}
+
 			if (window.chrome?.webview?.postMessage) {
 			window.chrome.webview.postMessage(mensaje);
 			return true;
 			}
-			mostrarMensaje("Esta pantalla requiere WebView2 para consultar los datos.");
+
+			mostrarMensaje("No hay conexión con Windows Forms.");
 			return false;
 			}
+
 
 			function mostrarMensaje(texto) {
 			document.getElementById("categoriaRows").innerHTML = `
@@ -447,8 +455,7 @@
 			}).join("");
 			}
 
-			if (window.chrome?.webview?.addEventListener) {
-			window.chrome.webview.addEventListener("message", evento => {
+			function recibirMensajeCategorias(evento) {
 			let mensaje = evento.data;
 
 			if (typeof mensaje === "string") {
@@ -470,8 +477,13 @@
 			document.getElementById("totalCategorias").textContent = "0";
 			mostrarMensaje(mensaje.message || "No se pudieron cargar las categorías.");
 			}
-			});
 			}
+
+			if (window.chrome?.webview?.addEventListener) {
+			window.chrome.webview.addEventListener("message", recibirMensajeCategorias);
+			}
+
+			window.addEventListener("message", recibirMensajeCategorias);
 
 			document.getElementById("btnNuevaCategoria").addEventListener("click", () => {
 			enviarACSharp({ type: "categorias:abrirNuevo" });

@@ -6,6 +6,7 @@
   <title>AutoParts | Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="app.js" defer></script>
+  <script src="categorias-integradas.js" defer></script>
 </head>
 <body>
   <div class="app-shell">
@@ -14,25 +15,22 @@
       <nav class="nav" aria-label="Menú principal">
         <a class="nav-link active" href="#dashboard" data-section="Dashboard"><span data-icon="home"></span>Inicio</a>
         <a class="nav-link" href="#productos" data-section="Productos"><span data-icon="box"></span> Productos</a>
-       <a class="nav-link" href="#categorias" data-section="Categorías"><span data-icon="grid"></span> Categorías</a>
-
-        <a class="nav-link" href="#estados" data-section="Estados"> <span data-icon="settings"></span> Estados</a>
+        <a class="nav-link" href="#categorias" data-section="Categorías"><span data-icon="grid"></span> Categorías</a>
+        <a class="nav-link" href="#estados" data-section="Estados"><span data-icon="settings"></span> Estados</a>
         <a class="nav-link" href="#roles" data-section="Roles"><span data-icon="shield"></span> Roles</a>
         <a class="nav-link" href="#proveedores" data-section="Proveedores"><span data-icon="truck"></span> Proveedores</a>
         <a class="nav-link" href="#clientes" data-section="Clientes"><span data-icon="users"></span> Clientes</a>
         <a class="nav-link" href="#marcas" data-section="Marcas"><span data-icon="tag"></span> Marcas</a>
         <a class="nav-link" href="#puestos" data-section="Puestos"><span data-icon="user"></span> Puestos</a>
         <a class="nav-link" href="#inventario" data-section="Inventario"><span data-icon="package"></span> Inventario</a>
-       
         <a class="nav-link" href="#compras" data-section="Compras"><span data-icon="cart"></span> Compras</a>
         <a class="nav-link" href="#ventas" data-section="Ventas"><span data-icon="chart"></span> Ventas</a>
-       
         <a class="nav-link" href="#empleados" data-section="Empleados"><span data-icon="user"></span> Empleados</a>
         <a class="nav-link" href="#garantias" data-section="Garantías"><span data-icon="shield"></span> Garantías</a>
         <a class="nav-link" href="#usuarios" data-section="Usuarios"><span data-icon="users"></span> Usuarios</a>
         <a class="nav-link" href="#configuracion" data-section="Configuración"><span data-icon="settings"></span> Configuración</a>
       </nav>
-       <div class="sidebar-footer"><div class="footer-car"></div><p>POTENCIA TU NEGOCIO<br>CONTROL TOTAL EN TUS MANOS</p><i></i></div>
+      <div class="sidebar-footer"><div class="footer-car"></div><p>POTENCIA TU NEGOCIO<br>CONTROL TOTAL EN TUS MANOS</p><i></i></div>
     </aside>
 
     <main class="main">
@@ -47,7 +45,21 @@
         <section class="shortcuts panel"><div class="shortcut-heading"><div><h3>Accesos rápidos</h3><p>Ir directamente a las funciones principales de tu sistema.</p></div></div><div class="shortcut-buttons"><button class="shortcut red" data-open="Productos"><span data-icon="box"></span><span><strong>Productos</strong><small>Ver y gestionar productos</small></span><b data-icon="arrow"></b></button><button class="shortcut yellow" data-open="Ventas"><span data-icon="cart"></span><span><strong>Ventas</strong><small>Crear y consultar ventas</small></span><b data-icon="arrow"></b></button><button class="shortcut orange" data-open="Inventario"><span data-icon="package"></span><span><strong>Inventario</strong><small>Revisar stock y existencias</small></span><b data-icon="arrow"></b></button></div></section>
         <section class="tables-grid"><article class="data-panel sales"><div class="panel-heading"><span class="heading-icon yellow-text" data-icon="cart"></span><div><h3>Ventas recientes</h3><p>Últimas facturas registradas en el sistema.</p></div><button class="see-all" data-open="Ventas">Ver todas <span data-icon="arrow"></span></button></div><div class="table-scroll"><table><thead><tr><th># Factura</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th></tr></thead><tbody id="salesRows"></tbody></table></div></article><article class="data-panel stock"><div class="panel-heading"><span class="heading-icon yellow-text" data-icon="package"></span><div><h3>Productos con bajo stock</h3><p>Productos que están por debajo del stock mínimo.</p></div><button class="see-all" data-open="Inventario">Ver todos <span data-icon="arrow"></span></button></div><div class="table-scroll"><table><thead><tr><th>Producto</th><th>SKU</th><th>Stock actual</th><th>Stock mínimo</th></tr></thead><tbody id="stockRows"></tbody></table></div></article></section>
       </div>
-      <section id="sectionView" class="section-view panel" hidden><button class="back-button" id="backButton"><span data-icon="arrow-left"></span> Volver al Dashboard</button><div class="section-heading"><p>AUTOPARTS · PANEL DE ADMINISTRACIÓN</p><h1 id="sectionTitle">Productos</h1><span id="sectionDescription">Módulo listo para integrar a tu sistema.</span></div><div id="sectionBody"></div></section>
+
+      <section id="sectionView" class="section-view" hidden>
+        <div class="module-shell">
+          <div class="module-toolbar">
+            <button class="back-button" id="backButton" type="button"><span data-icon="arrow-left"></span> Volver al Dashboard</button>
+          </div>
+          <div class="section-heading" id="sectionHeading">
+            <p>AUTOPARTS · PANEL DE ADMINISTRACIÓN</p>
+            <h1 id="sectionTitle">Productos</h1>
+            <span id="sectionDescription">Módulo listo para integrar a tu sistema.</span>
+          </div>
+          <div id="sectionBody" class="module-body"></div>
+        </div>
+      </section>
+
       <p class="demo-label">Vista de demostración · Datos de ejemplo; no está conectada a SQL Server.</p>
     </main>
   </div>

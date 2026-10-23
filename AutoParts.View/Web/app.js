@@ -361,21 +361,19 @@ function showSection(section) {
 
     /* CATEGORÍAS SE ABRE EN WINDOWS FORMS */
 
+   
     if (key === 'Categorías') {
-
-        abrirFormularioCategorias();
-
+        abrirCategoriasEnDashboard();
         return;
-
     }
+
+
+    
 
     /* ESTADOS SOLO SE ABRE AL HACER CLIC EN EL MENÚ */
     if (key === 'Estados') {
-
-        abrirFormularioEstados();
-
-        return;
-
+    abrirEstadosEnDashboard();
+    return;
     }
 
 
@@ -393,11 +391,11 @@ function showSection(section) {
     return;
     }
     if (key === 'Clientes') {
-    abrirFormularioClientes();
+    abrirClientesEnDashboard();
     return;
     }
     if (key === 'Marcas') {
-    abrirFormularioMarcas();
+    abrirMarcasEnDashboard();
     return;
     }
     if (key === 'Puestos') {

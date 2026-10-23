@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,15 +28,8 @@
             font-weight: 700;
             margin-bottom: 8px;
         }
-        h1 {
-            margin: 0;
-            font-size: 27px;
-        }
-        .descripcion {
-            color: #a9a7ae;
-            font-size: 13px;
-            line-height: 1.5;
-        }
+        h1 { margin: 0; font-size: 27px; }
+        .descripcion { color: #a9a7ae; font-size: 13px; line-height: 1.5; }
         .icono {
             width: 47px;
             height: 47px;
@@ -57,12 +49,7 @@
             border-radius: 14px;
             padding: 25px;
         }
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 9px;
-        }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 9px; }
         .campo { margin-bottom: 21px; }
         input, select {
             width: 100%;
@@ -74,57 +61,23 @@
             font: inherit;
             outline: none;
         }
-        input:focus, select:focus {
-            border-color: #ff3d46;
-            box-shadow: 0 0 10px #e41b303b;
-        }
+        input:focus, select:focus { border-color: #ff3d46; box-shadow: 0 0 10px #e41b303b; }
         input::placeholder { color: #85858f; }
         select:disabled { opacity: .6; }
-        .ayuda {
-            color: #898a94;
-            font-size: 11px;
-            margin-top: 7px;
-        }
+        .ayuda { color: #898a94; font-size: 11px; margin-top: 7px; }
         .requerido { color: #ff4753; }
-        .mensaje {
-            color: #ffb64e;
-            min-height: 18px;
-            font-size: 12px;
-            margin-bottom: 12px;
-        }
-        .acciones {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 22px;
-        }
-        button {
-            padding: 13px 23px;
-            border-radius: 9px;
-            font-weight: 700;
-            border: 0;
-            cursor: pointer;
-            transition: .2s;
-        }
-        .cancelar {
-            background: #242328;
-            color: #e5e5e5;
-            border: 1px solid #56535b;
-        }
+        .mensaje { color: #ffb64e; min-height: 18px; font-size: 12px; margin-bottom: 12px; }
+        .acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
+        button { padding: 13px 23px; border-radius: 9px; font-weight: 700; border: 0; cursor: pointer; transition: .2s; }
+        .cancelar { background: #242328; color: #e5e5e5; border: 1px solid #56535b; }
         .cancelar:hover { background: #353039; }
         .guardar {
             color: #140c0d;
             background: linear-gradient(105deg, #ff3543, #ffbd2b);
             box-shadow: 0 0 16px #e5233533;
         }
-        .guardar:hover:not(:disabled) {
-            filter: brightness(1.12);
-            transform: translateY(-2px);
-        }
-        .guardar:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
+        .guardar:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-2px); }
+        .guardar:disabled { opacity: .55; cursor: not-allowed; }
         @media (max-width: 500px) {
             .contenedor { padding: 17px; }
             .panel { padding: 18px; }
@@ -142,7 +95,6 @@
             </div>
             <div class="icono">+</div>
         </div>
-
         <div class="panel">
             <form id="formCategoria">
                 <div class="campo">
@@ -150,7 +102,6 @@
                     <input type="text" id="nombre" maxlength="100" placeholder="Ej. Sistemas de frenos" required>
                     <div class="ayuda">Ingresa el nombre que identificará la categoría.</div>
                 </div>
-
                 <div class="campo">
                     <label for="estado">Estado <span class="requerido">*</span></label>
                     <select id="estado" required disabled>
@@ -158,9 +109,7 @@
                     </select>
                     <div class="ayuda">Selecciona el estado de la categoría.</div>
                 </div>
-
                 <div id="mensaje" class="mensaje" role="alert"></div>
-
                 <div class="acciones">
                     <button class="cancelar" type="button" id="cancelar">Cancelar</button>
                     <button class="guardar" type="submit" id="guardar" disabled>Guardar categoría</button>
@@ -168,7 +117,6 @@
             </form>
         </div>
     </div>
-
     <script>
         const formulario = document.getElementById("formCategoria");
         const nombre = document.getElementById("nombre");
@@ -177,6 +125,10 @@
         const mensaje = document.getElementById("mensaje");
 
         function enviar(datos) {
+            if (window.parent !== window) {
+                window.parent.postMessage(datos, "*");
+                return true;
+            }
             if (window.chrome?.webview?.postMessage) {
                 window.chrome.webview.postMessage(datos);
                 return true;
@@ -185,17 +137,17 @@
             return false;
         }
 
-        document.getElementById("cancelar").onclick = () => {
+        document.getElementById("cancelar").addEventListener("click", () => {
             enviar({ type: "cancelar" });
-        };
+        });
 
         formulario.addEventListener("submit", e => {
             e.preventDefault();
             const nombreValor = nombre.value.trim();
             const estadoId = Number(estado.value);
 
-            if (!nombreValor || !Number.isInteger(estadoId) || estadoId <= 0) {
-                mensaje.textContent = "Ingresa el nombre y selecciona un estado.";
+            if (!nombreValor || nombreValor.length > 100 || !Number.isInteger(estadoId) || estadoId <= 0) {
+                mensaje.textContent = "Ingresa el nombre y selecciona un estado válido.";
                 return;
             }
 
@@ -217,55 +169,49 @@
             }
         });
 
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", e => {
-                let respuesta = e.data;
+        function recibirMensajeNuevaCategoria(evento) {
+            if (evento.type === "message" && evento.source && evento.source !== window.parent) return;
+            let respuesta = evento.data;
 
-                if (typeof respuesta === "string") {
-                    try {
-                        respuesta = JSON.parse(respuesta);
-                    } catch {
-                        return;
-                    }
+            if (typeof respuesta === "string") {
+                try { respuesta = JSON.parse(respuesta); }
+                catch { return; }
+            }
+            if (!respuesta || typeof respuesta !== "object") return;
+
+            if (respuesta.type === "estados") {
+                const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+                estado.innerHTML = "";
+                const opcionInicial = document.createElement("option");
+                opcionInicial.value = "";
+                opcionInicial.textContent = "Selecciona un estado";
+                estado.appendChild(opcionInicial);
+
+                for (const item of lista) {
+                    const id = item.EstadoId ?? item.estadoId;
+                    const texto = item.Nombre ?? item.nombre;
+                    const opcion = document.createElement("option");
+                    opcion.value = id;
+                    opcion.textContent = texto;
+                    estado.appendChild(opcion);
                 }
 
-                if (!respuesta || typeof respuesta !== "object") return;
+                estado.disabled = lista.length === 0;
+                guardar.disabled = lista.length === 0;
+                mensaje.textContent = lista.length ? "" : "No hay estados disponibles.";
+            }
 
-                if (respuesta.type === "estados") {
-                    const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
-                    estado.innerHTML = "";
-
-                    const opcionInicial = document.createElement("option");
-                    opcionInicial.value = "";
-                    opcionInicial.textContent = "Selecciona un estado";
-                    estado.appendChild(opcionInicial);
-
-                    for (const item of lista) {
-                        const id = item.EstadoId ?? item.estadoId;
-                        const texto = item.Nombre ?? item.nombre;
-                        const opcion = document.createElement("option");
-                        opcion.value = id;
-                        opcion.textContent = texto;
-                        estado.appendChild(opcion);
-                    }
-
-                    estado.disabled = lista.length === 0;
-                    guardar.disabled = lista.length === 0;
-
-                    if (!lista.length) {
-                        mensaje.textContent = "No hay estados disponibles.";
-                    } else {
-                        mensaje.textContent = "";
-                    }
-                }
-
-                if (respuesta.type === "error") {
-                    mensaje.textContent = respuesta.message || "No se pudo guardar la categoría.";
-                    guardar.disabled = estado.disabled;
-                    guardar.textContent = "Guardar categoría";
-                }
-            });
+            if (respuesta.type === "error") {
+                mensaje.textContent = respuesta.message || "No se pudo guardar la categoría.";
+                guardar.disabled = estado.disabled;
+                guardar.textContent = "Guardar categoría";
+            }
         }
+
+        if (window.chrome?.webview?.addEventListener) {
+            window.chrome.webview.addEventListener("message", recibirMensajeNuevaCategoria);
+        }
+        window.addEventListener("message", recibirMensajeNuevaCategoria);
 
         enviar({ type: "obtenerEstados" });
     </script>

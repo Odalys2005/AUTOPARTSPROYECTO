@@ -346,6 +346,10 @@
             }
 
             function enviarACSharp(mensaje) {
+                if (window.parent !== window) {
+                    window.parent.postMessage(mensaje, "*");
+                    return true;
+                }
                 if (window.chrome?.webview?.postMessage) {
                     window.chrome.webview.postMessage(mensaje);
                     return true;
@@ -380,24 +384,30 @@
                 }).join("");
             }
 
-            if (window.chrome?.webview?.addEventListener) {
-                window.chrome.webview.addEventListener("message", evento => {
-                    let mensaje = evento.data;
-                    if (typeof mensaje === "string") {
-                        try { mensaje = JSON.parse(mensaje); } catch { return; }
-                    }
-                    if (!mensaje || typeof mensaje !== "object") return;
-                    if (mensaje.type === "estados:list") {
-                        estados = Array.isArray(mensaje.data) ? mensaje.data : [];
-                        pintarEstados();
-                    }
-                    if (mensaje.type === "error") {
-                        estados = [];
-                        document.getElementById("totalEstados").textContent = "0";
-                        mostrarMensaje(mensaje.message || "No se pudieron cargar los estados.");
-                    }
-                });
+            function recibirMensajeEstados(evento) {
+                let mensaje = evento.data;
+                if (typeof mensaje === "string") {
+                    try { mensaje = JSON.parse(mensaje); } catch { return; }
+                }
+                if (!mensaje || typeof mensaje !== "object") return;
+                if (mensaje.type === "estados:list") {
+                    estados = Array.isArray(mensaje.data) ? mensaje.data : [];
+                    pintarEstados();
+                }
+                if (mensaje.type === "error") {
+                    estados = [];
+                    document.getElementById("totalEstados").textContent = "0";
+                    mostrarMensaje(mensaje.message || "No se pudieron cargar los estados.");
+                }
             }
+
+            if (window.chrome?.webview?.addEventListener) {
+                window.chrome.webview.addEventListener("message", recibirMensajeEstados);
+            }
+            window.addEventListener("message", evento => {
+                if (evento.source !== window.parent || window.parent === window) return;
+                recibirMensajeEstados(evento);
+            });
 
             function solicitarEstados() {
                 mostrarMensaje("Cargando estados...");

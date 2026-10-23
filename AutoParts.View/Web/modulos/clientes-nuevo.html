@@ -173,10 +173,16 @@
         }
 
         function enviar(datos) {
+            if (window.parent !== window) {
+                window.parent.postMessage(datos, "*");
+                return true;
+            }
+
             if (window.chrome?.webview?.postMessage) {
                 window.chrome.webview.postMessage(datos);
                 return true;
             }
+
             mensaje.textContent = "No hay conexión con Windows Forms.";
             return false;
         }
@@ -213,27 +219,31 @@
             }
         });
 
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", e => {
-                let respuesta = e.data;
+        function recibirMensajeClienteNuevo(evento) {
+            let respuesta = evento.data;
 
-                if (typeof respuesta === "string") {
-                    try {
-                        respuesta = JSON.parse(respuesta);
-                    } catch {
-                        return;
-                    }
+            if (typeof respuesta === "string") {
+                try {
+                    respuesta = JSON.parse(respuesta);
+                } catch {
+                    return;
                 }
+            }
 
-                if (!respuesta || typeof respuesta !== "object") return;
+            if (!respuesta || typeof respuesta !== "object") return;
 
-                if (respuesta.type === "error") {
-                    mensaje.textContent = respuesta.message || "No se pudo guardar el cliente.";
-                    guardar.disabled = false;
-                    guardar.textContent = "Guardar cliente";
-                }
-            });
+            if (respuesta.type === "error") {
+                mensaje.textContent = respuesta.message || "No se pudo guardar el cliente.";
+                guardar.disabled = false;
+                guardar.textContent = "Guardar cliente";
+            }
         }
+
+        if (window.chrome?.webview?.addEventListener) {
+            window.chrome.webview.addEventListener("message", recibirMensajeClienteNuevo);
+        }
+
+        window.addEventListener("message", recibirMensajeClienteNuevo);
     </script>
 </body>
 </html>
