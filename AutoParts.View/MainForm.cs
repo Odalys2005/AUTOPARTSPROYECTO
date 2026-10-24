@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AutoParts.Entity;
 using AutoParts.Entity.Productos;
@@ -34,6 +35,8 @@ namespace AutoParts.View
         private readonly ReemplazoGarantiaBL _reemplazoGarantiaBL;
         private readonly EmpleadoBL _empleadoBL;
         private readonly UsuarioBL _usuarioBL;
+        private SesionUsuario? _sesionActual;
+        private bool _loginEnProceso;
 
 
         public MainForm(
@@ -91,49 +94,135 @@ namespace AutoParts.View
             Load += MainForm_Load;
         }
 
-        private async void MainForm_Load(
-            object? sender,
-            EventArgs e)
+        private async void MainForm_Load(object? sender, EventArgs e)
         {
             try
             {
                 await webViewMain.EnsureCoreWebView2Async();
-
-                webViewMain.CoreWebView2.WebMessageReceived +=
-                    WebViewMain_WebMessageReceived;
-
-                string ruta = Path.Combine(
-                    AppContext.BaseDirectory,
-                    "Web",
-                    "index.html"
-                );
-
-                if (!File.Exists(ruta))
+                webViewMain.CoreWebView2.WebMessageReceived += WebViewMain_WebMessageReceived;
+                webViewMain.CoreWebView2.NavigationStarting += (s, args) =>
                 {
-                    MessageBox.Show(
-                        "No se encontró el Dashboard:\n" + ruta,
-                        "AutoParts",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    );
-
-                    return;
-                }
-
-                webViewMain.Source = new Uri(ruta);
+                    // No permitir que la interfaz navegue a sitios externos.
+                    if (!Uri.TryCreate(args.Uri, UriKind.Absolute, out Uri? destino)
+                        || !destino.IsFile
+                        || (!RutaCoincide(destino, "login.html")
+                            && !RutaCoincide(destino, "index.html"))
+                        || (_sesionActual == null && RutaCoincide(destino, "index.html")))
+                    {
+                        args.Cancel = true;
+                    }
+                };
+                webViewMain.CoreWebView2.NavigationCompleted += (s, args) =>
+                {
+                    if (args.IsSuccess && _sesionActual != null && PaginaActualEs("index.html"))
+                        EnviarSesion();
+                };
+                NavegarPagina("login.html");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    "Error al cargar el Dashboard:\n" + ex.Message,
-                    "AutoParts",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
+                MessageBox.Show("No se pudo iniciar el login:\n" + ex.Message,
+                    "AutoParts", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void WebViewMain_WebMessageReceived(
+        private bool RutaCoincide(Uri uri, string archivo)
+        {
+            if (!uri.IsFile) return false;
+            string esperado = Path.GetFullPath(Path.Combine(
+                AppContext.BaseDirectory, "Web", archivo));
+            return string.Equals(Path.GetFullPath(uri.LocalPath), esperado,
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool PaginaActualEs(string archivo)
+        {
+            Uri? actual = webViewMain.Source;
+            return actual != null && RutaCoincide(actual, archivo);
+        }
+
+        private void NavegarPagina(string archivo)
+        {
+            string ruta = Path.Combine(AppContext.BaseDirectory, "Web", archivo);
+            if (!File.Exists(ruta))
+                throw new FileNotFoundException("No se encontró la página de AutoParts", ruta);
+            webViewMain.Source = new Uri(Path.GetFullPath(ruta));
+        }
+
+        private void EnviarSesion()
+        {
+            if (_sesionActual == null) return;
+            EnviarAlDashboard(new
+            {
+                type = "auth:sesion",
+                data = new
+                {
+                    _sesionActual.UsuarioId,
+                    _sesionActual.EmpleadoId,
+                    _sesionActual.RolId,
+                    _sesionActual.NombreUsuario
+                }
+            });
+        }
+
+        private async Task ProcesarLoginAsync(JsonElement raiz)
+        {
+            if (_loginEnProceso) return;
+            _loginEnProceso = true;
+            try
+            {
+                if (!raiz.TryGetProperty("data", out JsonElement datos)
+                    || datos.ValueKind != JsonValueKind.Object)
+                    throw new ArgumentException("Debes ingresar usuario y contraseña.");
+
+                string nombre = datos.TryGetProperty("usuario", out var campoUsuario)
+                    && campoUsuario.ValueKind == JsonValueKind.String
+                    ? (campoUsuario.GetString() ?? "").Trim() : "";
+                string clave = datos.TryGetProperty("contrasena", out var campoClave)
+                    && campoClave.ValueKind == JsonValueKind.String
+                    ? campoClave.GetString() ?? "" : "";
+
+                if (nombre.Length == 0 || nombre.Length > 50 || clave.Length == 0)
+                {
+                    EnviarAlDashboard(new
+                    {
+                        type = "auth:error",
+                        message = "Ingresa un usuario y una contraseña válidos."
+                    });
+                    return;
+                }
+
+                SesionUsuario? sesion = await Task.Run(() =>
+                    _usuarioBL.IniciarSesion(nombre, clave));
+
+                if (sesion == null)
+                {
+                    EnviarAlDashboard(new
+                    {
+                        type = "auth:error",
+                        message = "Usuario o contraseña incorrectos, o cuenta inactiva."
+                    });
+                    return;
+                }
+
+                _sesionActual = sesion;
+                NavegarPagina("index.html");
+            }
+            catch (Exception)
+            {
+                EnviarAlDashboard(new
+                {
+                    type = "auth:error",
+                    message = "No fue posible validar el acceso. Revisa la conexión con la base de datos."
+                });
+            }
+            finally
+            {
+                _loginEnProceso = false;
+            }
+        }
+
+        private async void WebViewMain_WebMessageReceived(
             object? sender,
             CoreWebView2WebMessageReceivedEventArgs e)
         {
@@ -147,6 +236,29 @@ namespace AutoParts.View
                 string tipo = raiz
                     .GetProperty("type")
                     .GetString() ?? "";
+
+                // Nunca atender operaciones del Dashboard antes de iniciar sesión.
+                if (_sesionActual == null)
+                {
+                    if (tipo == "auth:login" && PaginaActualEs("login.html"))
+                        await ProcesarLoginAsync(raiz);
+                    return;
+                }
+
+                // Después de autenticarse, solo el Dashboard puede mandar operaciones.
+                if (!PaginaActualEs("index.html")) return;
+                if (tipo == "auth:logout")
+                {
+                    _sesionActual = null;
+                    NavegarPagina("login.html");
+                    return;
+                }
+                if (tipo == "auth:sesionSolicitar")
+                {
+                    EnviarSesion();
+                    return;
+                }
+                if (tipo == "auth:login") return;
 
                 switch (tipo)
                 {

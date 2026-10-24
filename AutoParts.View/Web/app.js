@@ -545,13 +545,71 @@ document.getElementById('profileSettings').onclick = () => {
 };
 
 
-/* Cerrar sesión */
+/* Cerrar sesión real desde el botón que ya existe en el Dashboard */
 
 document.getElementById('logoutButton').onclick = () => {
 
-    toast('El cierre de sesión se conectará con Windows Forms.');
+    if (!window.confirm('¿Deseas cerrar tu sesión de AutoParts?')) return;
+
+    if (enviarACSharp({ type: 'auth:logout' })) {
+        profileMenu.hidden = true;
+        profileButton.setAttribute('aria-expanded', 'false');
+    }
 
 };
+
+/* Mostrar la sesión que MainForm.cs mantiene en memoria.
+   No se guardan contraseñas ni datos de sesión en el navegador. */
+
+const rolesSesion = {
+    1: 'Administrador',
+    2: 'Gerente',
+    3: 'Vendedor',
+    4: 'Encargado de inventario',
+    5: 'Encargado de compras',
+    6: 'Atención al cliente'
+};
+
+function actualizarPerfilSesion(sesion) {
+    if (!sesion || typeof sesion !== 'object') return;
+
+    const nombre = String(sesion.NombreUsuario ?? sesion.nombreUsuario ?? '').trim();
+    const rolId = Number(sesion.RolId ?? sesion.rolId);
+    if (!nombre) return;
+
+    const nombreRol = rolesSesion[rolId] || `Rol ${Number.isFinite(rolId) ? rolId : 'sin asignar'}`;
+    const avatar = nombre.split(/[._\s-]+/).filter(Boolean)
+        .slice(0, 2).map(parte => parte[0].toUpperCase()).join('') || 'AP';
+
+    const etiquetaAvatar = profileButton.querySelector('.avatar');
+    const etiquetaNombre = profileButton.querySelector('.profile-info strong');
+    const etiquetaRol = profileButton.querySelector('.profile-info small');
+    const nombreMenu = profileMenu.querySelector('strong');
+    const rolMenu = profileMenu.querySelector('small');
+    const bienvenida = document.querySelector('.welcome-copy h1 em');
+    const salir = document.getElementById('logoutButton');
+
+    if (etiquetaAvatar) etiquetaAvatar.textContent = avatar;
+    if (etiquetaNombre) etiquetaNombre.textContent = nombre;
+    if (etiquetaRol) etiquetaRol.textContent = nombreRol;
+    if (nombreMenu) nombreMenu.textContent = nombre;
+    if (rolMenu) rolMenu.textContent = nombreRol;
+    if (bienvenida) bienvenida.textContent = nombre;
+    if (salir) salir.textContent = 'Cerrar sesión';
+}
+
+if (window.chrome?.webview?.addEventListener) {
+    window.chrome.webview.addEventListener('message', evento => {
+        const mensaje = evento.data;
+        if (mensaje?.type === 'auth:sesion') {
+            actualizarPerfilSesion(mensaje.data);
+        }
+    });
+
+    // Se solicita la sesión después de registrar el listener,
+    // para no perder el mensaje enviado por Windows Forms.
+    enviarACSharp({ type: 'auth:sesionSolicitar' });
+}
 
 
 /* Cerrar perfil al hacer clic fuera */

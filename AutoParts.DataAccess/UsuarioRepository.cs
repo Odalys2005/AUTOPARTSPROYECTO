@@ -84,5 +84,41 @@ namespace AutoParts.DataAccess
 
             return result;
         }
+    
+    
+public Usuario? SelectByNombreUsuario(string nombreUsuario)
+        {
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand(
+                "dbo.spUsuarioSelectByNombreUsuario", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@NombreUsuario", SqlDbType.VarChar, 50)
+                    .Value = nombreUsuario;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(
+                    CommandBehavior.SingleRow))
+                {
+                    if (!dr.Read())
+                        return null;
+
+                    return new Usuario
+                    {
+                        UsuarioId = dr.GetInt32(0),
+                        EmpleadoId = dr.GetInt32(1),
+                        RolId = dr.GetInt32(2),
+                        NombreUsuario = dr.GetString(3),
+                        Contrasena = dr.GetString(4),
+                        EstadoId = dr.IsDBNull(5)
+                            ? null
+                            : dr.GetInt32(5)
+                    };
+                }
+            }
+        }
+
     }
 }
