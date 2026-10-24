@@ -17,7 +17,7 @@ namespace AutoParts.DataAccess
 
         public List<Empleado> SelectAll()
         {
-            List<Empleado> result = null;
+            List<Empleado> result = new List<Empleado>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,8 +29,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Empleado>();
-
                         while (dr.Read())
                         {
                             Empleado entity = new Empleado();
@@ -42,7 +40,7 @@ namespace AutoParts.DataAccess
                             entity.DUI = dr.GetString(4);
                             entity.Telefono = dr.GetString(5);
                             entity.Correo = dr.GetString(6);
-                            entity.EstadoId = dr.GetInt32(8);
+                            entity.EstadoId = dr.GetInt32(7);
 
                             result.Add(entity);
                         }
@@ -63,17 +61,30 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@PuestoId", entity.PuestoId);
-                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
-                    cmd.Parameters.AddWithValue("@Apellido", entity.Apellido);
-                    cmd.Parameters.AddWithValue("@DUI", entity.DUI);
-                    cmd.Parameters.AddWithValue("@Telefono", entity.Telefono);
-                    cmd.Parameters.AddWithValue("@Correo", entity.Correo);
-                    cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
+                    cmd.Parameters.Add("@PuestoId", SqlDbType.Int)
+                        .Value = entity.PuestoId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@Apellido", SqlDbType.VarChar, 100)
+                        .Value = entity.Apellido;
+
+                    cmd.Parameters.Add("@DUI", SqlDbType.VarChar, 10)
+                        .Value = entity.DUI;
+
+                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
+                        .Value = entity.Telefono;
+
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
+                        .Value = entity.Correo;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

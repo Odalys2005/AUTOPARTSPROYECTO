@@ -17,7 +17,7 @@ namespace AutoParts.DataAccess
 
         public List<CompatibilidadRepuesto> SelectAll()
         {
-            List<CompatibilidadRepuesto> result = null;
+            List<CompatibilidadRepuesto> result = new List<CompatibilidadRepuesto>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,15 +29,15 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<CompatibilidadRepuesto>();
-
                         while (dr.Read())
                         {
                             CompatibilidadRepuesto entity = new CompatibilidadRepuesto();
 
                             entity.CompatibilidadId = dr.GetInt32(0);
                             entity.ProductoId = dr.GetInt32(1);
-                            entity.VehiculoId = dr.GetInt32(2);
+                            entity.VehiculoId = dr.IsDBNull(2)
+                                ? null
+                                : dr.GetInt32(2);
 
                             result.Add(entity);
                         }
@@ -58,12 +58,15 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@ProductoId", entity.ProductoId);
-                    cmd.Parameters.AddWithValue("@VehiculoId", entity.VehiculoId);
+                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                        .Value = entity.ProductoId;
+
+                    cmd.Parameters.Add("@VehiculoId", SqlDbType.Int)
+                        .Value = (object?)entity.VehiculoId ?? DBNull.Value;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

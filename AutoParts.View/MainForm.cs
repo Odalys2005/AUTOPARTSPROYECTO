@@ -274,6 +274,21 @@ namespace AutoParts.View
                         ProcesarMarcaIntegrada(tipo, raiz);
                         break;
 
+                    case "proveedores:selectAll":
+                    case "proveedores:guardarIntegrado":
+                        ProcesarProveedorIntegrado(tipo, raiz);
+                        break;
+
+                    case "puestos:selectAll":
+                    case "puestos:guardarIntegrado":
+                        ProcesarPuestoIntegrado(tipo, raiz);
+                        break;
+
+                    case "roles:selectAll":
+                    case "roles:guardarIntegrado":
+                        ProcesarRolIntegrado(tipo, raiz);
+                        break;
+
                     case "estados:selectAll":
                         try
                         {
@@ -662,6 +677,250 @@ namespace AutoParts.View
                             {
                                 type = "error",
                                 message = "No se pudo registrar la marca."
+                            });
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                EnviarAlDashboard(new
+                {
+                    type = "error",
+                    message = ex.Message
+                });
+            }
+        }
+
+        private void ProcesarProveedorIntegrado(string tipo, JsonElement raiz)
+        {
+            try
+            {
+                switch (tipo)
+                {
+                    case "proveedores:selectAll":
+                        var proveedores = _proveedorBL.SelectAll();
+                        EnviarAlDashboard(new
+                        {
+                            type = "proveedores:list",
+                            data = proveedores
+                        });
+                        break;
+
+                    case "proveedores:guardarIntegrado":
+                        JsonElement datos = raiz.GetProperty("data");
+
+                        string nombreEmpresa = ObtenerTextoCliente(datos, "NombreEmpresa") ?? "";
+                        string nit = ObtenerTextoCliente(datos, "NIT") ?? "";
+                        string telefono = ObtenerTextoCliente(datos, "Telefono") ?? "";
+                        string correo = ObtenerTextoCliente(datos, "Correo") ?? "";
+                        string contacto = ObtenerTextoCliente(datos, "Contacto") ?? "";
+
+                        if (string.IsNullOrWhiteSpace(nombreEmpresa) ||
+                            string.IsNullOrWhiteSpace(nit) ||
+                            string.IsNullOrWhiteSpace(telefono) ||
+                            string.IsNullOrWhiteSpace(correo) ||
+                            string.IsNullOrWhiteSpace(contacto))
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "Completa todos los campos del proveedor."
+                            });
+                            return;
+                        }
+
+                        if (nombreEmpresa.Length > 100 ||
+                            nit.Length > 20 ||
+                            telefono.Length > 25 ||
+                            correo.Length > 150 ||
+                            contacto.Length > 100)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "Uno o más campos superan la longitud permitida."
+                            });
+                            return;
+                        }
+
+                        if (!System.Net.Mail.MailAddress.TryCreate(correo, out var email) ||
+                            email.Address != correo)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "Ingresa un correo electrónico válido."
+                            });
+                            return;
+                        }
+
+                        Proveedor proveedor = new Proveedor()
+                        {
+                            NombreEmpresa = nombreEmpresa,
+                            NIT = nit,
+                            Telefono = telefono,
+                            Correo = correo,
+                            Contacto = contacto
+                        };
+
+                        int resultado = _proveedorBL.Insert(proveedor);
+
+                        if (resultado > 0)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "proveedores:guardado"
+                            });
+                        }
+                        else
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "No se pudo registrar el proveedor."
+                            });
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                EnviarAlDashboard(new
+                {
+                    type = "error",
+                    message = ex.Message
+                });
+            }
+        }
+
+        private void ProcesarPuestoIntegrado(string tipo, JsonElement raiz)
+        {
+            try
+            {
+                switch (tipo)
+                {
+                    case "puestos:selectAll":
+                        var puestos = _puestoBL.SelectAll();
+                        EnviarAlDashboard(new
+                        {
+                            type = "puestos:list",
+                            data = puestos
+                        });
+                        break;
+
+                    case "puestos:guardarIntegrado":
+                        JsonElement datos = raiz.GetProperty("data");
+                        string nombre = ObtenerTextoCliente(datos, "Nombre") ?? "";
+                        string? descripcion = ObtenerTextoCliente(datos, "Descripcion");
+                        int estadoId = datos.GetProperty("EstadoId").GetInt32();
+
+                        if (string.IsNullOrWhiteSpace(nombre) || nombre.Length > 100)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "Ingresa un nombre válido de hasta 100 caracteres."
+                            });
+                            return;
+                        }
+
+                        if (estadoId <= 0)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "Selecciona un estado válido."
+                            });
+                            return;
+                        }
+
+                        Puesto puesto = new Puesto()
+                        {
+                            Nombre = nombre,
+                            Descripcion = descripcion,
+                            EstadoId = estadoId
+                        };
+
+                        int resultado = _puestoBL.Insert(puesto);
+
+                        if (resultado > 0)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "puestos:guardado"
+                            });
+                        }
+                        else
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "No se pudo registrar el puesto."
+                            });
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                EnviarAlDashboard(new
+                {
+                    type = "error",
+                    message = ex.Message
+                });
+            }
+        }
+
+        private void ProcesarRolIntegrado(string tipo, JsonElement raiz)
+        {
+            try
+            {
+                switch (tipo)
+                {
+                    case "roles:selectAll":
+                        var roles = _rolBL.SelectAll();
+                        EnviarAlDashboard(new
+                        {
+                            type = "roles:list",
+                            data = roles
+                        });
+                        break;
+
+                    case "roles:guardarIntegrado":
+                        JsonElement datos = raiz.GetProperty("data");
+                        string nombre = ObtenerTextoCliente(datos, "Nombre") ?? "";
+
+                        if (string.IsNullOrWhiteSpace(nombre) || nombre.Length > 100)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "Ingresa un nombre válido de hasta 100 caracteres."
+                            });
+                            return;
+                        }
+
+                        Rol rol = new Rol()
+                        {
+                            Nombre = nombre
+                        };
+
+                        int resultado = _rolBL.Insert(rol);
+
+                        if (resultado > 0)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "roles:guardado"
+                            });
+                        }
+                        else
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "No se pudo registrar el rol."
                             });
                         }
                         break;

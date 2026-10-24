@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ namespace AutoParts.DataAccess
 
         public List<Compra> SelectAll()
         {
-            List<Compra> result = null;
+            List<Compra> result = new List<Compra>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -30,18 +29,16 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Compra>();
-
                         while (dr.Read())
                         {
                             Compra entity = new Compra();
 
                             entity.CompraId = dr.GetInt32(0);
-                            entity.NumeroComprobante = dr.GetString(1);
-                            entity.FechaCompra = dr.GetDateTime(2);
-                            entity.TotalCompra = dr.GetDecimal(3);
-                            entity.ProveedorId = dr.GetInt32(4);
-                            entity.EmpleadoId = dr.GetInt32(5);
+                            entity.ProveedorId = dr.GetInt32(1);
+                            entity.EmpleadoId = dr.GetInt32(2);
+                            entity.NumeroComprobante = dr.GetString(3);
+                            entity.FechaCompra = dr.GetDateTime(4);
+                            entity.TotalCompra = dr.GetDecimal(5);
 
                             result.Add(entity);
                         }
@@ -62,15 +59,28 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@NumeroComprobante", entity.NumeroComprobante);
-                    cmd.Parameters.AddWithValue("@FechaCompra", entity.FechaCompra);
-                    cmd.Parameters.AddWithValue("@TotalCompra", entity.TotalCompra);
-                    cmd.Parameters.AddWithValue("@ProveedorId", entity.ProveedorId);
-                    cmd.Parameters.AddWithValue("@EmpleadoId", entity.EmpleadoId);
+                    cmd.Parameters.Add("@ProveedorId", SqlDbType.Int)
+                        .Value = entity.ProveedorId;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@NumeroComprobante", SqlDbType.VarChar, 50)
+                        .Value = entity.NumeroComprobante;
+
+                    cmd.Parameters.Add("@FechaCompra", SqlDbType.DateTime)
+                        .Value = entity.FechaCompra;
+
+                    SqlParameter totalCompra = cmd.Parameters.Add(
+                        "@TotalCompra", SqlDbType.Decimal);
+
+                    totalCompra.Precision = 18;
+                    totalCompra.Scale = 2;
+                    totalCompra.Value = entity.TotalCompra;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

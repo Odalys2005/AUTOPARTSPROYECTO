@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ namespace AutoParts.DataAccess
 
         public List<Inventario> SelectAll()
         {
-            List<Inventario> result = null;
+            List<Inventario> result = new List<Inventario>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -30,17 +29,15 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Inventario>();
-
                         while (dr.Read())
                         {
                             Inventario entity = new Inventario();
 
                             entity.InventarioId = dr.GetInt32(0);
-                            entity.StockActual = dr.GetInt32(1);
-                            entity.StockMinimo = dr.GetInt32(2);
-                            entity.StockMaximo = dr.GetInt32(3);
-                            entity.ProductoId = dr.GetInt32(4);
+                            entity.ProductoId = dr.GetInt32(1);
+                            entity.StockActual = dr.GetInt32(2);
+                            entity.StockMinimo = dr.GetInt32(3);
+                            entity.StockMaximo = dr.GetInt32(4);
                             entity.EstadoId = dr.GetInt32(5);
 
                             result.Add(entity);
@@ -62,15 +59,15 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
+                    cmd.Parameters.AddWithValue("@ProductoId", entity.ProductoId);
                     cmd.Parameters.AddWithValue("@StockActual", entity.StockActual);
                     cmd.Parameters.AddWithValue("@StockMinimo", entity.StockMinimo);
                     cmd.Parameters.AddWithValue("@StockMaximo", entity.StockMaximo);
-                    cmd.Parameters.AddWithValue("@ProductoId", entity.ProductoId);
                     cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

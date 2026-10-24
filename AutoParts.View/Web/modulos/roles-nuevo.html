@@ -126,7 +126,6 @@
             </div>
             <div class="icono">+</div>
         </div>
-
         <div class="panel">
             <form id="formRol">
                 <div class="campo">
@@ -134,9 +133,7 @@
                     <input type="text" id="nombre" maxlength="100" placeholder="Ej. Administrador" required>
                     <div class="ayuda">Ingresa el nombre que identificará el rol.</div>
                 </div>
-
                 <div id="mensaje" class="mensaje" role="alert"></div>
-
                 <div class="acciones">
                     <button class="cancelar" type="button" id="cancelar">Cancelar</button>
                     <button class="guardar" type="submit" id="guardar">Guardar rol</button>
@@ -144,14 +141,18 @@
             </form>
         </div>
     </div>
-
     <script>
         const formulario = document.getElementById("formRol");
         const nombre = document.getElementById("nombre");
         const guardar = document.getElementById("guardar");
         const mensaje = document.getElementById("mensaje");
+        let guardando = false;
 
         function enviar(datos) {
+            if (window.parent !== window) {
+                window.parent.postMessage(datos, "*");
+                return true;
+            }
             if (window.chrome?.webview?.postMessage) {
                 window.chrome.webview.postMessage(datos);
                 return true;
@@ -160,55 +161,53 @@
             return false;
         }
 
-        document.getElementById("cancelar").onclick = () => {
+        document.getElementById("cancelar").addEventListener("click", () => {
             enviar({ type: "cancelar" });
-        };
+        });
 
         formulario.addEventListener("submit", e => {
             e.preventDefault();
+            if (guardando) return;
             const nombreValor = nombre.value.trim();
 
-            if (!nombreValor) {
-                mensaje.textContent = "Ingresa el nombre del rol.";
+            if (!nombreValor || nombreValor.length > 100) {
+                mensaje.textContent = "Ingresa un nombre válido de hasta 100 caracteres.";
                 nombre.focus();
                 return;
             }
+            if (!formulario.reportValidity()) return;
 
+            guardando = true;
             guardar.disabled = true;
             guardar.textContent = "Guardando...";
             mensaje.textContent = "";
 
-            const enviado = enviar({
-                type: "guardar",
-                data: { Nombre: nombreValor }
-            });
-
-            if (!enviado) {
-                guardar.disabled = false;
-                guardar.textContent = "Guardar rol";
+            if (!enviar({ type: "guardar", data: { Nombre: nombreValor } })) {
+                restaurarGuardado();
             }
         });
 
+        function restaurarGuardado() {
+            guardando = false;
+            guardar.disabled = false;
+            guardar.textContent = "Guardar rol";
+        }
+
+        function recibirRespuesta(evento) {
+            let respuesta = evento.data;
+            if (typeof respuesta === "string") {
+                try { respuesta = JSON.parse(respuesta); } catch { return; }
+            }
+            if (!respuesta || typeof respuesta !== "object") return;
+            if (respuesta.type === "error") {
+                mensaje.textContent = respuesta.message || "No se pudo guardar el rol.";
+                restaurarGuardado();
+            }
+        }
+
+        window.addEventListener("message", recibirRespuesta);
         if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", e => {
-                let respuesta = e.data;
-
-                if (typeof respuesta === "string") {
-                    try {
-                        respuesta = JSON.parse(respuesta);
-                    } catch {
-                        return;
-                    }
-                }
-
-                if (!respuesta || typeof respuesta !== "object") return;
-
-                if (respuesta.type === "error") {
-                    mensaje.textContent = respuesta.message || "No se pudo guardar el rol.";
-                    guardar.disabled = false;
-                    guardar.textContent = "Guardar rol";
-                }
-            });
+            window.chrome.webview.addEventListener("message", recibirRespuesta);
         }
     </script>
 </body>

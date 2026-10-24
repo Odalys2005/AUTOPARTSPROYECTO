@@ -17,7 +17,7 @@ namespace AutoParts.DataAccess
 
         public List<Vehiculo> SelectAll()
         {
-            List<Vehiculo> result = null;
+            List<Vehiculo> result = new List<Vehiculo>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,17 +29,16 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Vehiculo>();
-
                         while (dr.Read())
                         {
                             Vehiculo entity = new Vehiculo();
 
                             entity.VehiculoId = dr.GetInt32(0);
-                            entity.Anio = dr.GetInt16(dr.GetOrdinal("Anio"));
-                            entity.Cilindrada = dr.GetDecimal(dr.GetOrdinal("Cilindrada"));
-                            entity.TipoMotor = dr.GetString(3);
-                            entity.ModeloId = dr.GetInt32(4);
+                            entity.ModeloId = dr.GetInt32(1);
+                            entity.Anio = dr.GetInt16(2);
+                            entity.Cilindrada = dr.GetDecimal(3);
+                            entity.TipoMotor = dr.GetString(4);
+                            entity.EstadoId = dr.GetInt32(5);
 
                             result.Add(entity);
                         }
@@ -60,14 +59,28 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Anio", entity.Anio);
-                    cmd.Parameters.AddWithValue("@Cilindrada", entity.Cilindrada);
-                    cmd.Parameters.AddWithValue("@TipoMotor", entity.TipoMotor);
-                    cmd.Parameters.AddWithValue("@ModeloId", entity.ModeloId);
+                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
+                        .Value = entity.ModeloId;
+
+                    cmd.Parameters.Add("@Anio", SqlDbType.SmallInt)
+                        .Value = entity.Anio;
+
+                    SqlParameter cilindrada = cmd.Parameters.Add(
+                        "@Cilindrada", SqlDbType.Decimal);
+
+                    cilindrada.Precision = 5;
+                    cilindrada.Scale = 2;
+                    cilindrada.Value = entity.Cilindrada;
+
+                    cmd.Parameters.Add("@TipoMotor", SqlDbType.VarChar, 100)
+                        .Value = entity.TipoMotor;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

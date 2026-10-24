@@ -57,6 +57,18 @@ function abrirMarcasEnDashboard() {
     abrirModuloEnDashboard('marcas', 'Marcas', 'Administración de marcas registradas.', 'modulos/marcas.html');
 }
 
+function abrirProveedoresEnDashboard() {
+    abrirModuloEnDashboard('proveedores', 'Proveedores', 'Administración de proveedores registrados.', 'modulos/proveedores.html');
+}
+
+function abrirPuestosEnDashboard() {
+    abrirModuloEnDashboard('puestos', 'Puestos', 'Administración de puestos de trabajo.', 'modulos/puestos.html');
+}
+
+function abrirRolesEnDashboard() {
+    abrirModuloEnDashboard('roles', 'Roles', 'Administración de roles de usuario.', 'modulos/roles.html');
+}
+
 function obtenerMarcoIntegrado() {
     return document.getElementById('moduloIntegrado');
 }
@@ -75,7 +87,7 @@ if (botonVolver) {
     });
 }
 
-const modulosIntegrados = ['Categorías', 'Clientes', 'Estados', 'Marcas'];
+const modulosIntegrados = ['Categorías', 'Clientes', 'Estados', 'Marcas', 'Proveedores', 'Puestos', 'Roles'];
 
 document.querySelectorAll('.nav-link').forEach(enlace => {
     enlace.addEventListener('click', () => {
@@ -137,6 +149,42 @@ window.addEventListener('message', evento => {
             enviarACSharp(mensaje);
         }
     }
+
+    if (modulo === 'proveedores') {
+        if (mensaje.type === 'proveedores:abrirNuevo') {
+            marco.src = 'modulos/proveedores-nuevo.html';
+        } else if (mensaje.type === 'cancelar') {
+            marco.src = 'modulos/proveedores.html';
+        } else if (mensaje.type === 'guardar') {
+            enviarACSharp({ type: 'proveedores:guardarIntegrado', data: mensaje.data });
+        } else if (mensaje.type === 'proveedores:selectAll') {
+            enviarACSharp(mensaje);
+        }
+    }
+
+    if (modulo === 'puestos') {
+        if (mensaje.type === 'puestos:abrirNuevo') {
+            marco.src = 'modulos/puestos-nuevo.html';
+        } else if (mensaje.type === 'cancelar') {
+            marco.src = 'modulos/puestos.html';
+        } else if (mensaje.type === 'guardar') {
+            enviarACSharp({ type: 'puestos:guardarIntegrado', data: mensaje.data });
+        } else if (mensaje.type === 'puestos:selectAll' || mensaje.type === 'obtenerEstados') {
+            enviarACSharp(mensaje);
+        }
+    }
+
+    if (modulo === 'roles') {
+        if (mensaje.type === 'roles:abrirNuevo') {
+            marco.src = 'modulos/roles-nuevo.html';
+        } else if (mensaje.type === 'cancelar') {
+            marco.src = 'modulos/roles.html';
+        } else if (mensaje.type === 'guardar') {
+            enviarACSharp({ type: 'roles:guardarIntegrado', data: mensaje.data });
+        } else if (mensaje.type === 'roles:selectAll') {
+            enviarACSharp(mensaje);
+        }
+    }
 });
 
 if (window.chrome?.webview?.addEventListener) {
@@ -182,6 +230,30 @@ if (window.chrome?.webview?.addEventListener) {
             if (mensaje.type === 'marcas:guardado') {
                 marco.src = 'modulos/marcas.html';
             } else if (mensaje.type === 'marcas:list' || mensaje.type === 'estados' || mensaje.type === 'error') {
+                marco.contentWindow?.postMessage(mensaje, '*');
+            }
+        }
+
+        if (modulo === 'proveedores') {
+            if (mensaje.type === 'proveedores:guardado') {
+                marco.src = 'modulos/proveedores.html';
+            } else if (mensaje.type === 'proveedores:list' || mensaje.type === 'error') {
+                marco.contentWindow?.postMessage(mensaje, '*');
+            }
+        }
+
+        if (modulo === 'puestos') {
+            if (mensaje.type === 'puestos:guardado') {
+                marco.src = 'modulos/puestos.html';
+            } else if (mensaje.type === 'puestos:list' || mensaje.type === 'estados' || mensaje.type === 'error') {
+                marco.contentWindow?.postMessage(mensaje, '*');
+            }
+        }
+
+        if (modulo === 'roles') {
+            if (mensaje.type === 'roles:guardado') {
+                marco.src = 'modulos/roles.html';
+            } else if (mensaje.type === 'roles:list' || mensaje.type === 'error') {
                 marco.contentWindow?.postMessage(mensaje, '*');
             }
         }

@@ -378,18 +378,15 @@ function showSection(section) {
 
 
     /* ROLES SOLO SE ABRE AL HACER CLIC EN EL MENÚ */
-    if (key === 'Roles') {
-
-        abrirFormularioRoles();
-
-        return;
-
+  if (key === 'Roles') {
+    abrirRolesEnDashboard();
+    return;
     }
 
     if (key === 'Proveedores') {
-    abrirFormularioProveedores();
+    abrirProveedoresEnDashboard();
     return;
-    }
+}
     if (key === 'Clientes') {
     abrirClientesEnDashboard();
     return;
@@ -399,9 +396,10 @@ function showSection(section) {
     return;
     }
     if (key === 'Puestos') {
-    abrirFormularioPuestos();
+    abrirPuestosEnDashboard();
     return;
-}
+    }
+
     /* RESTO DE NAVEGACIÓN DEL DASHBOARD */
 
     const esDashboard = key === 'Dashboard';

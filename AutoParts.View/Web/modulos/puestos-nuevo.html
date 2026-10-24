@@ -102,11 +102,10 @@
             <div>
                 <div class="subtitulo">AUTOPARTS · ADMINISTRACIÓN</div>
                 <h1>Nuevo puesto</h1>
-                <p class="descripcion">Registra una nuevo puesto en el catálogo de AutoParts.</p>
+                <p class="descripcion">Registra un nuevo puesto en el catálogo de AutoParts.</p>
             </div>
             <div class="icono">+</div>
         </div>
-
         <div class="panel">
             <form id="formPuesto">
                 <div class="campo">
@@ -114,13 +113,11 @@
                     <input type="text" id="nombre" maxlength="100" placeholder="Ej. Vendedor" required>
                     <div class="ayuda">Ingresa el nombre con el que se identificará el puesto.</div>
                 </div>
-
                 <div class="campo">
                     <label for="descripcion">Descripción (opcional)</label>
                     <textarea id="descripcion" placeholder="Ej. Atención al cliente y venta de repuestos"></textarea>
                     <div class="ayuda">Describe las responsabilidades principales del puesto.</div>
                 </div>
-
                 <div class="campo">
                     <label for="estado">Estado <span class="requerido">*</span></label>
                     <select id="estado" required disabled>
@@ -128,9 +125,7 @@
                     </select>
                     <div class="ayuda">Selecciona el estado del puesto.</div>
                 </div>
-
-                <div id="mensaje" class="mensaje" role="alert"></div>
-
+                <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
                 <div class="acciones">
                     <button class="cancelar" type="button" id="cancelar">Cancelar</button>
                     <button class="guardar" type="submit" id="guardar" disabled>Guardar puesto</button>
@@ -138,46 +133,48 @@
             </form>
         </div>
     </div>
-
     <script>
-        const formulario = document.getElementById("formPuesto");
-        const nombre = document.getElementById("nombre");
-        const descripcion = document.getElementById("descripcion");
-        const estado = document.getElementById("estado");
-        const guardar = document.getElementById("guardar");
-        const mensaje = document.getElementById("mensaje");
+        const formulario = document.getElementById('formPuesto');
+        const nombre = document.getElementById('nombre');
+        const descripcion = document.getElementById('descripcion');
+        const estado = document.getElementById('estado');
+        const guardar = document.getElementById('guardar');
+        const mensaje = document.getElementById('mensaje');
 
         function enviar(datos) {
+            if (window.parent !== window) {
+                window.parent.postMessage(datos, '*');
+                return true;
+            }
             if (window.chrome?.webview?.postMessage) {
                 window.chrome.webview.postMessage(datos);
                 return true;
             }
-            mensaje.textContent = "No hay conexión con Windows Forms.";
+            mensaje.textContent = 'No hay conexión con Windows Forms.';
             return false;
         }
 
-        document.getElementById("cancelar").addEventListener("click", () => {
-            enviar({ type: "cancelar" });
+        document.getElementById('cancelar').addEventListener('click', () => {
+            enviar({ type: 'cancelar' });
         });
 
-        formulario.addEventListener("submit", e => {
-            e.preventDefault();
-
+        formulario.addEventListener('submit', evento => {
+            evento.preventDefault();
             const nombreValor = nombre.value.trim();
             const descripcionValor = descripcion.value.trim();
             const estadoId = Number(estado.value);
 
-            if (!nombreValor || !Number.isInteger(estadoId) || estadoId <= 0) {
-                mensaje.textContent = "Ingresa el nombre y selecciona un estado.";
+            if (!nombreValor || nombreValor.length > 100 || !estado.value || !Number.isInteger(estadoId) || estadoId <= 0) {
+                mensaje.textContent = 'Ingresa un nombre válido y selecciona un estado.';
                 return;
             }
 
             guardar.disabled = true;
-            guardar.textContent = "Guardando...";
-            mensaje.textContent = "";
+            guardar.textContent = 'Guardando...';
+            mensaje.textContent = '';
 
             const enviado = enviar({
-                type: "guardar",
+                type: 'guardar',
                 data: {
                     Nombre: nombreValor,
                     Descripcion: descripcionValor || null,
@@ -187,57 +184,51 @@
 
             if (!enviado) {
                 guardar.disabled = false;
-                guardar.textContent = "Guardar puesto";
+                guardar.textContent = 'Guardar puesto';
             }
         });
 
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", e => {
-                let respuesta = e.data;
+        function recibirMensaje(evento) {
+            let respuesta = evento.data;
+            if (typeof respuesta === 'string') {
+                try { respuesta = JSON.parse(respuesta); } catch { return; }
+            }
+            if (!respuesta || typeof respuesta !== 'object') return;
 
-                if (typeof respuesta === "string") {
-                    try {
-                        respuesta = JSON.parse(respuesta);
-                    } catch {
-                        return;
-                    }
+            if (respuesta.type === 'estados') {
+                const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
+                estado.innerHTML = '';
+
+                const opcionInicial = document.createElement('option');
+                opcionInicial.value = '';
+                opcionInicial.textContent = 'Selecciona un estado';
+                estado.appendChild(opcionInicial);
+
+                for (const item of lista) {
+                    const id = item.EstadoId ?? item.estadoId;
+                    const texto = item.Nombre ?? item.nombre;
+                    if (id == null) continue;
+                    const opcion = document.createElement('option');
+                    opcion.value = id;
+                    opcion.textContent = texto ?? '';
+                    estado.appendChild(opcion);
                 }
 
-                if (!respuesta || typeof respuesta !== "object") return;
+                estado.disabled = estado.options.length <= 1;
+                guardar.disabled = estado.disabled;
+                mensaje.textContent = estado.disabled ? 'No hay estados disponibles.' : '';
+            }
 
-                if (respuesta.type === "estados") {
-                    const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
-                    estado.innerHTML = "";
-
-                    const opcionInicial = document.createElement("option");
-                    opcionInicial.value = "";
-                    opcionInicial.textContent = "Selecciona un estado";
-                    estado.appendChild(opcionInicial);
-
-                    for (const item of lista) {
-                        const id = item.EstadoId ?? item.estadoId;
-                        const texto = item.Nombre ?? item.nombre;
-                        if (id == null) continue;
-                        const opcion = document.createElement("option");
-                        opcion.value = id;
-                        opcion.textContent = texto ?? "";
-                        estado.appendChild(opcion);
-                    }
-
-                    estado.disabled = estado.options.length <= 1;
-                    guardar.disabled = estado.disabled;
-                    mensaje.textContent = estado.disabled ? "No hay estados disponibles." : "";
-                }
-
-                if (respuesta.type === "error") {
-                    mensaje.textContent = respuesta.message || "No se pudo guardar el puesto.";
-                    guardar.disabled = estado.disabled;
-                    guardar.textContent = "Guardar puesto";
-                }
-            });
+            if (respuesta.type === 'error') {
+                mensaje.textContent = respuesta.message || 'No se pudo guardar el puesto.';
+                guardar.disabled = estado.disabled;
+                guardar.textContent = 'Guardar puesto';
+            }
         }
 
-        enviar({ type: "obtenerEstados" });
+        window.addEventListener('message', recibirMensaje);
+        window.chrome?.webview?.addEventListener?.('message', recibirMensaje);
+        enviar({ type: 'obtenerEstados' });
     </script>
 </body>
 </html>

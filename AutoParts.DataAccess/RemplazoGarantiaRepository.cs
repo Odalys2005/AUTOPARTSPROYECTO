@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿
+using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace AutoParts.DataAccess
 
         public List<ReemplazoGarantia> SelectAll()
         {
-            List<ReemplazoGarantia> result = null;
+            List<ReemplazoGarantia> result = new List<ReemplazoGarantia>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,8 +30,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<ReemplazoGarantia>();
-
                         while (dr.Read())
                         {
                             ReemplazoGarantia entity = new ReemplazoGarantia();
@@ -40,7 +39,10 @@ namespace AutoParts.DataAccess
                             entity.EmpleadoId = dr.GetInt32(2);
                             entity.FechaReemplazo = dr.GetDateTime(3);
                             entity.Cantidad = dr.GetInt32(4);
-                            entity.Observaciones = dr.IsDBNull(5) ? null : dr.GetString(5);
+
+                            entity.Observaciones = dr.IsDBNull(5)
+                                ? null
+                                : dr.GetString(5);
 
                             result.Add(entity);
                         }
@@ -61,15 +63,24 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@GarantiaId", entity.GarantiaId);
-                    cmd.Parameters.AddWithValue("@EmpleadoId", entity.EmpleadoId);
-                    cmd.Parameters.AddWithValue("@FechaReemplazo", entity.FechaReemplazo);
-                    cmd.Parameters.AddWithValue("@Cantidad", entity.Cantidad);
-                    cmd.Parameters.AddWithValue("@Observaciones", (object)entity.Observaciones ?? DBNull.Value);
+                    cmd.Parameters.Add("@GarantiaId", SqlDbType.Int)
+                        .Value = entity.GarantiaId;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@FechaReemplazo", SqlDbType.DateTime)
+                        .Value = entity.FechaReemplazo;
+
+                    cmd.Parameters.Add("@Cantidad", SqlDbType.Int)
+                        .Value = entity.Cantidad;
+
+                    cmd.Parameters.Add("@Observaciones", SqlDbType.VarChar, 1000)
+                        .Value = (object?)entity.Observaciones ?? DBNull.Value;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

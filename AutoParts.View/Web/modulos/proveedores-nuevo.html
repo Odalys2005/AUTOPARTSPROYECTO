@@ -1,177 +1,195 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoParts | Nuevo proveedor</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: radial-gradient(circle at 100% 0%, #581016 0%, transparent 45%), #0a0a0d;
-            color: white;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-        .contenedor { padding: 29px; max-width: 950px; margin: 0 auto; }
-        .encabezado {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .subtitulo { color: #ffbd35; font-size: 11px; letter-spacing: 3px; font-weight: 700; margin-bottom: 8px; }
-        h1 { margin: 0; font-size: 27px; }
-        .descripcion { color: #a9a7ae; font-size: 13px; line-height: 1.5; }
-        .icono {
-            width: 47px; height: 47px; border: 1px solid #ee3642; border-radius: 12px;
-            background: #5c111a; display: grid; place-items: center; font-size: 24px;
-            color: #ffc42f; box-shadow: 0 0 20px #ca263044; flex-shrink: 0;
-        }
-        .panel {
-            background: linear-gradient(145deg, #171418, #0e0e12);
-            border: 1px solid #5a3139; border-radius: 14px; padding: 25px;
-        }
-        .campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
-        .campo { margin-bottom: 21px; min-width: 0; }
-        .campo.ancho { grid-column: 1 / -1; }
-        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 9px; }
-        input {
-            width: 100%; padding: 13px 14px; background: #111216; color: white;
-            border: 1px solid #554c55; border-radius: 9px; font: inherit; outline: none;
-        }
-        input:focus { border-color: #ff3d46; box-shadow: 0 0 10px #e41b303b; }
-        input::placeholder { color: #85858f; }
-        .ayuda { color: #898a94; font-size: 11px; margin-top: 7px; }
-        .requerido { color: #ff4753; }
-        .mensaje { color: #ffb64e; min-height: 18px; font-size: 12px; margin-bottom: 12px; }
-        .acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
-        button {
-            padding: 13px 23px; border-radius: 9px; font-weight: 700;
-            border: 0; cursor: pointer; transition: .2s;
-        }
-        .cancelar { background: #242328; color: #e5e5e5; border: 1px solid #56535b; }
-        .cancelar:hover { background: #353039; }
-        .guardar { color: #140c0d; background: linear-gradient(105deg, #ff3543, #ffbd2b); box-shadow: 0 0 16px #e5233533; }
-        .guardar:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-2px); }
-        .guardar:disabled { opacity: .55; cursor: not-allowed; }
-        @media (max-width: 650px) {
-            .contenedor { padding: 17px; }
-            .panel { padding: 18px; }
-            .campos { grid-template-columns: 1fr; }
-            .campo.ancho { grid-column: auto; }
-            .acciones { flex-wrap: wrap; }
-        }
-    </style>
-</head>
-<body>
-    <div class="contenedor">
-        <div class="encabezado">
-            <div>
-                <div class="subtitulo">AUTOPARTS · ABASTECIMIENTO</div>
-                <h1>Nuevo proveedor</h1>
-                <p class="descripcion">Registra los datos de un proveedor de repuestos en el sistema.</p>
-            </div>
-            <div class="icono">+</div>
-        </div>
+	<head>
+		<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>AutoParts | Nuevo proveedor</title>
+				<style>
+					* { box-sizing: border-box; }
+					body {
+					margin: 0;
+					min-height: 100vh;
+					background: radial-gradient(circle at 100% 0%, #581016 0%, transparent 45%), #0a0a0d;
+					color: white;
+					font-family: 'Segoe UI', Arial, sans-serif;
+					}
+					.contenedor { padding: 29px; max-width: 950px; margin: 0 auto; }
+					.encabezado {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					gap: 15px;
+					margin-bottom: 25px;
+					}
+					.subtitulo { color: #ffbd35; font-size: 11px; letter-spacing: 3px; font-weight: 700; margin-bottom: 8px; }
+					h1 { margin: 0; font-size: 27px; }
+					.descripcion { color: #a9a7ae; font-size: 13px; line-height: 1.5; }
+					.icono {
+					width: 47px; height: 47px; border: 1px solid #ee3642; border-radius: 12px;
+					background: #5c111a; display: grid; place-items: center; font-size: 24px;
+					color: #ffc42f; box-shadow: 0 0 20px #ca263044; flex-shrink: 0;
+					}
+					.panel {
+					background: linear-gradient(145deg, #171418, #0e0e12);
+					border: 1px solid #5a3139; border-radius: 14px; padding: 25px;
+					}
+					.campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+					.campo { margin-bottom: 21px; min-width: 0; }
+					.campo.ancho { grid-column: 1 / -1; }
+					label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 9px; }
+					input {
+					width: 100%; padding: 13px 14px; background: #111216; color: white;
+					border: 1px solid #554c55; border-radius: 9px; font: inherit; outline: none;
+					}
+					input:focus { border-color: #ff3d46; box-shadow: 0 0 10px #e41b303b; }
+					input::placeholder { color: #85858f; }
+					.ayuda { color: #898a94; font-size: 11px; margin-top: 7px; }
+					.requerido { color: #ff4753; }
+					.mensaje { color: #ffb64e; min-height: 18px; font-size: 12px; margin-bottom: 12px; }
+					.acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
+					button {
+					padding: 13px 23px; border-radius: 9px; font-weight: 700;
+					border: 0; cursor: pointer; transition: .2s;
+					}
+					.cancelar { background: #242328; color: #e5e5e5; border: 1px solid #56535b; }
+					.cancelar:hover { background: #353039; }
+					.guardar { color: #140c0d; background: linear-gradient(105deg, #ff3543, #ffbd2b); box-shadow: 0 0 16px #e5233533; }
+					.guardar:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-2px); }
+					.guardar:disabled { opacity: .55; cursor: not-allowed; }
+					@media (max-width: 650px) {
+					.contenedor { padding: 17px; }
+					.panel { padding: 18px; }
+					.campos { grid-template-columns: 1fr; }
+					.campo.ancho { grid-column: auto; }
+					.acciones { flex-wrap: wrap; }
+					}
+				</style>
+			</head>
+	<body>
+		<div class="contenedor">
+			<div class="encabezado">
+				<div>
+					<div class="subtitulo">AUTOPARTS · ABASTECIMIENTO</div>
+					<h1>Nuevo proveedor</h1>
+					<p class="descripcion">Registra los datos de un proveedor de repuestos en el sistema.</p>
+				</div>
+				<div class="icono">+</div>
+			</div>
 
-        <div class="panel">
-            <form id="formProveedor">
-                <div class="campos">
-                    <div class="campo ancho">
-                        <label for="nombreEmpresa">Nombre de la empresa <span class="requerido">*</span></label>
-                        <input type="text" id="nombreEmpresa" maxlength="100" placeholder="Ej. Distribuidora de Repuestos" required autocomplete="organization">
-                        <div class="ayuda">Nombre con el que identificaremos al proveedor.</div>
+			<div class="panel">
+				<form id="formProveedor">
+					<div class="campos">
+						<div class="campo ancho">
+							<label for="nombreEmpresa">
+								Nombre de la empresa <span class="requerido">*</span>
+							</label>
+							<input type="text" id="nombreEmpresa" maxlength="100" placeholder="Ej. Distribuidora de Repuestos" required="" autocomplete="organization">
+								<div class="ayuda">Nombre con el que identificaremos al proveedor.</div>
+							</div>
+						<div class="campo">
+							<label for="nit">
+								NIT <span class="requerido">*</span>
+							</label>
+							<input type="text" id="nit" maxlength="20" placeholder="NIT del proveedor" required="">
                     </div>
-                    <div class="campo">
-                        <label for="nit">NIT <span class="requerido">*</span></label>
-                        <input type="text" id="nit" maxlength="20" placeholder="NIT del proveedor" required>
+						<div class="campo">
+							<label for="telefono">
+								Teléfono <span class="requerido">*</span>
+							</label>
+							<input type="tel" id="telefono" maxlength="25" placeholder="Ej. 2222-3333" required="" autocomplete="tel">
                     </div>
-                    <div class="campo">
-                        <label for="telefono">Teléfono <span class="requerido">*</span></label>
-                        <input type="tel" id="telefono" maxlength="25" placeholder="Ej. 2222-3333" required autocomplete="tel">
+						<div class="campo">
+							<label for="correo">
+								Correo electrónico <span class="requerido">*</span>
+							</label>
+							<input type="email" id="correo" maxlength="150" placeholder="contacto@empresa.com" required="" autocomplete="email">
                     </div>
-                    <div class="campo">
-                        <label for="correo">Correo electrónico <span class="requerido">*</span></label>
-                        <input type="email" id="correo" maxlength="150" placeholder="contacto@empresa.com" required autocomplete="email">
+						<div class="campo">
+							<label for="contacto">
+								Persona de contacto <span class="requerido">*</span>
+							</label>
+							<input type="text" id="contacto" maxlength="100" placeholder="Ej. Encargado de ventas" required="">
                     </div>
-                    <div class="campo">
-                        <label for="contacto">Persona de contacto <span class="requerido">*</span></label>
-                        <input type="text" id="contacto" maxlength="100" placeholder="Ej. Encargado de ventas" required>
-                    </div>
-                </div>
-                <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
-                <div class="acciones">
-                    <button class="cancelar" type="button" id="cancelar">Cancelar</button>
-                    <button class="guardar" type="submit" id="guardar">Guardar proveedor</button>
-                </div>
-            </form>
-        </div>
-    </div>
+					</div>
+					<div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
+					<div class="acciones">
+						<button class="cancelar" type="button" id="cancelar">Cancelar</button>
+						<button class="guardar" type="submit" id="guardar">Guardar proveedor</button>
+					</div>
+				</form>
+			</div>
+		</div>
 
-    <script>
-        const formulario = document.getElementById("formProveedor");
-        const campos = {
-            NombreEmpresa: document.getElementById("nombreEmpresa"),
-            NIT: document.getElementById("nit"),
-            Telefono: document.getElementById("telefono"),
-            Correo: document.getElementById("correo"),
-            Contacto: document.getElementById("contacto")
-        };
-        const guardar = document.getElementById("guardar");
-        const mensaje = document.getElementById("mensaje");
+		<script>
+			const formulario = document.getElementById("formProveedor");
+			const campos = {
+			NombreEmpresa: document.getElementById("nombreEmpresa"),
+			NIT: document.getElementById("nit"),
+			Telefono: document.getElementById("telefono"),
+			Correo: document.getElementById("correo"),
+			Contacto: document.getElementById("contacto")
+			};
+			const guardar = document.getElementById("guardar");
+			const mensaje = document.getElementById("mensaje");
 
-        function enviar(datos) {
-            if (window.chrome?.webview?.postMessage) {
-                window.chrome.webview.postMessage(datos);
-                return true;
-            }
-            mensaje.textContent = "No hay conexión con Windows Forms.";
-            return false;
-        }
+			function enviar(datos) {
+			if (window.parent !== window) {
+			window.parent.postMessage(datos, "*");
+			return true;
+			}
+			if (window.chrome?.webview?.postMessage) {
+			window.chrome.webview.postMessage(datos);
+			return true;
+			}
+			mensaje.textContent = "No hay conexión con Windows Forms.";
+			return false;
+			}
 
-        document.getElementById("cancelar").addEventListener("click", () => {
-            enviar({ type: "cancelar" });
-        });
+			document.getElementById("cancelar").addEventListener("click", () => {
+			enviar({ type: "cancelar" });
+			});
 
-        formulario.addEventListener("submit", evento => {
-            evento.preventDefault();
-            const datos = Object.fromEntries(
-                Object.entries(campos).map(([propiedad, control]) => [propiedad, control.value.trim()])
-            );
+			formulario.addEventListener("submit", evento => {
+			evento.preventDefault();
+			const datos = Object.fromEntries(
+			Object.entries(campos).map(([propiedad, control]) => [propiedad, control.value.trim()])
+			);
 
-            if (Object.values(datos).some(valor => !valor)) {
-                mensaje.textContent = "Completa todos los campos del proveedor.";
-                return;
-            }
-            if (!formulario.reportValidity()) return;
+			if (Object.values(datos).some(valor => !valor)) {
+			mensaje.textContent = "Completa todos los campos del proveedor.";
+			return;
+			}
+			if (!formulario.reportValidity()) return;
 
-            guardar.disabled = true;
-            guardar.textContent = "Guardando...";
-            mensaje.textContent = "";
+			guardar.disabled = true;
+			guardar.textContent = "Guardando...";
+			mensaje.textContent = "";
 
-            if (!enviar({ type: "guardar", data: datos })) {
-                guardar.disabled = false;
-                guardar.textContent = "Guardar proveedor";
-            }
-        });
+			if (!enviar({ type: "guardar", data: datos })) {
+			guardar.disabled = false;
+			guardar.textContent = "Guardar proveedor";
+			}
+			});
 
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", evento => {
-                let respuesta = evento.data;
-                if (typeof respuesta === "string") {
-                    try { respuesta = JSON.parse(respuesta); }
-                    catch { return; }
-                }
-                if (!respuesta || typeof respuesta !== "object") return;
-                if (respuesta.type === "error") {
-                    mensaje.textContent = respuesta.message || "No se pudo guardar el proveedor.";
-                    guardar.disabled = false;
-                    guardar.textContent = "Guardar proveedor";
-                }
-            });
-        }
-    </script>
-</body>
+			function recibirRespuesta(evento) {
+			if (evento.type === "message" && evento.currentTarget === window && window.parent !== window && evento.source !== window.parent) {
+			return;
+			}
+			let respuesta = evento.data;
+			if (typeof respuesta === "string") {
+			try { respuesta = JSON.parse(respuesta); }
+			catch { return; }
+			}
+			if (!respuesta || typeof respuesta !== "object") return;
+			if (respuesta.type === "error") {
+			mensaje.textContent = respuesta.message || "No se pudo guardar el proveedor.";
+			guardar.disabled = false;
+			guardar.textContent = "Guardar proveedor";
+			}
+			}
+
+			window.addEventListener("message", recibirRespuesta);
+			window.chrome?.webview?.addEventListener?.("message", recibirRespuesta);
+		</script>
+	</body>
 </html>

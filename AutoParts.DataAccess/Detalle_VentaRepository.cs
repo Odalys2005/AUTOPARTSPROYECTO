@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿
+using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,11 @@ namespace AutoParts.DataAccess
 
         public List<Detalle_Venta> SelectAll()
         {
-            List<Detalle_Venta> result = null;
+            List<Detalle_Venta> result = new List<Detalle_Venta>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
-                using (SqlCommand cmd = new SqlCommand("spDetalle_VentaSelectAll", conn))
+                using (SqlCommand cmd = new SqlCommand("spDetalleVentaSelectAll", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -29,8 +30,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Detalle_Venta>();
-
                         while (dr.Read())
                         {
                             Detalle_Venta entity = new Detalle_Venta();
@@ -40,9 +39,16 @@ namespace AutoParts.DataAccess
                             entity.ProductoId = dr.GetInt32(2);
                             entity.Cantidad = dr.GetInt32(3);
                             entity.PrecioUnitario = dr.GetDecimal(4);
-                            entity.Descuento = dr.GetDecimal(5);
+
+                            entity.Descuento = dr.IsDBNull(5)
+                                ? null
+                                : dr.GetDecimal(5);
+
                             entity.Subtotal = dr.GetDecimal(6);
-                            entity.DiasGarantiaVenta = dr.GetInt32(7);
+
+                            entity.DiasGarantiaVenta = dr.IsDBNull(7)
+                                ? null
+                                : dr.GetInt32(7);
 
                             result.Add(entity);
                         }
@@ -59,21 +65,46 @@ namespace AutoParts.DataAccess
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
-                using (SqlCommand cmd = new SqlCommand("spDetalle_VentaInsert", conn))
+                using (SqlCommand cmd = new SqlCommand("spDetalleVentaInsert", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@VentaId", entity.VentaId);
-                    cmd.Parameters.AddWithValue("@ProductoId", entity.ProductoId);
-                    cmd.Parameters.AddWithValue("@Cantidad", entity.Cantidad);
-                    cmd.Parameters.AddWithValue("@PrecioUnitario", entity.PrecioUnitario);
-                    cmd.Parameters.AddWithValue("@Descuento", entity.Descuento);
-                    cmd.Parameters.AddWithValue("@Subtotal", entity.Subtotal);
-                    cmd.Parameters.AddWithValue("@DiasGarantiaVenta", entity.DiasGarantiaVenta);
+                    cmd.Parameters.Add("@VentaId", SqlDbType.Int)
+                        .Value = entity.VentaId;
+
+                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                        .Value = entity.ProductoId;
+
+                    cmd.Parameters.Add("@Cantidad", SqlDbType.Int)
+                        .Value = entity.Cantidad;
+
+                    SqlParameter precioUnitario = cmd.Parameters.Add(
+                        "@PrecioUnitario", SqlDbType.Decimal);
+
+                    precioUnitario.Precision = 18;
+                    precioUnitario.Scale = 2;
+                    precioUnitario.Value = entity.PrecioUnitario;
+
+                    SqlParameter descuento = cmd.Parameters.Add(
+                        "@Descuento", SqlDbType.Decimal);
+
+                    descuento.Precision = 18;
+                    descuento.Scale = 2;
+                    descuento.Value = (object?)entity.Descuento ?? DBNull.Value;
+
+                    SqlParameter subtotal = cmd.Parameters.Add(
+                        "@Subtotal", SqlDbType.Decimal);
+
+                    subtotal.Precision = 18;
+                    subtotal.Scale = 2;
+                    subtotal.Value = entity.Subtotal;
+
+                    cmd.Parameters.Add("@DiasGarantiaVenta", SqlDbType.Int)
+                        .Value = (object?)entity.DiasGarantiaVenta ?? DBNull.Value;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

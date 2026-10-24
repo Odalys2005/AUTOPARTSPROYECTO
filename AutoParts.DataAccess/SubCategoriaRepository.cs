@@ -1,15 +1,16 @@
 ﻿using Microsoft.Data.SqlClient;
 using AutoParts.Entity.Productos;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
 namespace AutoParts.DataAccess
 {
-    public class SubCategoriaRepository
+    public class SubcategoriaRepository
     {
         private readonly ConnectionFactory _connectionFactory;
 
-        public SubCategoriaRepository(ConnectionFactory connectionFactory)
+        public SubcategoriaRepository(ConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -32,17 +33,10 @@ namespace AutoParts.DataAccess
                         {
                             Subcategoria entity = new Subcategoria();
 
-                            entity.SubcategoriaId = dr.GetInt32(
-                                dr.GetOrdinal("SubcategoriaId"));
-
-                            entity.CategoriaId = dr.GetInt32(
-                                dr.GetOrdinal("CategoriaId"));
-
-                            entity.Nombre = dr.GetString(
-                                dr.GetOrdinal("Nombre"));
-
-                            entity.EstadoId = dr.GetInt32(
-                                dr.GetOrdinal("EstadoId"));
+                            entity.SubcategoriaId = dr.GetInt32(0);
+                            entity.CategoriaId = dr.GetInt32(1);
+                            entity.Nombre = dr.GetString(2);
+                            entity.EstadoId = dr.GetInt32(3);
 
                             result.Add(entity);
                         }

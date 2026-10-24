@@ -17,7 +17,7 @@ namespace AutoParts.DataAccess
 
         public List<Usuario> SelectAll()
         {
-            List<Usuario> result = null;
+            List<Usuario> result = new List<Usuario>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,8 +29,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Usuario>();
-
                         while (dr.Read())
                         {
                             Usuario entity = new Usuario();
@@ -40,7 +38,9 @@ namespace AutoParts.DataAccess
                             entity.RolId = dr.GetInt32(2);
                             entity.NombreUsuario = dr.GetString(3);
                             entity.Contrasena = dr.GetString(4);
-                            entity.EstadoId = dr.IsDBNull(5) ? null : dr.GetInt32(5);
+                            entity.EstadoId = dr.IsDBNull(5)
+                                ? null
+                                : dr.GetInt32(5);
 
                             result.Add(entity);
                         }
@@ -61,15 +61,24 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@EmpleadoId", entity.EmpleadoId);
-                    cmd.Parameters.AddWithValue("@RolId", entity.RolId);
-                    cmd.Parameters.AddWithValue("@NombreUsuario", entity.NombreUsuario);
-                    cmd.Parameters.AddWithValue("@Contrasena", entity.Contrasena);
-                    cmd.Parameters.AddWithValue("@EstadoId", (object)entity.EstadoId ?? DBNull.Value);
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                        .Value = entity.RolId;
+
+                    cmd.Parameters.Add("@NombreUsuario", SqlDbType.VarChar, 50)
+                        .Value = entity.NombreUsuario;
+
+                    cmd.Parameters.Add("@Contraseña", SqlDbType.VarChar, 255)
+                        .Value = entity.Contrasena;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = (object?)entity.EstadoId ?? DBNull.Value;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

@@ -1,9 +1,8 @@
-﻿using AutoParts.Entity;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
 
 namespace AutoParts.DataAccess
 {
@@ -18,7 +17,7 @@ namespace AutoParts.DataAccess
 
         public List<Modelo> SelectAll()
         {
-            List<Modelo> result = null;
+            List<Modelo> result = new List<Modelo>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -30,15 +29,14 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Modelo>();
-
                         while (dr.Read())
                         {
                             Modelo entity = new Modelo();
 
                             entity.ModeloId = dr.GetInt32(0);
-                            entity.Nombre = dr.GetString(1);
-                            entity.EstadoId = dr.GetInt32(2);
+                            entity.MarcaId = dr.GetInt32(1);
+                            entity.Nombre = dr.GetString(2);
+                            entity.EstadoId = dr.GetInt32(3);
 
                             result.Add(entity);
                         }
@@ -59,12 +57,18 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
-                    cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
+                    cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
+                        .Value = entity.MarcaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

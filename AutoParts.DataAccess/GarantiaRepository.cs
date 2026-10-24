@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿
+using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace AutoParts.DataAccess
 
         public List<Garantia> SelectAll()
         {
-            List<Garantia> result = null;
+            List<Garantia> result = new List<Garantia>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,8 +30,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Garantia>();
-
                         while (dr.Read())
                         {
                             Garantia entity = new Garantia();
@@ -41,9 +40,19 @@ namespace AutoParts.DataAccess
                             entity.FechaSolicitud = dr.GetDateTime(3);
                             entity.CantidadReclamada = dr.GetInt32(4);
                             entity.DescripcionFalla = dr.GetString(5);
-                            entity.ResultadoEvaluacion = dr.IsDBNull(6) ? null : dr.GetString(6);
-                            entity.FechaResolucion = dr.IsDBNull(7) ? (DateTime?)null : dr.GetDateTime(7);
-                            entity.Observaciones = dr.IsDBNull(8) ? null : dr.GetString(8);
+
+                            entity.ResultadoEvaluacion = dr.IsDBNull(6)
+                                ? null
+                                : dr.GetString(6);
+
+                            entity.FechaResolucion = dr.IsDBNull(7)
+                                ? null
+                                : dr.GetDateTime(7);
+
+                            entity.Observaciones = dr.IsDBNull(8)
+                                ? null
+                                : dr.GetString(8);
+
                             entity.EstadoId = dr.GetInt32(9);
 
                             result.Add(entity);
@@ -65,19 +74,36 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@DetalleVentaId", entity.DetalleVentaId);
-                    cmd.Parameters.AddWithValue("@EmpleadoId", entity.EmpleadoId);
-                    cmd.Parameters.AddWithValue("@FechaSolicitud", entity.FechaSolicitud);
-                    cmd.Parameters.AddWithValue("@CantidadReclamada", entity.CantidadReclamada);
-                    cmd.Parameters.AddWithValue("@DescripcionFalla", entity.DescripcionFalla);
-                    cmd.Parameters.AddWithValue("@ResultadoEvaluacion", (object)entity.ResultadoEvaluacion ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@FechaResolucion", (object)entity.FechaResolucion ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Observaciones", (object)entity.Observaciones ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
+                    cmd.Parameters.Add("@DetalleVentaId", SqlDbType.Int)
+                        .Value = entity.DetalleVentaId;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@FechaSolicitud", SqlDbType.DateTime)
+                        .Value = entity.FechaSolicitud;
+
+                    cmd.Parameters.Add("@CantidadReclamada", SqlDbType.Int)
+                        .Value = entity.CantidadReclamada;
+
+                    cmd.Parameters.Add("@DescripcionFalla", SqlDbType.VarChar, 1000)
+                        .Value = entity.DescripcionFalla;
+
+                    cmd.Parameters.Add("@ResultadoEvaluacion", SqlDbType.VarChar, 500)
+                        .Value = (object?)entity.ResultadoEvaluacion ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@FechaResolucion", SqlDbType.DateTime)
+                        .Value = (object?)entity.FechaResolucion ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@Observaciones", SqlDbType.VarChar, 1000)
+                        .Value = (object?)entity.Observaciones ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

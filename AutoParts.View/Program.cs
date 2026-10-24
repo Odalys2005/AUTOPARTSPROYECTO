@@ -28,21 +28,40 @@ namespace AutoParts.View
 
             services.AddSingleton(new ConnectionFactory(connectionString));
 
-            // DAL
+            // Categorías y productos
             services.AddTransient<CategoriaRepository>();
+            services.AddTransient<SubcategoriaRepository>();
+            services.AddTransient<ProductoRepository>();
+            services.AddTransient<InventarioRepository>();
+
+            // Marcas y vehículos
+            services.AddTransient<MarcaRepository>();
+            services.AddTransient<ModeloRepository>();
+            services.AddTransient<VehiculoRepository>();
+            services.AddTransient<CompatibilidadRepuestoRepository>();
+
+            // Personal y seguridad
+            services.AddTransient<EstadoRepository>();
+            services.AddTransient<RolRepository>();
+            services.AddTransient<PuestoRepository>();
+            services.AddTransient<EmpleadoRepository>();
+            services.AddTransient<UsuarioRepository>();
+
+            // Proveedores y compras
             services.AddTransient<ProveedorRepository>();
             services.AddTransient<CompraRepository>();
             services.AddTransient<Detalle_CompraRepository>();
-            services.AddTransient<ProductoRepository>();
-            services.AddTransient<InventarioRepository>();
-            services.AddTransient<MarcaRepository>();
-            services.AddTransient<EstadoRepository>();
-            services.AddTransient<RolRepository>();
-            services.AddTransient<ClienteRepository>();
-            services.AddTransient<MarcaRepository>();
-            services.AddTransient<PuestoRepository>();
 
-            // BL
+            // Clientes y ventas
+            services.AddTransient<ClienteRepository>();
+            services.AddTransient<VentaRepository>();
+            services.AddTransient<Detalle_VentaRepository>();
+
+            // Garantías
+            services.AddTransient<GarantiaRepository>();
+            services.AddTransient<ReemplazoGarantiaRepository>();
+            //BL
+
             services.AddScoped<CategoriaBL>();
             services.AddScoped<EstadoBL>();
             services.AddScoped<RolBL>();
@@ -50,24 +69,33 @@ namespace AutoParts.View
             services.AddScoped<ClienteBL>();
             services.AddScoped<MarcaBL>();
             services.AddScoped<PuestoBL>();
-
-
-            // Form
+            //VIEW
+           
             services.AddTransient<MainForm>();
+
             services.AddTransient<frmCategoriasNuevo>();
             services.AddTransient<frmCategorias>();
+
             services.AddTransient<Login>();
+
             services.AddTransient<frmEstados>();
+
             services.AddTransient<frmRoles>();
             services.AddTransient<frmRolesNuevo>();
+
             services.AddTransient<frmProveedores>();
             services.AddTransient<frmProveedoresNuevo>();
+
             services.AddTransient<frmClientes>();
             services.AddTransient<frmClientesNuevo>();
+
             services.AddTransient<frmMarcas>();
             services.AddTransient<frmMarcasNuevo>();
+
             services.AddTransient<frmPuestos>();
             services.AddTransient<frmPuestosNuevo>();
+
+            
 
             var serviceProvider = services.BuildServiceProvider();
 

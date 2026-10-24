@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿
+using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace AutoParts.DataAccess
 
         public List<Venta> SelectAll()
         {
-            List<Venta> result = null;
+            List<Venta> result = new List<Venta>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
@@ -29,8 +30,6 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Venta>();
-
                         while (dr.Read())
                         {
                             Venta entity = new Venta();
@@ -41,6 +40,7 @@ namespace AutoParts.DataAccess
                             entity.NumeroFactura = dr.GetString(3);
                             entity.FechaVenta = dr.GetDateTime(4);
                             entity.Total = dr.GetDecimal(5);
+                            entity.EstadoId = dr.GetInt32(6);
 
                             result.Add(entity);
                         }
@@ -61,15 +61,31 @@ namespace AutoParts.DataAccess
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@ClienteId", entity.ClienteId);
-                    cmd.Parameters.AddWithValue("@EmpleadoId", entity.EmpleadoId);
-                    cmd.Parameters.AddWithValue("@NumeroFactura", entity.NumeroFactura);
-                    cmd.Parameters.AddWithValue("@FechaVenta", entity.FechaVenta);
-                    cmd.Parameters.AddWithValue("@Total", entity.Total);
+                    cmd.Parameters.Add("@ClienteId", SqlDbType.Int)
+                        .Value = entity.ClienteId;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@NumeroFactura", SqlDbType.VarChar, 50)
+                        .Value = entity.NumeroFactura;
+
+                    cmd.Parameters.Add("@FechaVenta", SqlDbType.DateTime)
+                        .Value = entity.FechaVenta;
+
+                    SqlParameter total = cmd.Parameters.Add(
+                        "@Total", SqlDbType.Decimal);
+
+                    total.Precision = 18;
+                    total.Scale = 2;
+                    total.Value = entity.Total;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
 
                     conn.Open();
 
-                    result = Convert.ToInt32(cmd.ExecuteScalar());
+                    result = cmd.ExecuteNonQuery();
                 }
             }
 

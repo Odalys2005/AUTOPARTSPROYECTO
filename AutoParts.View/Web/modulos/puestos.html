@@ -152,6 +152,10 @@
         }
 
         function enviarACSharp(mensaje) {
+            if (window.parent !== window) {
+                window.parent.postMessage(mensaje, "*");
+                return true;
+            }
             if (window.chrome?.webview?.postMessage) {
                 window.chrome.webview.postMessage(mensaje);
                 return true;
@@ -197,24 +201,30 @@
             }).join("");
         }
 
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", evento => {
-                let mensaje = evento.data;
-                if (typeof mensaje === "string") {
-                    try { mensaje = JSON.parse(mensaje); } catch { return; }
-                }
-                if (!mensaje || typeof mensaje !== "object") return;
-
-                if (mensaje.type === "puestos:list") {
-                    puestos = Array.isArray(mensaje.data) ? mensaje.data : [];
-                    pintarPuestos();
-                }
-                if (mensaje.type === "error") {
-                    document.getElementById("totalPuestos").textContent = "0";
-                    mostrarMensaje(mensaje.message || "No se pudieron cargar los puestos.");
-                }
-            });
+        function recibirMensajePuestos(evento) {
+            let mensaje = evento.data;
+            if (typeof mensaje === "string") {
+                try { mensaje = JSON.parse(mensaje); } catch { return; }
+            }
+            if (!mensaje || typeof mensaje !== "object") return;
+            if (mensaje.type === "puestos:list") {
+                puestos = Array.isArray(mensaje.data) ? mensaje.data : [];
+                pintarPuestos();
+            }
+            if (mensaje.type === "error") {
+                puestos = [];
+                document.getElementById("totalPuestos").textContent = "0";
+                mostrarMensaje(mensaje.message || "No se pudieron cargar los puestos.");
+            }
         }
+
+        if (window.chrome?.webview?.addEventListener) {
+            window.chrome.webview.addEventListener("message", recibirMensajePuestos);
+        }
+        window.addEventListener("message", evento => {
+            if (window.parent !== window && evento.source !== window.parent) return;
+            recibirMensajePuestos(evento);
+        });
 
         document.getElementById("btnNuevoPuesto").addEventListener("click", () => {
             enviarACSharp({ type: "puestos:abrirNuevo" });

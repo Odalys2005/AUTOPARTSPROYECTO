@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -32,29 +33,14 @@ namespace AutoParts.DataAccess
                         {
                             Producto entity = new Producto();
 
-                            entity.ProductoId = dr.GetInt32(
-                                dr.GetOrdinal("ProductoId"));
-
-                            entity.CodigoOEM = dr.GetString(
-                                dr.GetOrdinal("CodigoOEM"));
-
-                            entity.Nombre = dr.GetString(
-                                dr.GetOrdinal("Nombre"));
-
-                            entity.Descripcion = dr.GetString(
-                                dr.GetOrdinal("Descripcion"));
-
-                            entity.PrecioVenta = dr.GetDecimal(
-                                dr.GetOrdinal("PrecioVenta"));
-
-                            entity.DiasGarantia = dr.GetInt32(
-                                dr.GetOrdinal("DiasGarantia"));
-
-                            entity.SubcategoriaId = dr.GetInt32(
-                                dr.GetOrdinal("SubcategoriaId"));
-
-                            entity.EstadoId = dr.GetInt32(
-                                dr.GetOrdinal("EstadoId"));
+                            entity.ProductoId = dr.GetInt32(0);
+                            entity.SubcategoriaId = dr.GetInt32(1);
+                            entity.CodigoOEM = dr.GetString(2);
+                            entity.Nombre = dr.GetString(3);
+                            entity.Descripcion = dr.GetString(4);
+                            entity.PrecioVenta = dr.GetDecimal(5);
+                            entity.DiasGarantia = dr.GetInt32(6);
+                            entity.EstadoId = dr.GetInt32(7);
 
                             result.Add(entity);
                         }

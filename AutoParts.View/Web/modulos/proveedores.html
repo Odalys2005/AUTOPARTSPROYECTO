@@ -379,11 +379,15 @@
         }
 
         function enviarACSharp(mensaje) {
+            if (window.parent !== window) {
+                window.parent.postMessage(mensaje, '*');
+                return true;
+            }
             if (window.chrome?.webview?.postMessage) {
                 window.chrome.webview.postMessage(mensaje);
                 return true;
             }
-            mostrarMensaje("Esta pantalla requiere WebView2 para consultar los datos.");
+            mostrarMensaje('Esta pantalla requiere WebView2 para consultar los datos.');
             return false;
         }
 
@@ -418,24 +422,24 @@
                 </tr>`).join("");
         }
 
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", evento => {
-                let mensaje = evento.data;
-                if (typeof mensaje === "string") {
-                    try { mensaje = JSON.parse(mensaje); } catch { return; }
-                }
-                if (!mensaje || typeof mensaje !== "object") return;
+        function recibirRespuestaProveedores(evento) {
+            let mensaje = evento.data;
+            if (typeof mensaje === 'string') {
+                try { mensaje = JSON.parse(mensaje); } catch { return; }
+            }
+            if (!mensaje || typeof mensaje !== 'object') return;
 
-                if (mensaje.type === "proveedores:list") {
-                    proveedores = Array.isArray(mensaje.data) ? mensaje.data : [];
-                    pintarProveedores();
-                }
-                if (mensaje.type === "error") {
-                    document.getElementById("totalProveedores").textContent = "0";
-                    mostrarMensaje(mensaje.message || "No se pudieron cargar los proveedores.");
-                }
-            });
+            if (mensaje.type === 'proveedores:list') {
+                proveedores = Array.isArray(mensaje.data) ? mensaje.data : [];
+                pintarProveedores();
+            } else if (mensaje.type === 'error') {
+                document.getElementById('totalProveedores').textContent = '0';
+                mostrarMensaje(mensaje.message || 'No se pudieron cargar los proveedores.');
+            }
         }
+
+        window.chrome?.webview?.addEventListener?.('message', recibirRespuestaProveedores);
+        window.addEventListener('message', recibirRespuestaProveedores);
 
         function solicitarProveedores() {
             mostrarMensaje("Cargando proveedores...");
