@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoParts | Nuevo Garantía</title><style>
+:root{color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 100% 0%,rgba(136,16,25,.20),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+.contenedor{max-width:1110px;margin:0 auto;padding:34px}
+.encabezado{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:29px}
+.etiqueta{display:flex;align-items:center;gap:9px;color:#ffbd37;font-size:11px;font-weight:750;letter-spacing:2.7px;margin-bottom:12px}
+.etiqueta:before{content:'';width:22px;height:3px;background:#ff3543;border-radius:10px;box-shadow:0 0 12px #ff243a}
+h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}h1 span{color:#ffbd2e}
+.descripcion{color:#adaeb8;margin:10px 0 0;font-size:13px;line-height:1.6}
+.icono{width:50px;height:50px;display:grid;place-items:center;border-radius:12px;border:1px solid #f43848;background:#3b1119;color:#ffbd35;box-shadow:0 0 18px #e9243444;flex-shrink:0}
+.panel{background:linear-gradient(140deg,#171519,#0d0e11 70%,#140f12);border:1px solid #56323c;border-radius:15px;padding:30px;box-shadow:0 12px 35px #0005}
+.seccion{font-size:11px;letter-spacing:2px;font-weight:750;color:#ffbd35;margin:0 0 25px}
+.campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 24px}
+.campo{min-width:0}.campo.ancho{grid-column:1/-1}
+.campo label{display:block;font-size:13px;font-weight:650;margin-bottom:9px;color:#f4f4f6}.requerido{color:#ff4653}
+.campo input,.campo select,.campo textarea{display:block;width:100%;min-height:47px;border-radius:9px;border:1px solid #554a52;background:#111216;padding:0 14px;color:#fff;outline:0;transition:border-color .2s,box-shadow .2s}
+.campo textarea{min-height:113px;padding:12px 14px;resize:vertical;line-height:1.5}
+.campo input:focus,.campo select:focus,.campo textarea:focus{border-color:#ff3543;box-shadow:0 0 14px #ff354333}
+.campo input::placeholder,.campo textarea::placeholder{color:#777982}.campo select:disabled{opacity:.58}
+.campo input:read-only{background:#201c21;color:#ffbd35;font-weight:750}
+.mensaje{min-height:22px;margin-top:25px;color:#ffc075;font-size:12px;line-height:1.5}.mensaje:empty{min-height:0}
+.acciones{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;border-top:1px solid #382d34;padding-top:23px;margin-top:24px}
+.acciones button{border-radius:9px;border:1px solid transparent;padding:13px 25px;font-weight:750;font-size:13px;cursor:pointer;transition:filter .2s,transform .2s}
+.cancelar{color:#e6e6eb;background:#25232a;border-color:#58535c}.cancelar:hover{background:#37313a}
+.guardar{color:#190d0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);box-shadow:0 0 16px #e5233533}
+.guardar:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-2px)}.guardar:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:720px){.contenedor{padding:20px}.panel{padding:20px}.campos{grid-template-columns:1fr;gap:18px}.campo.ancho{grid-column:auto}}
+</style></head><body>
+<main class="contenedor"><header class="encabezado"><div><div class="etiqueta">SERVICIO POSVENTA</div>
+<h1>Nueva <span>Garantía</span></h1><p class="descripcion">Registro de garantía en AutoParts.</p></div>
+<div class="icono" aria-hidden="true"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h8m-8 4h5"/></svg></div></header>
+<section class="panel"><form id="formRegistro" novalidate><p class="seccion">DATOS DEL REGISTRO</p><div class="campos"><div class="campo"><label for="DetalleVentaId">Detalle de venta <span class="requerido">*</span></label><select id="DetalleVentaId" required disabled><option value="">Cargando...</option></select></div>
+<div class="campo"><label for="EmpleadoId">Empleado responsable <span class="requerido">*</span></label><select id="EmpleadoId" required disabled><option value="">Cargando...</option></select></div>
+<div class="campo"><label for="FechaSolicitud">Fecha de solicitud <span class="requerido">*</span></label><input type="datetime-local" id="FechaSolicitud" required></div>
+<div class="campo"><label for="CantidadReclamada">Cantidad reclamada <span class="requerido">*</span></label><input type="number" id="CantidadReclamada" required min="1" step="1" placeholder="0"></div>
+<div class="campo ancho"><label for="DescripcionFalla">Descripción de la falla <span class="requerido">*</span></label><textarea id="DescripcionFalla" required maxlength="1000" placeholder=""></textarea></div>
+<div class="campo ancho"><label for="ResultadoEvaluacion">Resultado de evaluación </label><textarea id="ResultadoEvaluacion" maxlength="500" placeholder=""></textarea></div>
+<div class="campo"><label for="FechaResolucion">Fecha de resolución </label><input type="datetime-local" id="FechaResolucion"></div>
+<div class="campo ancho"><label for="Observaciones">Observaciones </label><textarea id="Observaciones" maxlength="1000" placeholder=""></textarea></div>
+<div class="campo"><label for="EstadoId">Estado <span class="requerido">*</span></label><select id="EstadoId" required disabled><option value="">Cargando...</option></select></div></div>
+<div id="mensaje" class="mensaje" role="status" aria-live="polite"></div>
+<div class="acciones"><button type="button" id="cancelar" class="cancelar">Cancelar</button>
+<button type="submit" id="guardar" class="guardar" disabled>Guardar garantía</button></div></form></section></main>
+<script>
+'use strict';
+function val(obj, ...keys){for(const k of keys){if(obj && Object.prototype.hasOwnProperty.call(obj,k) && obj[k]!==null && obj[k]!==undefined)return obj[k];}return '';}
+function campo(obj,key){return val(obj,key,key[0].toLowerCase()+key.slice(1));}
+function idDe(obj,key){return Number(campo(obj,key))||0;}
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function emitir(data){if(window.parent!==window){window.parent.postMessage(data,'*');return true;}
+  if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(data);return true;}
+  return false;}
+function dinero(x){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(x)||0);}
+function fecha(x){if(!x)return '—'; const s=String(x);return s.replace('T',' ').slice(0,16);}
+function leer(evento){let data=evento.data;if(typeof data==='string'){try{data=JSON.parse(data);}catch{return null;}}return data&&typeof data==='object'?data:null;}
+const IDS={compras:'CompraId','detalles-compra':'DetalleCompraId',ventas:'VentaId','detalles-venta':'DetalleVentaId',garantias:'GarantiaId','reemplazos-garantia':'ReemplazoId',proveedores:'ProveedorId',clientes:'ClienteId',empleados:'EmpleadoId',productos:'ProductoId',estados:'EstadoId'};
+function nombreRelacionado(tipo,reg){if(!reg)return '—';
+  switch(tipo){
+    case 'proveedores':return String(campo(reg,'NombreEmpresa')||`Proveedor #${idDe(reg,'ProveedorId')}`);
+    case 'clientes':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Cliente #${idDe(reg,'ClienteId')}`;
+    case 'empleados':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Empleado #${idDe(reg,'EmpleadoId')}`;
+    case 'productos':return [campo(reg,'CodigoOEM'),campo(reg,'Nombre')].filter(Boolean).join(' · ')||`Producto #${idDe(reg,'ProductoId')}`;
+    case 'compras':return String(campo(reg,'NumeroComprobante')||`Compra #${idDe(reg,'CompraId')}`);
+    case 'ventas':return String(campo(reg,'NumeroFactura')||`Venta #${idDe(reg,'VentaId')}`);
+    case 'detalles-venta':return `Detalle #${idDe(reg,'DetalleVentaId')} · Venta #${idDe(reg,'VentaId')} · Producto #${idDe(reg,'ProductoId')}`;
+    case 'garantias':return `Garantía #${idDe(reg,'GarantiaId')}`;
+    case 'estados':return String(campo(reg,'Nombre')||`Estado #${idDe(reg,'EstadoId')}`);
+    default:return String(campo(reg,'Nombre')||'—');
+  }
+}
+
+
+const CFG={"slug": "garantias", "menu": "Garantías", "single": "garantía", "title": "Garantías", "newtitle": "Garantía", "tag": "SERVICIO POSVENTA", "desc": "Consulta las solicitudes por defectos de fabricación.", "info": "Solicitudes de garantía registradas.", "search": "Buscar solicitud, producto, fecha o estado...", "id": "GarantiaId", "lookups": {"detalles-venta": "DetalleVentaId", "empleados": "EmpleadoId", "estados": "EstadoId", "productos": "ProductoId"}, "columns": [["GarantiaId", "ID", "id"], ["DetalleVentaId", "Detalle de venta", "lookup:detalles-venta"], ["FechaSolicitud", "Solicitud", "date"], ["EmpleadoId", "Empleado", "lookup:empleados"], ["CantidadReclamada", "Cantidad", "number"], ["DescripcionFalla", "Falla reportada", "truncate"], ["EstadoId", "Estado", "status"]], "fields": [["DetalleVentaId", "Detalle de venta", "select:detalles-venta", true], ["EmpleadoId", "Empleado responsable", "select:empleados", true], ["FechaSolicitud", "Fecha de solicitud", "datetime", true], ["CantidadReclamada", "Cantidad reclamada", "int", true], ["DescripcionFalla", "Descripción de la falla", "textarea", true, 1000], ["ResultadoEvaluacion", "Resultado de evaluación", "textarea", false, 500], ["FechaResolucion", "Fecha de resolución", "datetime", false], ["Observaciones", "Observaciones", "textarea", false, 1000], ["EstadoId", "Estado", "select:estados", true]]};
+const form=document.getElementById('formRegistro'),mensaje=document.getElementById('mensaje'),guardar=document.getElementById('guardar');
+let guardando=false,cargado={},temporizadorCarga,temporizadorGuardar;
+const colecciones={};for(const k of Object.keys(CFG.lookups)){colecciones[k]=[];cargado[k]=false;}
+function aviso(t){mensaje.textContent=t;}
+function llenar(tipo){const idCampo=CFG.lookups[tipo],control=CFG.fields.find(x=>x[0]===idCampo);if(!control)return;
+  const sel=document.getElementById(idCampo);if(!sel)return;const anterior=sel.value;sel.replaceChildren();
+  const op=document.createElement('option');op.value='';op.textContent=`Selecciona ${control[1].toLowerCase()}`;sel.appendChild(op);
+  let registros=colecciones[tipo];
+  if(tipo==='garantias'){const usados=new Set((colecciones['reemplazos-garantia']||[]).map(r=>idDe(r,'GarantiaId')));registros=registros.filter(r=>!usados.has(idDe(r,'GarantiaId')));}
+  for(const r of registros){const id=idDe(r,IDS[tipo]);if(!id)continue;const item=document.createElement('option');item.value=String(id);item.textContent=nombreRelacionado(tipo,r);sel.appendChild(item);}
+  if([...sel.options].some(o=>o.value===anterior))sel.value=anterior;
+  sel.disabled=sel.options.length===1;
+  habilitar();
+}
+function habilitar(){guardar.disabled=guardando||!Object.entries(CFG.lookups).filter(([k])=>CFG.fields.some(f=>f[2]===`select:${k}`)).every(([k])=>cargado[k]);}
+function recibir(evento){const m=leer(evento);if(!m||!m.type)return;
+  if(m.type.endsWith(':list')){const tipo=m.type.slice(0,-5);if(tipo in colecciones){colecciones[tipo]=Array.isArray(m.data)?m.data:[];cargado[tipo]=true;llenar(tipo);if(tipo==='reemplazos-garantia')llenar('garantias');}}
+  else if(m.type==='estados'&&'estados' in colecciones){colecciones.estados=Array.isArray(m.data)?m.data:[];cargado.estados=true;llenar('estados');}
+  else if(m.type==='error'){clearTimeout(temporizadorGuardar);guardando=false;aviso(String(m.message||'No se pudo completar la operación.'));habilitar();}
+  if(Object.values(cargado).every(Boolean)){clearTimeout(temporizadorCarga);if(!guardando&&!mensaje.textContent){const faltan=CFG.fields.some(f=>f[2].startsWith('select:')&&document.getElementById(f[0]).disabled);if(faltan)aviso('No hay registros disponibles en una de las listas necesarias.');}}
+}
+window.addEventListener('message',recibir);
+if(window.chrome?.webview?.addEventListener&&window.parent===window)window.chrome.webview.addEventListener('message',recibir);
+function valorCampo(f){const [k,label,tipo,req]=f,el=document.getElementById(k);const raw=el.value.trim();
+  if(tipo.startsWith('select:'))return Number(raw);
+  if(tipo==='int'||tipo==='intzero')return raw===''?null:Number(raw);
+  if(tipo==='money'||tipo==='calculated')return raw===''?null:Number(raw);
+  return raw===''?null:raw;
+}
+function totalizar(){if(!CFG.calc)return;
+  const cantidad=Number(document.getElementById('Cantidad').value)||0;
+  const costo=Number(document.getElementById(CFG.calc==='purchase'?'PrecioCosto':'PrecioUnitario').value)||0;
+  const desc=CFG.calc==='sale'?Number(document.getElementById('Descuento').value)||0:0;
+  const subtotal=Math.max(0,Math.round((cantidad*costo-desc)*100)/100);
+  document.getElementById('Subtotal').value=subtotal.toFixed(2);
+}
+if(CFG.calc){for(const k of ['Cantidad',CFG.calc==='purchase'?'PrecioCosto':'PrecioUnitario',...(CFG.calc==='sale'?['Descuento']:[])])document.getElementById(k).addEventListener('input',totalizar);totalizar();}
+// El diseño propone el formulario, pero la confirmación de guardado depende del C#.
+document.getElementById('cancelar').addEventListener('click',()=>emitir({type:'cancelar'}));
+form.addEventListener('submit',evento=>{evento.preventDefault();if(guardando)return;const datos={};
+  for(const campoDef of CFG.fields){const [key,label,tipo,req]=campoDef;const x=valorCampo(campoDef);
+    if(req&&(x===null||x===''||((tipo.startsWith('select:'))&&x<=0))){aviso(`Completa el campo: ${label}.`);document.getElementById(key).focus();return;}
+    if(x!==null&&x!==''&&['int','intzero','money','calculated'].includes(tipo)){
+      if(!Number.isFinite(x)||x<(tipo==='int'?1:0)||(['int','intzero'].includes(tipo)&&!Number.isInteger(x))){aviso(`Revisa el valor de ${label.toLowerCase()}.`);document.getElementById(key).focus();return;}
+    }
+    if(x!==null)datos[key]=x;
+  }
+  if(!form.checkValidity()){aviso('Revisa los campos marcados.');form.reportValidity();return;}
+  if(CFG.slug==='detalles-venta' && Number(datos.Descuento||0)>Number(datos.Cantidad)*Number(datos.PrecioUnitario)){aviso('El descuento no puede superar el importe de la línea.');return;}
+  if(CFG.slug==='garantias'){
+    const detalle=colecciones['detalles-venta'].find(r=>idDe(r,'DetalleVentaId')===datos.DetalleVentaId);
+    if(detalle&&datos.CantidadReclamada>Number(campo(detalle,'Cantidad'))){aviso('La cantidad reclamada no puede exceder la cantidad vendida.');return;}
+    if(datos.FechaResolucion&&datos.FechaResolucion<datos.FechaSolicitud){aviso('La resolución no puede ser anterior a la solicitud.');return;}
+  }
+  if(CFG.slug==='reemplazos-garantia'){
+    const g=colecciones.garantias.find(r=>idDe(r,'GarantiaId')===datos.GarantiaId);
+    if(g&&datos.Cantidad>Number(campo(g,'CantidadReclamada'))){aviso('La cantidad a reemplazar no puede superar la reclamada.');return;}
+  }
+  if(!emitir({type:'guardar',data:datos})){aviso('Abre este formulario desde AutoParts.');return;}
+  guardando=true;habilitar();aviso('Enviando registro...');clearTimeout(temporizadorGuardar);
+  temporizadorGuardar=setTimeout(()=>{if(guardando){guardando=false;habilitar();aviso('No hubo confirmación de guardado. Comprueba la conexión de MainForm.cs antes de intentarlo de nuevo.');}},12000);
+});
+form.addEventListener('input',()=>{if(!guardando && mensaje.textContent && !mensaje.textContent.startsWith('No hubo'))aviso('');});
+function iniciar(){
+  for(const dep of Object.keys(CFG.lookups)){emitir({type:dep==='estados'?'obtenerEstados':`${dep}:selectAll`});}
+  clearTimeout(temporizadorCarga);
+  temporizadorCarga=setTimeout(()=>{const sinCargar=Object.keys(cargado).filter(k=>!cargado[k]);if(sinCargar.length)aviso('No se pudieron cargar las listas: '+sinCargar.join(', ')+'.');},12000);
+  habilitar();
+}
+// Inicio de formularios: la fecha se llena con hora local, no UTC.
+const ahora=new Date(),ajustada=new Date(ahora.getTime()-ahora.getTimezoneOffset()*60000).toISOString().slice(0,16);
+for(const f of CFG.fields){if(f[2]==='datetime'&&/^(FechaCompra|FechaVenta|FechaSolicitud|FechaReemplazo)$/.test(f[0]))document.getElementById(f[0]).value=ajustada;}
+iniciar();
+
+</script></body></html>

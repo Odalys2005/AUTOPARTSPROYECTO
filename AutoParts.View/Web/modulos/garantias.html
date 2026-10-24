@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoParts | Garantías</title><style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 95% 0%,rgba(136,16,25,.20),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.contenedor{max-width:1520px;margin:0 auto;padding:34px}
+.etiqueta{display:flex;align-items:center;gap:9px;color:#ffbd37;font-size:11px;font-weight:750;letter-spacing:2.7px;margin-bottom:12px}
+.etiqueta:before{content:'';width:22px;height:3px;background:#ff3543;border-radius:10px;box-shadow:0 0 12px #ff243a}
+h1{margin:0;font-size:clamp(28px,3vw,38px);letter-spacing:-.8px;font-weight:800}h1 span{color:#ffbd2e}
+.subtitulo{margin-top:9px;color:#adaeb8;font-size:13px;line-height:1.6}
+.encabezado{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;margin-bottom:31px}
+.btn-principal{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid #ff6053;border-radius:10px;padding:14px 20px;background:linear-gradient(110deg,#b10b1f,#e52a37,#ffac28);color:#fff;font-size:13px;font-weight:750;box-shadow:0 0 18px rgba(233,31,48,.27);transition:filter .2s,transform .2s;white-space:nowrap}
+.btn-principal:hover{filter:brightness(1.13);transform:translateY(-2px)}
+.panel{border:1px solid #4d3038;border-radius:15px;background:linear-gradient(140deg,#171519,#0d0e11 65%,#140f12);box-shadow:0 12px 35px #0005;overflow:hidden}
+.panel-cabecera{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:17px;padding:24px 25px;border-bottom:1px solid #352c32}
+.panel-cabecera h2{font-size:18px;margin:0 0 7px}.panel-cabecera p{font-size:12px;color:#9a9aa4;margin:0}
+.herramientas{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
+.buscador{display:flex;align-items:center;gap:10px;height:44px;border:1px solid #51454c;background:#111216;border-radius:9px;padding:0 13px;width:min(345px,100%)}
+.buscador:focus-within{border-color:#ff3d46;box-shadow:0 0 12px #ff334022}.buscador svg{color:#aba9b0;flex-shrink:0}
+.buscador input{width:100%;border:0;outline:0;background:transparent;color:white;font-size:12px}.buscador input::placeholder{color:#898992}
+.btn-actualizar{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0 15px;color:#eee;font-size:12px;transition:.2s}.btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
+.aviso{padding:0 25px;font-size:12px;color:#ffbd69;line-height:1.6}.aviso:empty{display:none}.aviso:not(:empty){padding-top:14px;padding-bottom:12px}
+.tabla-wrap{overflow-x:auto;min-height:240px}table{width:100%;min-width:940px;border-collapse:collapse;font-size:12px}thead{background:#1b1b21}
+th{text-align:left;color:#bcbcc6;border-bottom:1px solid #373035;padding:16px 18px;font-size:11px;font-weight:750;letter-spacing:.25px;white-space:nowrap}
+td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-align:middle}tbody tr:hover{background:#25181e}
+.codigo{color:#ffbd35;font-weight:750;font-variant-numeric:tabular-nums}.principal{font-weight:700;color:#fff;font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:750;white-space:nowrap}
+.chip.ok{color:#79eaaa;border:1px solid #17643e;background:#103d29}.chip.sin{color:#ffd274;border:1px solid #746027;background:#403514}.chip:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.vacio{text-align:center;padding:66px 20px;color:#9ea0ab}.vacio svg{color:#ffbd35;margin-bottom:11px}.vacio strong{display:block;color:#e8e8ee;margin-bottom:7px;font-size:14px}.vacio p{font-size:12px;margin:0}
+.pie{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;padding:16px 25px;border-top:1px solid #34292e;color:#9999a3;font-size:12px}.pie strong{color:#ffbd35}
+@media(max-width:960px){.contenedor{padding:22px}}
+@media(max-width:600px){.encabezado{align-items:flex-start}.panel-cabecera{padding:18px}.herramientas{width:100%}.buscador{flex:1;min-width:190px}.pie{padding:16px 18px}}
+</style></head><body>
+<main class="contenedor"><header class="encabezado"><div><div class="etiqueta">SERVICIO POSVENTA</div>
+<h1>Gestión de <span>Garantías</span></h1><p class="subtitulo">Consulta las solicitudes por defectos de fabricación.</p></div>
+<button type="button" class="btn-principal" id="btnNuevo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nueva garantía</button></header>
+<section class="panel"><div class="panel-cabecera"><div><h2>Listado de garantías</h2><p>Solicitudes de garantía registradas.</p></div>
+<div class="herramientas"><label class="buscador" aria-label="Buscar registro"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="buscar" type="search" placeholder="Buscar solicitud, producto, fecha o estado..." autocomplete="off"></label>
+<button id="btnActualizar" type="button" class="btn-actualizar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg> Actualizar</button></div></div>
+<div id="aviso" class="aviso" role="status" aria-live="polite"></div>
+<div class="tabla-wrap"><table><thead><tr><th>ID</th><th>Detalle de venta</th><th>Solicitud</th><th>Empleado</th><th>Cantidad</th><th>Falla reportada</th><th>Estado</th></tr></thead><tbody id="filas"><tr><td colspan="7" class="vacio"><strong>Cargando...</strong></td></tr></tbody></table></div>
+<div class="pie"><span>Registros mostrados: <strong id="conteo">0</strong></span><span>AutoParts · Garantías</span></div></section></main>
+<script>
+'use strict';
+function val(obj, ...keys){for(const k of keys){if(obj && Object.prototype.hasOwnProperty.call(obj,k) && obj[k]!==null && obj[k]!==undefined)return obj[k];}return '';}
+function campo(obj,key){return val(obj,key,key[0].toLowerCase()+key.slice(1));}
+function idDe(obj,key){return Number(campo(obj,key))||0;}
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function emitir(data){if(window.parent!==window){window.parent.postMessage(data,'*');return true;}
+  if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(data);return true;}
+  return false;}
+function dinero(x){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(x)||0);}
+function fecha(x){if(!x)return '—'; const s=String(x);return s.replace('T',' ').slice(0,16);}
+function leer(evento){let data=evento.data;if(typeof data==='string'){try{data=JSON.parse(data);}catch{return null;}}return data&&typeof data==='object'?data:null;}
+const IDS={compras:'CompraId','detalles-compra':'DetalleCompraId',ventas:'VentaId','detalles-venta':'DetalleVentaId',garantias:'GarantiaId','reemplazos-garantia':'ReemplazoId',proveedores:'ProveedorId',clientes:'ClienteId',empleados:'EmpleadoId',productos:'ProductoId',estados:'EstadoId'};
+function nombreRelacionado(tipo,reg){if(!reg)return '—';
+  switch(tipo){
+    case 'proveedores':return String(campo(reg,'NombreEmpresa')||`Proveedor #${idDe(reg,'ProveedorId')}`);
+    case 'clientes':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Cliente #${idDe(reg,'ClienteId')}`;
+    case 'empleados':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Empleado #${idDe(reg,'EmpleadoId')}`;
+    case 'productos':return [campo(reg,'CodigoOEM'),campo(reg,'Nombre')].filter(Boolean).join(' · ')||`Producto #${idDe(reg,'ProductoId')}`;
+    case 'compras':return String(campo(reg,'NumeroComprobante')||`Compra #${idDe(reg,'CompraId')}`);
+    case 'ventas':return String(campo(reg,'NumeroFactura')||`Venta #${idDe(reg,'VentaId')}`);
+    case 'detalles-venta':return `Detalle #${idDe(reg,'DetalleVentaId')} · Venta #${idDe(reg,'VentaId')} · Producto #${idDe(reg,'ProductoId')}`;
+    case 'garantias':return `Garantía #${idDe(reg,'GarantiaId')}`;
+    case 'estados':return String(campo(reg,'Nombre')||`Estado #${idDe(reg,'EstadoId')}`);
+    default:return String(campo(reg,'Nombre')||'—');
+  }
+}
+
+const iconBox="<svg width=\"36\" height=\"36\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 2 9 5-9 5-9-5 9-5zm-9 5v10l9 5 9-5V7M12 12v10\"/></svg>";
+
+const CFG={"slug": "garantias", "menu": "Garantías", "single": "garantía", "title": "Garantías", "newtitle": "Garantía", "tag": "SERVICIO POSVENTA", "desc": "Consulta las solicitudes por defectos de fabricación.", "info": "Solicitudes de garantía registradas.", "search": "Buscar solicitud, producto, fecha o estado...", "id": "GarantiaId", "lookups": {"detalles-venta": "DetalleVentaId", "empleados": "EmpleadoId", "estados": "EstadoId", "productos": "ProductoId"}, "columns": [["GarantiaId", "ID", "id"], ["DetalleVentaId", "Detalle de venta", "lookup:detalles-venta"], ["FechaSolicitud", "Solicitud", "date"], ["EmpleadoId", "Empleado", "lookup:empleados"], ["CantidadReclamada", "Cantidad", "number"], ["DescripcionFalla", "Falla reportada", "truncate"], ["EstadoId", "Estado", "status"]], "fields": [["DetalleVentaId", "Detalle de venta", "select:detalles-venta", true], ["EmpleadoId", "Empleado responsable", "select:empleados", true], ["FechaSolicitud", "Fecha de solicitud", "datetime", true], ["CantidadReclamada", "Cantidad reclamada", "int", true], ["DescripcionFalla", "Descripción de la falla", "textarea", true, 1000], ["ResultadoEvaluacion", "Resultado de evaluación", "textarea", false, 500], ["FechaResolucion", "Fecha de resolución", "datetime", false], ["Observaciones", "Observaciones", "textarea", false, 1000], ["EstadoId", "Estado", "select:estados", true]]};
+const filas=document.getElementById('filas'),buscar=document.getElementById('buscar'),aviso=document.getElementById('aviso'),conteo=document.getElementById('conteo');
+let registros=[],cargado=false,espera;
+const colecciones={};
+for(const k of Object.keys(CFG.lookups))colecciones[k]=[];
+function relacionado(tipo,id){let coleccion=colecciones[tipo]||[];return coleccion.find(x=>idDe(x,IDS[tipo])===Number(id))||null;}
+function mostrarCampo(reg,col){const [campoId,etiqueta,tipo]=col,bruto=campo(reg,campoId);
+  if(tipo==='id')return `<span class="codigo">#${esc(bruto)}</span>`;
+  if(tipo==='code')return `<span class="codigo">${esc(bruto||'—')}</span>`;
+  if(tipo==='date')return esc(fecha(bruto));
+  if(tipo==='money')return `<span class="principal">${esc(dinero(bruto))}</span>`;
+  if(tipo==='number')return esc(bruto||bruto===0?bruto:'—');
+  if(tipo==='days')return esc((bruto||bruto===0)? `${bruto} días`:'—');
+  if(tipo==='truncate')return `<span title="${esc(bruto)}">${esc(String(bruto||'—').slice(0,100))}</span>`;
+  if(tipo==='status'){const texto=nombreRelacionado('estados',relacionado('estados',bruto))||'—';const ok=texto.toLowerCase()==='activo';return `<span class="chip ${ok?'ok':'sin'}">${esc(texto)}</span>`;}
+  if(tipo.startsWith('lookup:')){let entidad=tipo.slice(7);let obj=relacionado(entidad,bruto);
+     return `<span class="${entidad==='productos'?'principal':''}">${esc(obj?nombreRelacionado(entidad,obj):bruto?`#${bruto}`:'—')}</span>`;}
+  return esc(bruto||'—');
+}
+function vacio(t){filas.innerHTML=`<tr><td class="vacio" colspan="${CFG.columns.length}">${iconBox}<strong>${esc(t)}</strong></td></tr>`;}
+function pintar(){if(!cargado)return;const q=buscar.value.trim().toLocaleLowerCase('es');const visibles=registros.filter(reg=>{
+    const s=CFG.columns.map(c=>{const raw=campo(reg,c[0]);if(c[2].startsWith('lookup:')){const t=c[2].slice(7);return `${raw} ${nombreRelacionado(t,relacionado(t,raw))}`;}return String(raw);}).join(' ');
+    return s.toLocaleLowerCase('es').includes(q);
+  });conteo.textContent=String(visibles.length);
+  if(!visibles.length){vacio(q?'No se encontraron resultados.':`No hay ${CFG.title.toLowerCase()} registrados.`);return;}
+  filas.innerHTML=visibles.map(r=>`<tr>${CFG.columns.map(col=>`<td>${mostrarCampo(r,col)}</td>`).join('')}</tr>`).join('');
+}
+function recibir(evento){const m=leer(evento);if(!m||!m.type)return;
+  if(m.type===`${CFG.slug}:list`){registros=Array.isArray(m.data)?m.data:[];cargado=true;clearTimeout(espera);aviso.textContent='';pintar();}
+  else if(m.type.endsWith(':list')){const tipo=m.type.slice(0,-5);if(tipo in colecciones){colecciones[tipo]=Array.isArray(m.data)?m.data:[];pintar();}}
+  else if(m.type==='estados' && 'estados' in colecciones){colecciones.estados=Array.isArray(m.data)?m.data:[];pintar();}
+  else if(m.type==='error'){clearTimeout(espera);aviso.textContent=String(m.message||'No fue posible cargar los datos.');if(!cargado)vacio('No se pudo cargar el listado.');}
+}
+window.addEventListener('message',recibir);
+if(window.chrome?.webview?.addEventListener&&window.parent===window)window.chrome.webview.addEventListener('message',recibir);
+function cargar(){cargado=false;aviso.textContent='';conteo.textContent='0';filas.innerHTML=`<tr><td class="vacio" colspan="${CFG.columns.length}"><strong>Cargando ${CFG.title.toLowerCase()}...</strong></td></tr>`;
+  const ok=emitir({type:`${CFG.slug}:selectAll`});
+  for(const dep of Object.keys(CFG.lookups)){emitir({type:dep==='estados'?'obtenerEstados':`${dep}:selectAll`});}
+  clearTimeout(espera);espera=setTimeout(()=>{if(!cargado){vacio('No se recibió respuesta del sistema.');aviso.textContent='Comprueba la conexión con MainForm.cs.';}},12000);
+  if(!ok){clearTimeout(espera);vacio('Abre el listado desde AutoParts.');aviso.textContent='Este listado necesita WebView2 para consultar SQL Server.';}
+}
+document.getElementById('btnNuevo').addEventListener('click',()=>emitir({type:`${CFG.slug}:abrirNuevo`}));
+document.getElementById('btnActualizar').addEventListener('click',cargar);
+buscar.addEventListener('input',pintar);
+cargar();
+
+</script></body></html>

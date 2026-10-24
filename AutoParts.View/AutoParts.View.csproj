@@ -23,15 +23,43 @@
 	  <None Remove="Web\modulos\categorias.html" />
 	  <None Remove="Web\modulos\clientes-nuevo.html" />
 	  <None Remove="Web\modulos\clientes.html" />
+	  <None Remove="Web\modulos\compatibilidad-nuevo.html" />
+	  <None Remove="Web\modulos\compatibilidad.html" />
+	  <None Remove="Web\modulos\compras-nuevo.html" />
+	  <None Remove="Web\modulos\compras.html" />
+	  <None Remove="Web\modulos\detalles-compra-nuevo.html" />
+	  <None Remove="Web\modulos\detalles-compra.html" />
+	  <None Remove="Web\modulos\detalles-venta-nuevo.html" />
+	  <None Remove="Web\modulos\detalles-venta.html" />
+	  <None Remove="Web\modulos\empleados-nuevo.html" />
+	  <None Remove="Web\modulos\empleados.html" />
 	  <None Remove="Web\modulos\estados.html" />
+	  <None Remove="Web\modulos\garantias-nuevo.html" />
+	  <None Remove="Web\modulos\garantias.html" />
+	  <None Remove="Web\modulos\inventario-nuevo.html" />
+	  <None Remove="Web\modulos\inventario.html" />
 	  <None Remove="Web\modulos\marcas-nuevo.html" />
 	  <None Remove="Web\modulos\marcas.html" />
+	  <None Remove="Web\modulos\modelos-nuevo.html" />
+	  <None Remove="Web\modulos\modelos.html" />
+	  <None Remove="Web\modulos\productos-nuevo.html" />
+	  <None Remove="Web\modulos\productos.html" />
 	  <None Remove="Web\modulos\proveedores-nuevo.html" />
 	  <None Remove="Web\modulos\proveedores.html" />
 	  <None Remove="Web\modulos\puestos-nuevo.html" />
 	  <None Remove="Web\modulos\puestos.html" />
+	  <None Remove="Web\modulos\reemplazos-garantia-nuevo.html" />
+	  <None Remove="Web\modulos\reemplazos-garantia.html" />
 	  <None Remove="Web\modulos\roles-nuevo.html" />
 	  <None Remove="Web\modulos\roles.html" />
+	  <None Remove="Web\modulos\subcategorias-nuevo.html" />
+	  <None Remove="Web\modulos\subcategorias.html" />
+	  <None Remove="Web\modulos\usuarios-nuevo.html" />
+	  <None Remove="Web\modulos\usuarios.html" />
+	  <None Remove="Web\modulos\vehiculos-nuevo.html" />
+	  <None Remove="Web\modulos\vehiculos.html" />
+	  <None Remove="Web\modulos\ventas-nuevo.html" />
+	  <None Remove="Web\modulos\ventas.html" />
 	  <None Remove="Web\styles.css" />
 	</ItemGroup>
 
@@ -45,10 +73,64 @@
 	  <Content Include="Web\modulos\clientes.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
+	  <Content Include="Web\modulos\compatibilidad-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\compatibilidad.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\compras-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\compras.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\detalles-compra-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\detalles-compra.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\detalles-venta-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\detalles-venta.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\empleados-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\empleados.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\garantias-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\garantias.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\inventario-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\inventario.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Web\modulos\marcas-nuevo.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\modulos\marcas.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\modelos-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\modelos.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\productos-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\productos.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\modulos\proveedores-nuevo.html">
@@ -102,10 +184,40 @@
 	  <Content Include="Web\modulos\puestos.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
+	  <Content Include="Web\modulos\reemplazos-garantia-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\reemplazos-garantia.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Web\modulos\roles-nuevo.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\modulos\roles.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\subcategorias-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\subcategorias.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\usuarios-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\usuarios.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\vehiculos-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\vehiculos.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\ventas-nuevo.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\modulos\ventas.html">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\styles.css">

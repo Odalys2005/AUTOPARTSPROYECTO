@@ -1,30 +1,31 @@
-﻿using AutoParts.DataAccess;
+﻿
+using AutoParts.DataAccess;
 using AutoParts.Entity.Productos;
 using System;
 using System.Collections.Generic;
 
 namespace AutoParts.BusinessLogic
 {
-    public class SubCategoriaBL
+    public class SubcategoriaBL
     {
-        private readonly SubCategoriaRepository _repository;
+        private readonly SubcategoriaRepository _repository;
 
-        public SubCategoriaBL(SubCategoriaRepository repository)
+        public SubcategoriaBL(SubcategoriaRepository repository)
         {
             _repository = repository;
         }
 
         public List<Subcategoria> SelectAll()
         {
-            List<Subcategoria> result = null;
+            List<Subcategoria> result = new List<Subcategoria>();
 
             try
             {
                 result = _repository.SelectAll();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message);
+                throw;
             }
 
             return result;
@@ -32,15 +33,15 @@ namespace AutoParts.BusinessLogic
 
         public int Insert(Subcategoria entity)
         {
-            int result;
+            int result = 0;
 
             try
             {
                 result = _repository.Insert(entity);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message);
+                throw;
             }
 
             return result;

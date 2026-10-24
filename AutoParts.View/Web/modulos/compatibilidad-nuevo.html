@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoParts | Nueva compatibilidad</title>
+<style>
+        :root{color-scheme:dark}
+        *{box-sizing:border-box}
+        body{margin:0;min-height:100vh;color:white;font-family:'Segoe UI',Arial,sans-serif;background:radial-gradient(ellipse at 100% 0%,rgba(105,16,28,.30),transparent 45%),#090a0d}
+        button,input,select{font:inherit}
+        .contenedor{max-width:1000px;margin:0 auto;padding:30px}
+        .encabezado{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:25px}
+        .etiqueta{color:#ffbd35;font-size:11px;letter-spacing:2.9px;font-weight:750;margin-bottom:8px}
+        h1{font-size:29px;margin:0;letter-spacing:-.5px}
+        h1 span{color:#ffbd35}
+        .descripcion{margin:9px 0 0;color:#ababb3;font-size:13px;line-height:1.6}
+        .icono{width:48px;height:48px;display:grid;place-items:center;border-radius:12px;background:#501118;border:1px solid #ed3c47;color:#ffc42f;box-shadow:0 0 20px #c7243544;flex-shrink:0}
+        .panel{background:linear-gradient(145deg,#171418,#0e0e12);border:1px solid #5a3139;border-radius:15px;padding:27px;box-shadow:0 10px 35px #0004}
+        .seccion{color:#ffbd35;font-size:11px;font-weight:750;letter-spacing:2px;margin:4px 0 22px}
+        .seccion:not(:first-child){margin-top:12px;padding-top:20px;border-top:1px solid #3e2c33}
+        .campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
+        .campo{margin-bottom:21px;min-width:0}
+        .campo.ancho{grid-column:1/-1}
+        label{display:block;margin-bottom:9px;font-size:13px;font-weight:650;color:#f1eff2}
+        .requerido{color:#ff4753}
+        input,select{outline:none;width:100%;padding:13px 14px;border:1px solid #554c55;border-radius:9px;background:#111216;color:#fff}
+        input:focus,select:focus{border-color:#ff3d46;box-shadow:0 0 10px #e41b303b}
+        input::placeholder{color:#86868f}
+        select:disabled{opacity:.6;cursor:not-allowed}
+        .ayuda{color:#9898a2;font-size:11px;line-height:1.5;margin-top:7px}
+        .preview{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:5px 0 20px}
+        .preview-card{background:#111317;border:1px solid #44343d;border-radius:10px;padding:16px;min-width:0}
+        .preview-card small{display:block;color:#ffbd35;font-size:10px;font-weight:750;letter-spacing:1.6px;margin-bottom:8px}
+        .preview-card strong{display:block;color:#f7f7fa;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+        .preview-card span{display:block;color:#a4a4af;font-size:11px;margin-top:6px;line-height:1.5;overflow-wrap:anywhere}
+        .mensaje{color:#ffbd65;min-height:22px;font-size:12px;line-height:1.5;margin:12px 0}
+        .acciones{display:flex;justify-content:flex-end;gap:12px;margin-top:23px}
+        button{cursor:pointer;border:0;border-radius:9px;font-weight:750;padding:13px 22px;transition:filter .2s,transform .2s}
+        .cancelar{color:#e6e6eb;background:#25232a;border:1px solid #58535c}
+        .cancelar:hover{background:#37313a}
+        .guardar{color:#1d0d0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);box-shadow:0 0 16px #e5233533}
+        .guardar:hover:not(:disabled){filter:brightness(1.13);transform:translateY(-2px)}
+        .guardar:disabled{opacity:.5;cursor:not-allowed}
+        @media(max-width:650px){.contenedor{padding:18px}.panel{padding:18px}.campos,.preview{grid-template-columns:1fr}.campo.ancho{grid-column:auto}.acciones{flex-wrap:wrap}}
+
+</style>
+</head>
+<body>
+<main class="contenedor">
+    <header class="encabezado">
+        <div>
+            <div class="etiqueta">AUTOPARTS · CATÁLOGO AUTOMOTRIZ</div>
+            <h1>Nueva <span>compatibilidad</span></h1>
+        </div>
+        <div class="icono" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="8" height="10" rx="2"/><path d="m10 12 4 0m0-5 3 0 4 5-4 5h-3"/></svg></div>
+    </header>
+
+    <section class="panel">
+        <form id="formCompatibilidad" novalidate>
+            <p class="seccion">01 · SELECCIONAR REPUESTO</p>
+            <div class="campos">
+                <div class="campo">
+                    <label for="buscarProducto">Buscar por nombre o código OEM</label>
+                    <input id="buscarProducto" type="search" placeholder="Ej. Filtro de aceite, OEM 123..." autocomplete="off">
+                 
+                </div>
+                <div class="campo">
+                    <label for="producto">Repuesto <span class="requerido">*</span></label>
+                    <select id="producto" disabled required><option value="">Cargando productos...</option></select>
+                   
+                </div>
+            </div>
+
+            <p class="seccion">02 · SELECCIONAR VEHÍCULO</p>
+            <div class="campos">
+                <div class="campo">
+                    <label for="marca">Marca <span class="requerido">*</span></label>
+                    <select id="marca" required disabled><option value="">Cargando marcas...</option></select>
+                  
+                </div>
+                <div class="campo">
+                    <label for="modelo">Modelo <span class="requerido">*</span></label>
+                    <select id="modelo" required disabled><option value="">Primero selecciona una marca</option></select>
+                  
+                </div>
+                <div class="campo ancho">
+                    <label for="vehiculo">Vehículo registrado <span class="requerido">*</span></label>
+                    <select id="vehiculo" required disabled><option value="">Primero selecciona un modelo</option></select>
+                </div>
+            </div>
+            <div class="preview" aria-live="polite">
+                <div class="preview-card" id="previewProducto"><small>REPUESTO SELECCIONADO</small><strong>Sin repuesto seleccionado</strong><span>Selecciona un producto registrado para continuar.</span></div>
+                <div class="preview-card" id="previewVehiculo"><small>VEHÍCULO SELECCIONADO</small><strong>Sin vehículo seleccionado</strong><span>Selecciona una marca, modelo y vehículo.</span></div>
+            </div>
+            <div class="mensaje" id="mensaje" role="alert" aria-live="polite"></div>
+            <div class="acciones">
+                <button class="cancelar" type="button" id="cancelar">Cancelar</button>
+                <button class="guardar" type="submit" id="guardar" disabled>Guardar compatibilidad</button>
+            </div>
+        </form>
+    </section>
+</main>
+<script>
+"use strict";
+const productoSelect=document.getElementById('producto');
+const filtroProducto=document.getElementById('buscarProducto');
+const marcaSelect=document.getElementById('marca');
+const modeloSelect=document.getElementById('modelo');
+const vehiculoSelect=document.getElementById('vehiculo');
+const mensaje=document.getElementById('mensaje');
+const botonGuardar=document.getElementById('guardar');
+const previewProducto=document.getElementById('previewProducto');
+const previewVehiculo=document.getElementById('previewVehiculo');
+let productos=[],marcas=[],modelos=[],vehiculos=[],relaciones=[];
+const cargado={productos:false,marcas:false,modelos:false,vehiculos:false,compatibilidad:false};
+let guardando=false,temporizadorCarga,temporizadorGuardar;
+
+function valor(obj,...claves) {
+    for(const clave of claves) if(obj && obj[clave]!==undefined && obj[clave]!==null) return obj[clave];
+    return '';
+}
+function numeroId(obj, nombre) {return Number(valor(obj,nombre,nombre[0].toLowerCase()+nombre.slice(1)))||0;}
+function enviar(mensajeNuevo) {
+    if(window.parent!==window){window.parent.postMessage(mensajeNuevo,'*');return true;}
+    if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(mensajeNuevo);return true;}
+    mostrarError('Este formulario se debe abrir desde AutoParts (WebView2).');return false;
+}
+function mostrarError(texto){mensaje.textContent=texto;}
+function opciones(select, elementos, mensajeVacio, idFn, nombreFn) {
+    const anterior=select.value;
+    select.replaceChildren();
+    const inicial=document.createElement('option');
+    inicial.value='';inicial.textContent=mensajeVacio;select.appendChild(inicial);
+    for(const e of elementos){
+        const opt=document.createElement('option');
+        opt.value=String(idFn(e));opt.textContent=String(nombreFn(e));select.appendChild(opt);
+    }
+    select.disabled=elementos.length===0;
+    if([...select.options].some(o=>o.value===anterior)) select.value=anterior;
+    else select.value='';
+}
+function porId(lista,numero,nombre){return lista.find(x=>numeroId(x,nombre)===Number(numero));}
+function nombreModelo(m){return String(valor(m,'Nombre','nombre')||`Modelo #${numeroId(m,'ModeloId')}`);}
+function nombreMarca(m){return String(valor(m,'Nombre','nombre')||`Marca #${numeroId(m,'MarcaId')}`);}
+function tituloProducto(p){return `${valor(p,'Nombre','nombre')||'Producto'} · ${valor(p,'CodigoOEM','codigoOEM','codigoOem')||'Sin OEM'}`;}
+function descripcionVehiculo(v){
+    const anio=valor(v,'Anio','anio')||'Sin año';
+    const motor=valor(v,'TipoMotor','tipoMotor')||'Motor no especificado';
+    const cil=valor(v,'Cilindrada','cilindrada');
+    return `${anio} · ${motor}${cil!==''?` · ${cil} L`:''} · Vehículo #${numeroId(v,'VehiculoId')}`;
+}
+function refrescarProductos(){
+    const busqueda=filtroProducto.value.trim().toLocaleLowerCase('es');
+    const lista=productos.filter(p=>[valor(p,'Nombre','nombre'),valor(p,'CodigoOEM','codigoOEM','codigoOem'),numeroId(p,'ProductoId')]
+        .some(x=>String(x).toLocaleLowerCase('es').includes(busqueda)));
+    opciones(productoSelect,lista,productos.length?(lista.length?'Selecciona un repuesto':'No hay resultados para la búsqueda'):'No hay productos registrados',p=>numeroId(p,'ProductoId'),tituloProducto);
+    actualizar();
+}
+function refrescarModelos(){
+    const id=Number(marcaSelect.value);
+    const list=modelos.filter(x=>numeroId(x,'MarcaId')===id);
+    opciones(modeloSelect,list,id?'Selecciona un modelo':'Primero selecciona una marca',x=>numeroId(x,'ModeloId'),nombreModelo);
+    refrescarVehiculos();
+}
+function refrescarVehiculos(){
+    const id=Number(modeloSelect.value);
+    const list=vehiculos.filter(x=>numeroId(x,'ModeloId')===id);
+    opciones(vehiculoSelect,list,id?(list.length?'Selecciona un vehículo':'Sin vehículos para este modelo'):'Primero selecciona un modelo',x=>numeroId(x,'VehiculoId'),descripcionVehiculo);
+    actualizar();
+}
+function relacionDuplicada(){
+    const pid=Number(productoSelect.value),vid=Number(vehiculoSelect.value);
+    return Boolean(pid&&vid&&relaciones.some(r=>numeroId(r,'ProductoId')===pid&&numeroId(r,'VehiculoId')===vid));
+}
+function actualizar(){
+    const listasListas=Object.values(cargado).every(Boolean);
+    const pid=Number(productoSelect.value),vid=Number(vehiculoSelect.value);
+    const producto=porId(productos,pid,'ProductoId'),vehiculo=porId(vehiculos,vid,'VehiculoId');
+    const modelo=porId(modelos,numeroId(vehiculo,'ModeloId'),'ModeloId');
+    const marca=porId(marcas,numeroId(modelo,'MarcaId'),'MarcaId');
+    previewProducto.querySelector('strong').textContent=producto?String(valor(producto,'Nombre','nombre')):'Sin repuesto seleccionado';
+    previewProducto.querySelector('span').textContent=producto?String(valor(producto,'CodigoOEM','codigoOEM','codigoOem')||'Código OEM no disponible'):'Selecciona un producto registrado para continuar.';
+    previewVehiculo.querySelector('strong').textContent=vehiculo?`${nombreMarca(marca)} ${nombreModelo(modelo)} · ${valor(vehiculo,'Anio','anio')}`:'Sin vehículo seleccionado';
+    previewVehiculo.querySelector('span').textContent=vehiculo?descripcionVehiculo(vehiculo):'Selecciona una marca, modelo y vehículo.';
+    const duplicado=relacionDuplicada();
+    if(duplicado) mostrarError('Esta compatibilidad ya está registrada. Selecciona otra combinación de producto y vehículo.');
+    else if(!guardando && mensaje.textContent.startsWith('Esta compatibilidad')) mensaje.textContent='';
+    botonGuardar.disabled=guardando||!listasListas||!producto||!vehiculo||duplicado;
+}
+function recibir(evento){
+    let r=evento.data;
+    if(typeof r==='string'){try{r=JSON.parse(r);}catch{return;}}
+    if(!r||typeof r!=='object')return;
+    const tipos={'productos:list':'productos','marcas:list':'marcas','modelos:list':'modelos','vehiculos:list':'vehiculos','compatibilidad:list':'compatibilidad'};
+    if(tipos[r.type]){
+        const nombre=tipos[r.type];
+        const datos=Array.isArray(r.data)?r.data:[];
+        if(nombre==='productos') productos=datos;
+        if(nombre==='marcas') marcas=datos;
+        if(nombre==='modelos') modelos=datos;
+        if(nombre==='vehiculos') vehiculos=datos;
+        if(nombre==='compatibilidad') relaciones=datos;
+        cargado[nombre]=true;
+        if(nombre==='productos') refrescarProductos();
+        if(nombre==='marcas') opciones(marcaSelect,marcas,'Selecciona una marca',x=>numeroId(x,'MarcaId'),nombreMarca);
+        if(nombre==='modelos') refrescarModelos();
+        if(nombre==='vehiculos') refrescarVehiculos();
+        if(Object.values(cargado).every(Boolean)){
+            clearTimeout(temporizadorCarga);
+            if(!productos.length) mostrarError('Primero registra productos en el catálogo.');
+            else if(!vehiculos.length) mostrarError('Primero registra vehículos en el catálogo.');
+            else mensaje.textContent='';
+        }
+        actualizar();
+    }else if(r.type==='compatibilidad:guardado'){
+        guardando=false;clearTimeout(temporizadorGuardar);
+        enviar({type:'cancelar'});
+    }else if(r.type==='error'){
+        guardando=false;clearTimeout(temporizadorGuardar);clearTimeout(temporizadorCarga);
+        mostrarError(r.message||'No se pudieron cargar o guardar los datos.');
+        actualizar();
+    }
+}
+window.addEventListener('message',recibir);
+if(window.chrome?.webview?.addEventListener)window.chrome.webview.addEventListener('message',recibir);
+document.getElementById('cancelar').addEventListener('click',()=>enviar({type:'cancelar'}));
+filtroProducto.addEventListener('input',refrescarProductos);
+productoSelect.addEventListener('change',actualizar);
+marcaSelect.addEventListener('change',()=>{refrescarModelos();actualizar();});
+modeloSelect.addEventListener('change',()=>{refrescarVehiculos();actualizar();});
+vehiculoSelect.addEventListener('change',actualizar);
+document.getElementById('formCompatibilidad').addEventListener('submit',e=>{
+    e.preventDefault();actualizar();
+    if(botonGuardar.disabled){if(!mensaje.textContent)mostrarError('Completa la selección de producto y vehículo.');return;}
+    const pid=Number(productoSelect.value),vid=Number(vehiculoSelect.value);
+    if(!Number.isInteger(pid)||pid<=0||!Number.isInteger(vid)||vid<=0){mostrarError('Selecciona un producto y un vehículo válidos.');return;}
+    if(relacionDuplicada()){mostrarError('Esta compatibilidad ya existe.');return;}
+    guardando=true;botonGuardar.textContent='Guardando...';actualizar();
+    if(!enviar({type:'guardar',data:{ProductoId:pid,VehiculoId:vid}})){
+        guardando=false;botonGuardar.textContent='Guardar compatibilidad';actualizar();return;
+    }
+    clearTimeout(temporizadorGuardar);
+    temporizadorGuardar=setTimeout(()=>{
+        if(guardando){guardando=false;botonGuardar.textContent='Guardar compatibilidad';
+            mostrarError('No hubo respuesta al guardar. Consulta el listado antes de volver a intentarlo, para evitar duplicados.');actualizar();}
+    },12000);
+});
+function solicitar(){
+    enviar({type:'productos:selectAll'});
+    enviar({type:'marcas:selectAll'});
+    enviar({type:'modelos:selectAll'});
+    enviar({type:'vehiculos:selectAll'});
+    enviar({type:'compatibilidad:selectAll'});
+    temporizadorCarga=setTimeout(()=>{
+        if(!Object.values(cargado).every(Boolean)) mostrarError('No se cargaron todos los catálogos. Revisa MainForm.cs, la conexión y los mensajes de WebView2.');
+    },10000);
+}
+actualizar();
+solicitar();
+</script>
+</body>
+</html>

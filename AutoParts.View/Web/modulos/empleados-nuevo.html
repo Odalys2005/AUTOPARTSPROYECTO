@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoParts | Nuevo empleado</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 100% 0%,rgba(136,16,25,.20),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
+button,input,select{font:inherit}
+.contenedor{max-width:1080px;margin:0 auto;padding:34px}
+.encabezado{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:29px}
+.etiqueta{display:flex;align-items:center;gap:9px;color:#ffbd37;font-size:11px;font-weight:750;letter-spacing:2.7px;margin-bottom:12px}
+.etiqueta:before{content:'';width:22px;height:3px;background:#ff3543;border-radius:10px;box-shadow:0 0 12px #ff243a}
+h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}h1 span{color:#ffbd2e}
+.descripcion{color:#adaeb8;margin:10px 0 0;font-size:13px;line-height:1.6}
+.icono{width:50px;height:50px;display:grid;place-items:center;border-radius:12px;border:1px solid #f43848;background:#3b1119;color:#ffbd35;box-shadow:0 0 18px #e9243444;flex-shrink:0}
+.panel{background:linear-gradient(140deg,#171519,#0d0e11 70%,#140f12);border:1px solid #56323c;border-radius:15px;padding:30px;box-shadow:0 12px 35px #0005}
+.seccion{font-size:11px;letter-spacing:2px;font-weight:750;color:#ffbd35;margin:0 0 25px}
+.campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 24px}
+.campo{min-width:0}
+.campo label{display:block;font-size:13px;font-weight:650;margin-bottom:9px;color:#f4f4f6}
+.requerido{color:#ff4653}
+.campo input,.campo select{width:100%;height:47px;border-radius:9px;border:1px solid #554a52;background:#111216;padding:0 14px;color:#fff;outline:0;transition:border-color .2s,box-shadow .2s}
+.campo input:focus,.campo select:focus{border-color:#ff3543;box-shadow:0 0 14px #ff354333}
+.campo input::placeholder{color:#777982}.campo select:disabled{opacity:.58}
+.mensaje{min-height:22px;margin-top:25px;color:#ffc075;font-size:12px;line-height:1.5}.mensaje:empty{min-height:0}
+.acciones{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;border-top:1px solid #382d34;padding-top:23px;margin-top:24px}
+.acciones button{border-radius:9px;border:1px solid transparent;padding:13px 25px;font-weight:750;font-size:13px;cursor:pointer;transition:filter .2s,transform .2s}
+.cancelar{color:#e6e6eb;background:#25232a;border-color:#58535c}.cancelar:hover{background:#37313a}
+.guardar{color:#190d0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);box-shadow:0 0 16px #e5233533}
+.guardar:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-2px)}.guardar:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:720px){.contenedor{padding:20px}.panel{padding:20px}.campos{grid-template-columns:1fr;gap:18px}}
+</style>
+</head>
+<body>
+<main class="contenedor">
+    <header class="encabezado">
+        <div>
+            <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
+            <h1>Nuevo <span>Empleado</span></h1>
+            <p class="descripcion">Registra la información del personal de AutoParts.</p>
+        </div>
+        <div class="icono" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3z"/></svg></div>
+    </header>
+    <section class="panel">
+        <form id="formEmpleado" novalidate>
+            <p class="seccion">INFORMACIÓN DEL EMPLEADO</p>
+            <div class="campos">
+                <div class="campo">
+                    <label for="nombre">Nombre <span class="requerido">*</span></label>
+                    <input id="nombre" type="text" maxlength="100" placeholder="Nombre del empleado" autocomplete="given-name" required>
+                </div>
+                <div class="campo">
+                    <label for="apellido">Apellido <span class="requerido">*</span></label>
+                    <input id="apellido" type="text" maxlength="100" placeholder="Apellido del empleado" autocomplete="family-name" required>
+                </div>
+                <div class="campo">
+                    <label for="dui">DUI <span class="requerido">*</span></label>
+                    <input id="dui" type="text" maxlength="10" placeholder="00000000-0" inputmode="numeric" autocomplete="off" required>
+                </div>
+                <div class="campo">
+                    <label for="telefono">Teléfono <span class="requerido">*</span></label>
+                    <input id="telefono" type="tel" maxlength="25" placeholder="0000-0000" autocomplete="tel" required>
+                </div>
+                <div class="campo">
+                    <label for="correo">Correo electrónico <span class="requerido">*</span></label>
+                    <input id="correo" type="email" maxlength="150" placeholder="empleado@correo.com" autocomplete="email" required>
+                </div>
+                <div class="campo">
+                    <label for="puesto">Puesto <span class="requerido">*</span></label>
+                    <select id="puesto" disabled required><option value="">Cargando puestos...</option></select>
+                </div>
+                <div class="campo">
+                    <label for="estado">Estado <span class="requerido">*</span></label>
+                    <select id="estado" disabled required><option value="">Cargando estados...</option></select>
+                </div>
+            </div>
+            <div id="mensaje" class="mensaje" role="status" aria-live="polite"></div>
+            <div class="acciones">
+                <button type="button" class="cancelar" id="cancelar">Cancelar</button>
+                <button type="submit" class="guardar" id="guardar" disabled>Guardar empleado</button>
+            </div>
+        </form>
+    </section>
+</main>
+<script>
+"use strict";
+const formulario = document.getElementById('formEmpleado');
+const puesto = document.getElementById('puesto');
+const estado = document.getElementById('estado');
+const mensaje = document.getElementById('mensaje');
+const guardar = document.getElementById('guardar');
+let puestosCargados = false, estadosCargados = false, guardando = false;
+let temporizadorCarga, temporizadorGuardado;
+
+function obtener(obj, ...claves) {
+    for (const clave of claves) if (obj && obj[clave] !== undefined && obj[clave] !== null) return obj[clave];
+    return '';
+}
+function enviar(peticion) {
+    if (window.parent !== window) { window.parent.postMessage(peticion, '*'); return true; }
+    if (window.chrome?.webview?.postMessage) { window.chrome.webview.postMessage(peticion); return true; }
+    mostrar('Abre este formulario desde AutoParts.');
+    return false;
+}
+function mostrar(texto) { mensaje.textContent = texto; }
+function llenarLista(select, datos, campoId, textoInicial) {
+    const anterior = select.value;
+    select.replaceChildren();
+    const opcion = document.createElement('option');
+    opcion.value = '';
+    opcion.textContent = textoInicial;
+    select.appendChild(opcion);
+    datos.forEach(item => {
+        const id = Number(obtener(item, campoId, campoId[0].toLowerCase() + campoId.slice(1)));
+        const nombre = String(obtener(item, 'Nombre', 'nombre'));
+        if (!id || !nombre) return;
+        const elemento = document.createElement('option');
+        elemento.value = String(id);
+        elemento.textContent = nombre;
+        select.appendChild(elemento);
+    });
+    select.disabled = select.options.length <= 1;
+    if ([...select.options].some(o => o.value === anterior)) select.value = anterior;
+    actualizarGuardar();
+}
+function actualizarGuardar() {
+    guardar.disabled = guardando || !puestosCargados || !estadosCargados || puesto.disabled || estado.disabled;
+}
+function recibir(evento) {
+    let respuesta = evento.data;
+    if (typeof respuesta === 'string') { try { respuesta = JSON.parse(respuesta); } catch { return; } }
+    if (!respuesta || typeof respuesta !== 'object') return;
+    if (respuesta.type === 'puestos:list') {
+        puestosCargados = true;
+        llenarLista(puesto, Array.isArray(respuesta.data) ? respuesta.data : [], 'PuestoId', 'Selecciona un puesto');
+    } else if (respuesta.type === 'estados') {
+        estadosCargados = true;
+        llenarLista(estado, Array.isArray(respuesta.data) ? respuesta.data : [], 'EstadoId', 'Selecciona un estado');
+    } else if (respuesta.type === 'error') {
+        clearTimeout(temporizadorGuardado);
+        guardando = false;
+        mostrar(String(respuesta.message || 'Ocurrió un error al procesar la solicitud.'));
+        actualizarGuardar();
+        return;
+    }
+    if (puestosCargados && estadosCargados) {
+        clearTimeout(temporizadorCarga);
+        if (puesto.disabled || estado.disabled) mostrar('Registra al menos un puesto y un estado antes de continuar.');
+        else if (!guardando) mostrar('');
+    }
+}
+window.addEventListener('message', recibir);
+if (window.chrome?.webview?.addEventListener && window.parent === window) {
+    window.chrome.webview.addEventListener('message', recibir);
+}
+
+document.getElementById('cancelar').addEventListener('click', () => enviar({ type: 'cancelar' }));
+formulario.addEventListener('input', () => { if (!guardando && mensaje.textContent.startsWith('Completa')) mostrar(''); });
+formulario.addEventListener('submit', evento => {
+    evento.preventDefault();
+    if (guardando) return;
+    const Nombre = document.getElementById('nombre').value.trim();
+    const Apellido = document.getElementById('apellido').value.trim();
+    const DUI = document.getElementById('dui').value.trim();
+    const Telefono = document.getElementById('telefono').value.trim();
+    const Correo = document.getElementById('correo').value.trim();
+    const PuestoId = Number(puesto.value);
+    const EstadoId = Number(estado.value);
+    if (!Nombre || !Apellido || !DUI || !Telefono || !Correo || !PuestoId || !EstadoId) {
+        mostrar('Completa todos los campos.');
+        return;
+    }
+    if (!/^\d{8}-\d$/.test(DUI)) {
+        mostrar('Ingresa un DUI válido con formato 00000000-0.');
+        document.getElementById('dui').focus();
+        return;
+    }
+    const campoCorreo = document.getElementById('correo');
+    if (!campoCorreo.validity.valid) {
+        mostrar('Ingresa un correo electrónico válido.');
+        campoCorreo.focus();
+        return;
+    }
+    if (!formulario.checkValidity()) {
+        mostrar('Revisa los campos del empleado.');
+        return;
+    }
+    guardar.disabled = true;
+    guardando = true;
+    mostrar('Guardando empleado...');
+    if (!enviar({ type: 'guardar', data: { Nombre, Apellido, DUI, Telefono, Correo, PuestoId, EstadoId } })) {
+        guardando = false;
+        actualizarGuardar();
+        return;
+    }
+    clearTimeout(temporizadorGuardado);
+    temporizadorGuardado = setTimeout(() => {
+        if (guardando) {
+            guardando = false;
+            actualizarGuardar();
+            mostrar('No llegó la respuesta del registro. Revisa la conexión con MainForm.cs antes de volver a guardar.');
+        }
+    }, 12000);
+});
+if (enviar({ type: 'puestos:selectAll' })) {
+    enviar({ type: 'obtenerEstados' });
+    temporizadorCarga = setTimeout(() => {
+        if (!puestosCargados || !estadosCargados) mostrar('No se pudieron cargar los puestos o estados desde AutoParts.');
+    }, 12000);
+}
+</script>
+</body>
+</html>

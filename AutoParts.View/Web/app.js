@@ -245,40 +245,58 @@ const sectionDescription = document.getElementById('sectionDescription');
 const sectionBody = document.getElementById('sectionBody');
 
 
-/* Descripciones de los módulos */
+/* Descripciones y rutas de todas las entidades del sistema. */
 
 const moduleDescriptions = {
-
-    Productos: 'Administración del catálogo de repuestos y sus precios.',
-
-    Inventario: 'Control de existencias y niveles mínimos.',
-
-    Ventas: 'Historial de ventas y facturas.',
-
-    Categorías: 'Administración de categorías de repuestos.',
-
-    Estados: 'Consulta de estados registrados en el sistema.',
-
-    Roles: 'Administración de roles y permisos del sistema.',
-
-    Marcas: 'Marcas registradas en el catálogo.',
-
-    Proveedores: 'Directorio de proveedores de repuestos.',
-
-    Compras: 'Registro de compras a proveedores.',
-
-    Clientes: 'Directorio de clientes.',
-
-    Empleados: 'Gestión de empleados.',
-
-    Garantías: 'Solicitudes y reemplazos por garantía.',
-
-    Usuarios: 'Accesos y permisos del sistema.',
-
-    Configuración: 'Opciones de AutoParts.'
-
+    'Productos': 'Administración del catálogo de repuestos y sus precios.',
+    'Categorías': 'Administración de categorías de repuestos.',
+    'Subcategorías': 'Administración de subcategorías de repuestos.',
+    'Marcas': 'Marcas registradas en el catálogo.',
+    'Modelos': 'Gestión de modelos de vehículos.',
+    'Vehículos': 'Registro y administración de vehículos.',
+    'Compatibilidad': 'Relaciones entre repuestos y vehículos compatibles.',
+    'Inventario': 'Control de existencias y niveles mínimos.',
+    'Proveedores': 'Directorio de proveedores de repuestos.',
+    'Compras': 'Registro de compras a proveedores.',
+    'Detalles de compra': 'Productos y cantidades asociados a cada compra.',
+    'Clientes': 'Directorio de clientes.',
+    'Ventas': 'Historial de ventas y facturas.',
+    'Detalles de venta': 'Productos y cantidades asociados a cada venta.',
+    'Garantías': 'Solicitudes y evaluaciones de garantía.',
+    'Reemplazos de garantía': 'Registro de reemplazos por garantía.',
+    'Empleados': 'Gestión de empleados.',
+    'Puestos': 'Administración de puestos de trabajo.',
+    'Usuarios': 'Accesos y cuentas de usuario del sistema.',
+    'Roles': 'Administración de roles y permisos del sistema.',
+    'Estados': 'Consulta de estados registrados en el sistema.',
+    'Configuración': 'Opciones de AutoParts.'
 };
 
+/* El slug corresponde al archivo Web/modulos/<slug>.html.
+   Al crear un HTML con ese nombre, no hay que modificar app.js. */
+const rutasModulos = {
+    'Productos': 'productos',
+    'Categorías': 'categorias',
+    'Subcategorías': 'subcategorias',
+    'Marcas': 'marcas',
+    'Modelos': 'modelos',
+    'Vehículos': 'vehiculos',
+    'Compatibilidad': 'compatibilidad',
+    'Inventario': 'inventario',
+    'Proveedores': 'proveedores',
+    'Compras': 'compras',
+    'Detalles de compra': 'detalles-compra',
+    'Clientes': 'clientes',
+    'Ventas': 'ventas',
+    'Detalles de venta': 'detalles-venta',
+    'Garantías': 'garantias',
+    'Reemplazos de garantía': 'reemplazos-garantia',
+    'Empleados': 'empleados',
+    'Puestos': 'puestos',
+    'Usuarios': 'usuarios',
+    'Roles': 'roles',
+    'Estados': 'estados',
+};
 
 /* ============================================================
    6. ABRIR FORMULARIOS WINDOWS FORMS
@@ -358,46 +376,21 @@ function showSection(section) {
 
     const key = section || 'Dashboard';
 
-
-    /* CATEGORÍAS SE ABRE EN WINDOWS FORMS */
-
-   
-    if (key === 'Categorías') {
-        abrirCategoriasEnDashboard();
+    // Todos los módulos comparten el mismo iframe y MainForm.
+    // Si todavía no se ha creado el HTML, WebView2 no podrá cargar esa ruta.
+    if (Object.prototype.hasOwnProperty.call(rutasModulos, key)) {
+        abrirModuloEnDashboard(
+            rutasModulos[key],
+            key,
+            moduleDescriptions[key],
+            `modulos/${rutasModulos[key]}.html`
+        );
         return;
     }
 
-
-    
-
-    /* ESTADOS SOLO SE ABRE AL HACER CLIC EN EL MENÚ */
-    if (key === 'Estados') {
-    abrirEstadosEnDashboard();
-    return;
-    }
-
-
-    /* ROLES SOLO SE ABRE AL HACER CLIC EN EL MENÚ */
-  if (key === 'Roles') {
-    abrirRolesEnDashboard();
-    return;
-    }
-
-    if (key === 'Proveedores') {
-    abrirProveedoresEnDashboard();
-    return;
-}
-    if (key === 'Clientes') {
-    abrirClientesEnDashboard();
-    return;
-    }
-    if (key === 'Marcas') {
-    abrirMarcasEnDashboard();
-    return;
-    }
-    if (key === 'Puestos') {
-    abrirPuestosEnDashboard();
-    return;
+    // Inicio y Configuración (sin HTML específico todavía).
+    if (typeof restaurarEncabezado === 'function') {
+        restaurarEncabezado();
     }
 
     /* RESTO DE NAVEGACIÓN DEL DASHBOARD */
@@ -440,9 +433,8 @@ function showSection(section) {
                 <h3>Módulo ${esc(key)}</h3>
 
                 <p>
-                    Este módulo se implementará
-                    próximamente con Windows Forms,
-                    BusinessLogic y SQL Server.
+                    Este apartado se integrará dentro del Dashboard
+                    mediante HTML, WebView2 y BusinessLogic.
                 </p>
 
             </div>

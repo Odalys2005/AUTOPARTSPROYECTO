@@ -1,4 +1,5 @@
-﻿using AutoParts.DataAccess;
+﻿
+using AutoParts.DataAccess;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -16,15 +17,15 @@ namespace AutoParts.BusinessLogic
 
         public List<Empleado> SelectAll()
         {
-            List<Empleado> result = null;
+            List<Empleado> result = new List<Empleado>();
 
             try
             {
                 result = _repository.SelectAll();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message);
+                throw;
             }
 
             return result;
@@ -32,15 +33,15 @@ namespace AutoParts.BusinessLogic
 
         public int Insert(Empleado entity)
         {
-            int result;
+            int result = 0;
 
             try
             {
                 result = _repository.Insert(entity);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message);
+                throw;
             }
 
             return result;

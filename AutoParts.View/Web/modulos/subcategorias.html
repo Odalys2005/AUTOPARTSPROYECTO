@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoParts | Subcategorías</title>
+    <style>
+					:root { color-scheme: dark; }
+					* { box-sizing: border-box; }
+					body {
+					margin: 0;
+					min-height: 100vh;
+					color: #f5f5f7;
+					font-family: 'Segoe UI', Arial, sans-serif;
+					background: radial-gradient(ellipse at 95% 0%, rgba(136, 16, 25, 0.18), transparent 38%), #090a0d;
+					}
+					button, input { font: inherit; }
+					button { cursor: pointer; }
+					.contenedor {
+					max-width: 1500px;
+					margin: auto;
+					padding: 35px;
+					}
+					.encabezado {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					flex-wrap: wrap;
+					gap: 20px;
+					margin-bottom: 30px;
+					}
+					.etiqueta {
+					display: flex;
+					align-items: center;
+					gap: 9px;
+					color: #ffbd37;
+					font-size: 11px;
+					font-weight: 700;
+					letter-spacing: 3px;
+					margin-bottom: 12px;
+					}
+					.etiqueta::before {
+					content: "";
+					width: 22px;
+					height: 3px;
+					border-radius: 10px;
+					background: #ff3844;
+					box-shadow: 0 0 12px #ff243a;
+					}
+					h1 {
+					margin: 0;
+					font-size: clamp(28px, 3vw, 39px);
+					font-weight: 800;
+					letter-spacing: -1px;
+					}
+					h1 span { color: #ffbd2e; }
+					.subtitulo {
+					color: #a9aab3;
+					font-size: 13px;
+					margin-top: 9px;
+					line-height: 1.6;
+					}
+					.btn-nueva {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					gap: 10px;
+					padding: 14px 20px;
+					border: 1px solid #ff6053;
+					border-radius: 10px;
+					background: linear-gradient(110deg, #b10b1f, #e52a37, #ffac28);
+					color: #fff;
+					font-size: 13px;
+					font-weight: 750;
+					box-shadow: 0 0 18px rgba(233, 31, 48, 0.27), inset 0 1px 1px #ffffff30;
+					transition: transform .2s, filter .2s;
+					}
+					.btn-nueva:hover {
+					transform: translateY(-2px);
+					filter: brightness(1.12);
+					}
+					.panel {
+					border: 1px solid #4d3038;
+					border-radius: 15px;
+					background: linear-gradient(140deg, #171519, #0d0e11 65%, #140f12);
+					box-shadow: 0 12px 35px #0005, inset 0 0 18px #0004;
+					overflow: hidden;
+					}
+					.panel-superior {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					flex-wrap: wrap;
+					gap: 16px;
+					padding: 23px 25px;
+					border-bottom: 1px solid #34292e;
+					}
+					.panel-titulo h2 {
+					font-size: 18px;
+					margin: 0 0 7px;
+					}
+					.panel-titulo p {
+					font-size: 12px;
+					color: #9798a1;
+					margin: 0;
+					}
+					.herramientas {
+					display: flex;
+					align-items: center;
+					flex-wrap: wrap;
+					gap: 11px;
+					}
+					.buscador {
+					display: flex;
+					align-items: center;
+					background: #111216;
+					border: 1px solid #51454c;
+					border-radius: 9px;
+					width: min(340px, 100%);
+					height: 44px;
+					padding: 0 13px;
+					}
+					.buscador:focus-within {
+					border-color: #ff414e;
+					box-shadow: 0 0 12px #ff334020;
+					}
+					.buscador svg {
+					flex-shrink: 0;
+					color: #a7a7b0;
+					}
+					.buscador input {
+					border: none;
+					background: transparent;
+					color: white;
+					outline: none;
+					width: 100%;
+					padding: 0 10px;
+					font-size: 12px;
+					}
+					.buscador input::placeholder { color: #898992; }
+					.btn-actualizar {
+					height: 44px;
+					padding: 0 14px;
+					display: flex;
+					align-items: center;
+					gap: 8px;
+					color: #e8e8eb;
+					background: #211a1f;
+					border: 1px solid #60444d;
+					border-radius: 9px;
+					font-size: 12px;
+					transition: .2s;
+					}
+					.btn-actualizar:hover {
+					background: #3a2027;
+					border-color: #ed4247;
+					}
+					.tabla-contenedor {
+					overflow-x: auto;
+					min-height: 240px;
+					}
+					table {
+					border-collapse: collapse;
+					width: 100%;
+					font-size: 13px;
+					}
+					thead { background: #1b1b21; }
+					th {
+					padding: 16px 23px;
+					color: #babac4;
+					font-size: 11px;
+					font-weight: 700;
+					letter-spacing: .5px;
+					text-align: left;
+					white-space: nowrap;
+					border-bottom: 1px solid #373035;
+					}
+					td {
+					padding: 16px 23px;
+					border-bottom: 1px solid #2c2a30;
+					color: #e4e4e9;
+					}
+					tbody tr { transition: background .15s; }
+					tbody tr:hover { background: #25181e; }
+					.codigo {
+					color: #ffbe42;
+					font-weight: 700;
+					}
+					.nombre {
+					color: #fff;
+					font-weight: 650;
+					}
+					.estado {
+					display: inline-flex;
+					align-items: center;
+					gap: 8px;
+					border-radius: 30px;
+					padding: 6px 12px;
+					font-size: 11px;
+					font-weight: 700;
+					}
+					.estado::before {
+					content: "";
+					width: 6px;
+					height: 6px;
+					border-radius: 50%;
+					background: currentColor;
+					}
+					.estado.activo {
+					background: #103d29;
+					border: 1px solid #17643e;
+					color: #78ecaa;
+					}
+					.estado.inactivo {
+					background: #40272a;
+					border: 1px solid #704147;
+					color: #ff8e94;
+					}
+					.estado.otro {
+					background: #403514;
+					border: 1px solid #746027;
+					color: #ffd274;
+					}
+					.vacio {
+					text-align: center;
+					padding: 65px 20px;
+					color: #9ea0ab;
+					}
+					.vacio svg {
+					color: #ffb92e;
+					margin-bottom: 12px;
+					opacity: .8;
+					}
+					.vacio strong {
+					display: block;
+					color: #e6e6eb;
+					margin-bottom: 7px;
+					}
+					.vacio p {
+					font-size: 12px;
+					margin: 0;
+					}
+					.panel-inferior {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					flex-wrap: wrap;
+					gap: 10px;
+					padding: 16px 25px;
+					border-top: 1px solid #34292e;
+					font-size: 12px;
+					color: #9999a3;
+					}
+					.total strong { color: #ffbd31; }
+					.indicador {
+					display: flex;
+					align-items: center;
+					gap: 8px;
+					}
+					.punto {
+					width: 7px;
+					height: 7px;
+					background: #ffbd35;
+					border-radius: 50%;
+					box-shadow: 0 0 10px #ffbd35;
+					}
+					@media (max-width: 850px) {
+					.contenedor { padding: 20px; }
+					.panel-superior { padding: 18px; }
+					.herramientas { width: 100%; }
+					.buscador {
+					flex: 1;
+					min-width: 190px;
+					}
+					th, td { padding: 14px 13px; }
+					.panel-inferior { padding: 16px; }
+					}
+				</style>
+</head>
+<body>
+    <main class="contenedor">
+        <header class="encabezado">
+            <div>
+                <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
+                <h1>Gestión de <span>Subcategorías</span></h1>
+                <p class="subtitulo">Organiza las subcategorías y relaciónalas con las categorías de repuestos.</p>
+            </div>
+            <button class="btn-nueva" type="button" id="btnNuevaSubcategoria">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Nueva subcategoría
+            </button>
+        </header>
+
+        <section class="panel">
+            <div class="panel-superior">
+                <div class="panel-titulo">
+                    <h2>Listado de subcategorías</h2>
+                    <p>Consulta las subcategorías registradas en el sistema.</p>
+                </div>
+                <div class="herramientas">
+                    <div class="buscador">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7"/>
+                            <path d="m16 16 5 5"/>
+                        </svg>
+                        <input id="buscarSubcategoria" type="search" autocomplete="off"
+                               placeholder="Buscar subcategorías..." aria-label="Buscar subcategorías">
+                    </div>
+                    <button class="btn-actualizar" type="button" id="btnActualizar">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20 11a8 8 0 1 0-2 6"/>
+                            <path d="M20 4v7h-7"/>
+                        </svg>
+                        Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subcategoriaRows">
+                        <tr>
+                            <td colspan="4"><div class="vacio">Cargando subcategorías...</div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <footer class="panel-inferior">
+                <div class="total">
+                    Total de subcategorías: <strong id="totalSubcategorias">0</strong>
+                </div>
+                <div class="indicador">
+                    <span class="punto"></span>
+                    AutoParts · Gestión de subcategorías
+                </div>
+            </footer>
+        </section>
+    </main>
+
+    <script>
+        let subcategorias = [];
+        let categoriasDisponibles = [];
+
+        function escapar(valor) {
+            return String(valor ?? "").replace(/[&<>"']/g, c => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;",
+                '"': "&quot;", "'": "&#39;"
+            }[c]));
+        }
+
+        function obtener(objeto, ...nombres) {
+            for (const nombre of nombres) {
+                if (objeto?.[nombre] !== undefined && objeto[nombre] !== null) {
+                    return objeto[nombre];
+                }
+            }
+            return "";
+        }
+
+        // Convierte el CategoriaId de una subcategoría en el nombre real
+        // que corresponde a la tabla Categoria de SQL Server.
+        function obtenerNombreCategoria(subcategoria) {
+            const nombreEnRegistro = obtener(
+                subcategoria, "CategoriaNombre", "categoriaNombre"
+            );
+            if (String(nombreEnRegistro).trim()) {
+                return String(nombreEnRegistro);
+            }
+
+            const id = Number(obtener(subcategoria, "CategoriaId", "categoriaId"));
+            const categoria = categoriasDisponibles.find(c =>
+                Number(obtener(c, "CategoriaId", "categoriaId")) === id
+            );
+
+            if (categoria) {
+                return obtener(categoria, "Nombre", "nombre") || `#${id}`;
+            }
+
+            return id > 0 ? `#${id}` : "Sin categoría";
+        }
+
+        function enviarACSharp(mensaje) {
+            // Integración actual: iframe dentro del Dashboard.
+            if (window.parent !== window) {
+                window.parent.postMessage(mensaje, "*");
+                return true;
+            }
+            // Permite abrir la página directamente en WebView2.
+            if (window.chrome?.webview?.postMessage) {
+                window.chrome.webview.postMessage(mensaje);
+                return true;
+            }
+            mostrarMensaje("No hay conexión con Windows Forms.");
+            return false;
+        }
+
+        function mostrarMensaje(texto) {
+            document.getElementById("subcategoriaRows").innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        <div class="vacio">
+                            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                <rect x="14" y="14" width="7" height="7" rx="1"/>
+                            </svg>
+                            <strong>${escapar(texto)}</strong>
+                            <p>Los registros se mostrarán aquí cuando estén disponibles.</p>
+                        </div>
+                    </td>
+                </tr>`;
+        }
+
+        function pintarSubcategorias() {
+            const texto = document.getElementById("buscarSubcategoria")
+                .value.trim().toLocaleLowerCase("es");
+
+            const filtradas = subcategorias.filter(s => {
+                const id = obtener(s, "SubcategoriaId", "subcategoriaId");
+                const nombre = obtener(s, "Nombre", "nombre");
+                const categoriaId = obtener(s, "CategoriaId", "categoriaId");
+                const categoriaNombre = obtenerNombreCategoria(s);
+                return [id, nombre, categoriaId, categoriaNombre].some(valor =>
+                    String(valor).toLocaleLowerCase("es").includes(texto)
+                );
+            });
+
+            document.getElementById("totalSubcategorias").textContent = String(filtradas.length);
+
+            if (filtradas.length === 0) {
+                mostrarMensaje(texto
+                    ? "No se encontraron coincidencias."
+                    : "No hay subcategorías registradas.");
+                return;
+            }
+
+            document.getElementById("subcategoriaRows").innerHTML = filtradas.map(s => {
+                const id = obtener(s, "SubcategoriaId", "subcategoriaId");
+                const nombre = obtener(s, "Nombre", "nombre");
+                const categoriaId = obtener(s, "CategoriaId", "categoriaId");
+                const estadoId = obtener(s, "EstadoId", "estadoId");
+                const estadoNombre = obtener(s, "EstadoNombre", "estadoNombre");
+
+                // Muestra el nombre de la categoría asociada a la subcategoría.
+                const categoriaTexto = obtenerNombreCategoria(s);
+
+                const estadoTexto = String(estadoNombre || (
+                    Number(estadoId) === 1 ? "Activo" :
+                    Number(estadoId) === 2 ? "Inactivo" : (estadoId || "Sin estado")
+                ));
+                const claseEstado =
+                    estadoTexto.toLowerCase() === "activo" ? "activo" :
+                    estadoTexto.toLowerCase() === "inactivo" ? "inactivo" : "otro";
+
+                return `
+                    <tr>
+                        <td class="codigo">#${escapar(id)}</td>
+                        <td class="nombre">${escapar(nombre)}</td>
+                        <td>${escapar(categoriaTexto)}</td>
+                        <td><span class="estado ${claseEstado}">${escapar(estadoTexto)}</span></td>
+                    </tr>`;
+            }).join("");
+        }
+
+        function recibirMensajeSubcategorias(evento) {
+            let mensaje = evento.data;
+            if (typeof mensaje === "string") {
+                try { mensaje = JSON.parse(mensaje); }
+                catch { return; }
+            }
+            if (!mensaje || typeof mensaje !== "object") return;
+
+            if (mensaje.type === "subcategorias:list") {
+                subcategorias = Array.isArray(mensaje.data) ? mensaje.data : [];
+                pintarSubcategorias();
+            } else if (mensaje.type === "categorias:list") {
+                categoriasDisponibles = Array.isArray(mensaje.data) ? mensaje.data : [];
+                // Redibuja la tabla aunque las subcategorías hayan llegado primero.
+                pintarSubcategorias();
+            } else if (mensaje.type === "error") {
+                document.getElementById("totalSubcategorias").textContent = "0";
+                mostrarMensaje(mensaje.message || "No se pudieron cargar las subcategorías.");
+            }
+        }
+
+        if (window.chrome?.webview?.addEventListener) {
+            window.chrome.webview.addEventListener("message", recibirMensajeSubcategorias);
+        }
+        window.addEventListener("message", recibirMensajeSubcategorias);
+
+        document.getElementById("btnNuevaSubcategoria").addEventListener("click", () => {
+            enviarACSharp({ type: "subcategorias:abrirNuevo" });
+        });
+        document.getElementById("btnActualizar").addEventListener("click", solicitarSubcategorias);
+        document.getElementById("buscarSubcategoria").addEventListener("input", pintarSubcategorias);
+
+        function solicitarSubcategorias() {
+            mostrarMensaje("Cargando subcategorías...");
+            enviarACSharp({ type: "subcategorias:selectAll" });
+            enviarACSharp({ type: "categorias:selectAll" });
+        }
+
+        solicitarSubcategorias();
+    </script>
+</body>
+</html>

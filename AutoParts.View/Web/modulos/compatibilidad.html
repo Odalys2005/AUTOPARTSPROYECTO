@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoParts | Compatibilidad de Repuestos</title>
+<style>
+        :root{color-scheme:dark}
+        *{box-sizing:border-box}
+        body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 95% 0%,rgba(136,16,25,.20),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
+        button,input,select{font:inherit}
+        button{cursor:pointer}
+        .contenedor{max-width:1520px;margin:0 auto;padding:34px}
+        .etiqueta{display:flex;align-items:center;gap:9px;color:#ffbd37;font-size:11px;font-weight:750;letter-spacing:2.7px;margin-bottom:12px}
+        .etiqueta:before{content:'';width:22px;height:3px;background:#ff3543;border-radius:10px;box-shadow:0 0 12px #ff243a}
+        h1{margin:0;font-size:clamp(27px,3vw,38px);letter-spacing:-.8px;font-weight:800}
+        h1 span{color:#ffbd2e}
+        .subtitulo{margin-top:9px;color:#adaeb8;font-size:13px;line-height:1.6;max-width:710px}
+        .encabezado{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;margin-bottom:27px}
+        .btn-principal{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid #ff6053;border-radius:10px;padding:14px 20px;background:linear-gradient(110deg,#b10b1f,#e52a37,#ffac28);color:#fff;font-size:13px;font-weight:750;box-shadow:0 0 18px rgba(233,31,48,.27);transition:filter .2s,transform .2s;white-space:nowrap}
+        .btn-principal:hover:not(:disabled){filter:brightness(1.13);transform:translateY(-2px)}
+        .btn-principal:disabled{opacity:.5;cursor:not-allowed}
+        .panel{border:1px solid #4d3038;border-radius:15px;background:linear-gradient(140deg,#171519,#0d0e11 65%,#140f12);box-shadow:0 12px 35px #0005;overflow:hidden}
+        .panel-cabecera{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:17px;padding:24px 25px;border-bottom:1px solid #352c32}
+        .panel-cabecera h2{font-size:18px;margin:0 0 7px}
+        .panel-cabecera p{font-size:12px;color:#9a9aa4;margin:0}
+        .herramientas{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
+        .buscador{display:flex;align-items:center;gap:10px;height:44px;border:1px solid #51454c;background:#111216;border-radius:9px;padding:0 13px;width:min(360px,100%)}
+        .buscador:focus-within{border-color:#ff3d46;box-shadow:0 0 12px #ff334022}
+        .buscador svg{color:#aba9b0;flex-shrink:0}
+        .buscador input{width:100%;border:0;outline:0;background:transparent;color:white;font-size:12px}
+        .buscador input::placeholder{color:#898992}
+        .btn-actualizar{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0 15px;color:#eee;font-size:12px;transition:.2s}
+        .btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
+        .aviso{min-height:19px;padding:0 25px;color:#ffb85d;font-size:12px;line-height:1.5}
+
+        .tabla-wrap{overflow-x:auto;min-height:250px}
+        table{width:100%;min-width:920px;border-collapse:collapse;font-size:12px}
+        thead{background:#1b1b21}
+        th{text-align:left;color:#bcbcc6;border-bottom:1px solid #373035;padding:16px 18px;font-size:11px;font-weight:750;letter-spacing:.3px;white-space:nowrap}
+        td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-align:middle}
+        tbody tr:hover{background:#25181e}
+        .codigo{color:#ffbd35;font-weight:750;font-variant-numeric:tabular-nums}
+        .principal{font-weight:700;color:white;font-size:13px}
+        .secundario{display:block;color:#a8a7ae;font-size:11px;margin-top:5px}
+        .chip{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:750}
+        .chip.ok{color:#79eaaa;border:1px solid #17643e;background:#103d29}
+        .chip.sin{color:#ffd274;border:1px solid #746027;background:#403514}
+        .chip:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+        .vacio{text-align:center;padding:63px 20px;color:#9ea0ab}
+        .vacio svg{color:#ffbd35;margin-bottom:11px}
+        .vacio strong{display:block;color:#e8e8ee;margin-bottom:7px;font-size:14px}
+        .vacio p{font-size:12px;margin:0}
+        .pie{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;padding:16px 25px;border-top:1px solid #34292e;color:#9999a3;font-size:12px}
+        .pie strong{color:#ffbd35}
+        .punto{display:inline-block;width:7px;height:7px;background:#ffbd35;box-shadow:0 0 10px #ffbd35;border-radius:50%;margin-right:6px}
+        @media(max-width:960px){.contenedor{padding:22px}}
+        @media(max-width:600px){.encabezado{align-items:flex-start}.panel-cabecera{padding:18px}.herramientas{width:100%}.buscador{flex:1;min-width:180px}.pie{padding:16px 18px}}
+
+</style>
+</head>
+<body>
+<main class="contenedor">
+    <header class="encabezado">
+        <div>
+            <div class="etiqueta">AUTOPARTS · CATÁLOGO AUTOMOTRIZ</div>
+            <h1>Compatibilidad de <span>Repuestos</span></h1>
+            <p class="subtitulo">Relaciona tus productos con los vehículos que pueden utilizarlos. Identifica fácilmente marcas, modelos y características del motor.</p>
+        </div>
+        <button class="btn-principal" id="btnNueva" type="button">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Nueva compatibilidad
+        </button>
+    </header>
+
+    <section class="panel">
+        <div class="panel-cabecera">
+            <div><h2>Listado de compatibilidades</h2><p>Consulta qué repuestos corresponden a cada vehículo.</p></div>
+            <div class="herramientas">
+                <label class="buscador" aria-label="Buscar compatibilidad">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+                    <input id="buscar" type="search" autocomplete="off" placeholder="Buscar producto, OEM, marca, modelo...">
+                </label>
+                <button type="button" id="btnActualizar" class="btn-actualizar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>Actualizar</button>
+            </div>
+        </div>
+        <div class="aviso" id="aviso" role="alert" aria-live="polite"></div>
+        <div class="tabla-wrap">
+            <table>
+                <thead><tr><th>ID</th><th>Código OEM</th><th>Repuesto</th><th>Marca</th><th>Modelo</th><th>Año / Motor</th><th>Relación</th></tr></thead>
+                <tbody id="filas"><tr><td colspan="7"><div class="vacio"><strong>Cargando compatibilidades...</strong></div></td></tr></tbody>
+            </table>
+        </div>
+        <div class="pie"><span>Mostrando <strong id="totalFiltrado">0</strong> relaciones</span><span><i class="punto"></i>Datos consultados desde AutoParts</span></div>
+    </section>
+</main>
+<script>
+"use strict";
+const filas = document.getElementById('filas');
+const filtro = document.getElementById('buscar');
+const aviso = document.getElementById('aviso');
+const totalFiltrado = document.getElementById('totalFiltrado');
+let relaciones=[], productos=[], vehiculos=[], modelos=[], marcas=[];
+let compatibilidadCargada=false;
+let temporizadorCarga;
+
+function valor(obj, ...claves) {
+    for (const clave of claves) if (obj && obj[clave] !== undefined && obj[clave] !== null) return obj[clave];
+    return '';
+}
+function numeroId(obj, nombre) { return Number(valor(obj,nombre,nombre[0].toLowerCase()+nombre.slice(1))) || 0; }
+function escapar(dato) { return String(dato ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function enviar(mensaje) {
+    if (window.parent !== window) { window.parent.postMessage(mensaje,'*'); return true; }
+    if (window.chrome?.webview?.postMessage) { window.chrome.webview.postMessage(mensaje); return true; }
+    aviso.textContent='Abre Compatibilidad dentro del Dashboard de AutoParts (WebView2).';
+    return false;
+}
+function buscarPorId(lista, id, clave) { return lista.find(item=>numeroId(item,clave)===Number(id)); }
+function productoDe(r) { return buscarPorId(productos, numeroId(r,'ProductoId'), 'ProductoId'); }
+function vehiculoDe(r) { return buscarPorId(vehiculos, numeroId(r,'VehiculoId'), 'VehiculoId'); }
+function modeloDe(v) { return buscarPorId(modelos, numeroId(v,'ModeloId'), 'ModeloId'); }
+function marcaDe(m) { return buscarPorId(marcas, numeroId(m,'MarcaId'), 'MarcaId'); }
+function datosRelacion(r) {
+    const p=productoDe(r),v=vehiculoDe(r),m=modeloDe(v),marca=marcaDe(m);
+    const pid=numeroId(r,'ProductoId'), vid=numeroId(r,'VehiculoId');
+    return {
+        id:numeroId(r,'CompatibilidadId'),productoId:pid,vehiculoId:vid,
+        producto:String(valor(p,'Nombre','nombre')||`Producto #${pid}`),
+        oem:String(valor(p,'CodigoOEM','codigoOEM','codigoOem')||'—'),
+        marca:vid ? String(valor(marca,'Nombre','nombre')|| (m ? 'Marca sin nombre':'Marca no disponible')):'—',
+        modelo:vid ? String(valor(m,'Nombre','nombre')||`Modelo #${numeroId(v,'ModeloId')||'?'}`):'—',
+        anio:vid ? String(valor(v,'Anio','anio')||'—'):'—',
+        motor:vid ? String(valor(v,'TipoMotor','tipoMotor')||'—'):'—',
+        cilindrada:vid ? String(valor(v,'Cilindrada','cilindrada')||'—'):'—'
+    };
+}
+function mostrarVacio(titulo, subtitulo='Los vínculos entre repuestos y vehículos aparecerán aquí.') {
+    filas.innerHTML=`<tr><td colspan="7"><div class="vacio"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13 6 7h12l3 6M2 13h20M5 13v5m14-5v5M8 16h.01M16 16h.01"/><path d="m8 4 2 2 2-2m0 16 2 2 2-2"/></svg><strong>${escapar(titulo)}</strong><p>${escapar(subtitulo)}</p></div></td></tr>`;
+}
+function pintar() {
+    if (!compatibilidadCargada) return;
+    const datos=relaciones.map(datosRelacion);
+    const termino=filtro.value.trim().toLocaleLowerCase('es');
+    const visibles=datos.filter(d=>[d.id,d.productoId,d.producto,d.oem,d.marca,d.modelo,d.anio,d.motor,d.cilindrada,d.vehiculoId]
+        .some(x=>String(x).toLocaleLowerCase('es').includes(termino)));
+    totalFiltrado.textContent=String(visibles.length);
+    if (!visibles.length) { mostrarVacio(termino?'No se encontraron coincidencias.':'No hay compatibilidades registradas.'); return; }
+    filas.innerHTML=visibles.map(d=>`<tr>
+        <td class="codigo">#${escapar(d.id)}</td>
+        <td class="codigo">${escapar(d.oem)}</td>
+        <td><span class="principal">${escapar(d.producto)}</span><span class="secundario">Producto #${escapar(d.productoId)}</span></td>
+        <td>${escapar(d.marca)}</td>
+        <td><span class="principal">${escapar(d.modelo)}</span></td>
+        <td><span class="principal">${escapar(d.anio)}</span><span class="secundario">${escapar(d.motor)} · ${escapar(d.cilindrada)}</span></td>
+        <td><span class="chip ${d.vehiculoId?'ok':'sin'}">${d.vehiculoId?'Vinculado':'Sin vehículo'}</span></td>
+    </tr>`).join('');
+}
+function recibir(evento) {
+    let r=evento.data;
+    if (typeof r==='string') { try{r=JSON.parse(r);}catch{return;} }
+    if (!r||typeof r!=='object') return;
+    if (r.type==='compatibilidad:list') {
+        relaciones=Array.isArray(r.data)?r.data:[];
+        compatibilidadCargada=true;
+        clearTimeout(temporizadorCarga);
+        aviso.textContent='';pintar();
+    } else if (r.type==='productos:list') {
+        productos=Array.isArray(r.data)?r.data:[];pintar();
+    } else if (r.type==='vehiculos:list') {
+        vehiculos=Array.isArray(r.data)?r.data:[];pintar();
+    } else if (r.type==='modelos:list') {
+        modelos=Array.isArray(r.data)?r.data:[];pintar();
+    } else if (r.type==='marcas:list') {
+        marcas=Array.isArray(r.data)?r.data:[];pintar();
+    } else if (r.type==='error') {
+        clearTimeout(temporizadorCarga);
+        aviso.textContent=r.message||'No se pudieron consultar los datos. Revisa SQL Server.';
+        if (!compatibilidadCargada) mostrarVacio('Error al cargar las compatibilidades.','Revisa el mensaje de error que aparece arriba.');
+    }
+}
+window.addEventListener('message',recibir);
+if (window.chrome?.webview?.addEventListener) window.chrome.webview.addEventListener('message',recibir);
+function solicitar() {
+    compatibilidadCargada=false;
+    aviso.textContent='';
+    mostrarVacio('Cargando compatibilidades...','Consultando SQL Server.');
+    clearTimeout(temporizadorCarga);
+    temporizadorCarga=setTimeout(()=>{
+        if (!compatibilidadCargada) {
+            aviso.textContent='AutoParts no respondió a la consulta. Revisa MainForm.cs, las rutas del Dashboard y SQL Server.';
+            mostrarVacio('No se recibió respuesta de C#.');
+        }
+    },10000);
+    enviar({type:'compatibilidad:selectAll'});
+    enviar({type:'productos:selectAll'});
+    enviar({type:'vehiculos:selectAll'});
+    enviar({type:'modelos:selectAll'});
+    enviar({type:'marcas:selectAll'});
+}
+document.getElementById('btnNueva').addEventListener('click',()=>enviar({type:'compatibilidad:abrirNuevo'}));
+document.getElementById('btnActualizar').addEventListener('click',solicitar);
+filtro.addEventListener('input',pintar);
+solicitar();
+</script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoParts | Nuevo inventario</title>
+    <style>
+        :root { color-scheme:dark; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:radial-gradient(circle at 100% 0%,#581016 0%,transparent 45%),#0a0a0d; color:white; font-family:'Segoe UI',Arial,sans-serif; }
+        .contenedor { max-width:990px; margin:0 auto; padding:29px; }
+        .encabezado { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:25px; }
+        .subtitulo { color:#ffbd35; font-size:11px; letter-spacing:3px; font-weight:700; margin-bottom:8px; }
+        h1 { margin:0; font-size:27px; }
+
+        .icono { width:47px; height:47px; display:grid; place-items:center; color:#ffc42f; font-size:24px; background:#5c111a; border:1px solid #ee3642; border-radius:12px; box-shadow:0 0 20px #ca263044; flex-shrink:0; }
+        .panel { background:linear-gradient(145deg,#171418,#0e0e12); border:1px solid #5a3139; border-radius:14px; padding:25px; }
+        .seccion { color:#ffbd35; font-size:11px; font-weight:800; letter-spacing:2px; margin:2px 0 20px; padding-bottom:12px; border-bottom:1px solid #392b30; }
+        .campos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:18px; }
+        .campo { margin-bottom:21px; min-width:0; }
+        .campo.ancho { grid-column:1/-1; }
+        label { display:block; font-size:13px; font-weight:600; margin-bottom:9px; }
+        input, select, textarea { width:100%; padding:13px 14px; background:#111216; color:white; border:1px solid #554c55; border-radius:9px; font:inherit; outline:none; }
+        input:focus, select:focus, textarea:focus { border-color:#ff3d46; box-shadow:0 0 10px #e41b303b; }
+        input::placeholder, textarea::placeholder { color:#85858f; }
+        select:disabled { opacity:.6; }
+        textarea { min-height:96px; resize:vertical; }
+
+        .requerido { color:#ff4753; }
+
+
+        .mensaje { color:#ffb64e; min-height:19px; font-size:12px; margin-bottom:12px; }
+        .acciones { display:flex; justify-content:flex-end; gap:12px; margin-top:22px; }
+        button { padding:13px 23px; border-radius:9px; font-weight:700; border:0; cursor:pointer; transition:.2s; }
+        .cancelar { background:#242328; color:#e5e5e5; border:1px solid #56535b; }
+        .cancelar:hover { background:#353039; }
+        .guardar { color:#140c0d; background:linear-gradient(105deg,#ff3543,#ffbd2b); box-shadow:0 0 16px #e5233533; }
+        .guardar:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-2px); }
+        .guardar:disabled { opacity:.55; cursor:not-allowed; }
+        @media(max-width:650px) { .contenedor{padding:17px;} .panel{padding:18px;} .campos{grid-template-columns:1fr;} .campo.ancho{grid-column:auto;} .acciones{flex-wrap:wrap;} }
+
+
+        .campos .campo:nth-child(2n) { min-width:0; }
+
+    </style>
+</head>
+<body>
+    <main class="contenedor">
+        <header class="encabezado">
+            <div>
+                <div class="subtitulo">AUTOPARTS · CONTROL DE EXISTENCIAS</div>
+                <h1>Nuevo inventario</h1>
+
+            </div>
+            <div class="icono" aria-hidden="true">+</div>
+        </header>
+        <section class="panel">
+            <form id="formInventario" novalidate>
+                <p class="seccion">PRODUCTO DEL CATÁLOGO</p>
+                <div class="campos">
+                    <div class="campo ancho">
+                        <label for="producto">Producto <span class="requerido">*</span></label>
+                        <select id="producto" disabled required><option value="">Cargando productos...</option></select>
+
+                    </div>
+                </div>
+
+                <p class="seccion">EXISTENCIAS Y LÍMITES</p>
+                <div class="campos">
+                    <div class="campo">
+                        <label for="stockActual">Stock actual <span class="requerido">*</span></label>
+                        <input id="stockActual" type="number" min="0" max="2147483647" step="1" value="0" required>
+
+                    </div>
+                    <div class="campo">
+                        <label for="stockMinimo">Stock mínimo <span class="requerido">*</span></label>
+                        <input id="stockMinimo" type="number" min="0" max="2147483647" step="1" placeholder="Ej. 5" required>
+
+                    </div>
+                    <div class="campo">
+                        <label for="stockMaximo">Stock máximo <span class="requerido">*</span></label>
+                        <input id="stockMaximo" type="number" min="0" max="2147483647" step="1" placeholder="Ej. 100" required>
+
+                    </div>
+                    <div class="campo">
+                        <label for="estado">Estado <span class="requerido">*</span></label>
+                        <select id="estado" disabled required><option value="">Cargando estados...</option></select>
+
+                    </div>
+                </div>
+
+                <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
+                <div class="acciones">
+                    <button id="cancelar" class="cancelar" type="button">Cancelar</button>
+                    <button id="guardar" class="guardar" type="submit" disabled>Guardar inventario</button>
+                </div>
+            </form>
+        </section>
+    </main>
+    <script>
+        const formulario = document.getElementById("formInventario");
+        const campoProducto = document.getElementById("producto");
+        const campoEstado = document.getElementById("estado");
+        const campoActual = document.getElementById("stockActual");
+        const campoMinimo = document.getElementById("stockMinimo");
+        const campoMaximo = document.getElementById("stockMaximo");
+        const botonGuardar = document.getElementById("guardar");
+        const mensaje = document.getElementById("mensaje");
+
+        let productos = [];
+        let inventarios = [];
+        let productosCargados = false;
+        let inventariosCargados = false;
+        let estadosCargados = false;
+        let guardando = false;
+        let esperaCatalogos = null;
+
+        function obtener(obj, ...llaves) {
+            for (const llave of llaves) {
+                if (obj && obj[llave] !== undefined && obj[llave] !== null) return obj[llave];
+            }
+            return "";
+        }
+
+        function enviar(datos) {
+            if (window.parent !== window) {
+                window.parent.postMessage(datos, "*");
+                return true;
+            }
+            if (window.chrome?.webview?.postMessage) {
+                window.chrome.webview.postMessage(datos);
+                return true;
+            }
+            mostrarError("Debes abrir este formulario desde AutoParts (WebView2).");
+            return false;
+        }
+
+        function mostrarError(texto) {
+            mensaje.textContent = texto;
+            mensaje.style.color = "#ffb64e";
+        }
+
+        function actualizarGuardar() {
+            botonGuardar.disabled = guardando || !productosCargados || !inventariosCargados ||
+                !estadosCargados || campoProducto.disabled || campoEstado.disabled;
+        }
+
+        function productosSinInventario() {
+            const idsRegistrados = new Set(inventarios.map(i => Number(obtener(i, "ProductoId", "productoId"))));
+            return productos.filter(p => !idsRegistrados.has(Number(obtener(p, "ProductoId", "productoId"))));
+        }
+
+        function llenarProductos() {
+            const seleccionado = campoProducto.value;
+            campoProducto.replaceChildren();
+            const inicio = document.createElement("option");
+            inicio.value = "";
+            if (!productosCargados || !inventariosCargados) {
+                inicio.textContent = "Cargando productos...";
+                campoProducto.append(inicio);
+                campoProducto.disabled = true;
+                actualizarGuardar();
+                return;
+            }
+            const disponibles = productosSinInventario();
+            inicio.textContent = disponibles.length ? "Selecciona un producto" : "No hay productos pendientes de inventario";
+            campoProducto.append(inicio);
+            disponibles.forEach(p => {
+                const id = Number(obtener(p, "ProductoId", "productoId"));
+                const nombre = obtener(p, "Nombre", "nombre");
+                const oem = obtener(p, "CodigoOEM", "codigoOEM", "codigoOem");
+                if (!Number.isInteger(id) || id <= 0) return;
+                const opcion = document.createElement("option");
+                opcion.value = String(id);
+                opcion.textContent = `${nombre || `Producto #${id}`} ${oem ? `· ${oem}` : ''}`;
+                campoProducto.appendChild(opcion);
+            });
+            campoProducto.disabled = campoProducto.options.length <= 1;
+            if ([...campoProducto.options].some(op => op.value === seleccionado)) campoProducto.value = seleccionado;
+
+            actualizarGuardar();
+            if (productosCargados && inventariosCargados && campoProducto.disabled) {
+                mostrarError("Todos los productos registrados ya tienen inventario, o aún no hay productos en el catálogo.");
+            } else {
+                mostrarError("");
+            }
+        }
+
+        function llenarEstados(lista) {
+            const anterior = campoEstado.value;
+            campoEstado.replaceChildren();
+            const inicio = document.createElement("option");
+            inicio.value = "";
+            inicio.textContent = "Selecciona un estado";
+            campoEstado.append(inicio);
+            lista.forEach(e => {
+                const id = Number(obtener(e, "EstadoId", "estadoId"));
+                const nombre = obtener(e, "Nombre", "nombre");
+                if (!Number.isInteger(id) || id <= 0 || !nombre) return;
+                const opcion = document.createElement("option");
+                opcion.value = String(id);
+                opcion.textContent = String(nombre);
+                campoEstado.append(opcion);
+            });
+            campoEstado.disabled = campoEstado.options.length <= 1;
+            if ([...campoEstado.options].some(op => op.value === anterior)) campoEstado.value = anterior;
+            estadosCargados = true;
+            actualizarGuardar();
+        }
+
+        document.getElementById("cancelar").addEventListener("click", () => enviar({ type: "cancelar" }));
+        formulario.addEventListener("submit", evento => {
+            evento.preventDefault();
+            if (guardando) return;
+            if (!productosCargados || !inventariosCargados || !estadosCargados) {
+                mostrarError("Aún se están cargando los productos y estados.");
+                return;
+            }
+
+            const productoId = Number(campoProducto.value);
+            const estadoId = Number(campoEstado.value);
+            const actual = Number(campoActual.value);
+            const minimo = Number(campoMinimo.value);
+            const maximo = Number(campoMaximo.value);
+            const cantidades = [actual, minimo, maximo];
+            if (!Number.isInteger(productoId) || productoId <= 0 ||
+                !Number.isInteger(estadoId) || estadoId <= 0) {
+                mostrarError("Selecciona un producto y un estado válido.");
+                return;
+            }
+            if ([campoActual, campoMinimo, campoMaximo].some(campo => campo.value.trim() === "") ||
+                !cantidades.every(c => Number.isSafeInteger(c) && c >= 0 && c <= 2147483647)) {
+                mostrarError("Ingresa cantidades enteras, no negativas y dentro del rango permitido.");
+                return;
+            }
+            if (maximo < minimo) {
+                mostrarError("El stock máximo no puede ser menor que el stock mínimo.");
+                return;
+            }
+            if (!productosSinInventario().some(p => Number(obtener(p, "ProductoId", "productoId")) === productoId)) {
+                mostrarError("Este producto ya tiene inventario. Selecciona uno que no esté registrado.");
+                return;
+            }
+
+            guardando = true;
+            actualizarGuardar();
+            mostrarError("Registrando inventario...");
+            const enviado = enviar({
+                type: "guardar",
+                data: {
+                    ProductoId: productoId,
+                    StockActual: actual,
+                    StockMinimo: minimo,
+                    StockMaximo: maximo,
+                    EstadoId: estadoId
+                }
+            });
+            if (!enviado) {
+                guardando = false;
+                actualizarGuardar();
+            }
+        });
+
+        function recibir(evento) {
+            if (evento.source && window.parent !== window && evento.source !== window.parent) return;
+            let respuesta = evento.data;
+            if (typeof respuesta === "string") {
+                try { respuesta = JSON.parse(respuesta); } catch { return; }
+            }
+            if (!respuesta || typeof respuesta !== "object") return;
+            if (respuesta.type === "productos:list") {
+                productos = Array.isArray(respuesta.data) ? respuesta.data : [];
+                productosCargados = true;
+                llenarProductos();
+            } else if (respuesta.type === "inventario:list") {
+                inventarios = Array.isArray(respuesta.data) ? respuesta.data : [];
+                inventariosCargados = true;
+                llenarProductos();
+            } else if (respuesta.type === "estados") {
+                llenarEstados(Array.isArray(respuesta.data) ? respuesta.data : []);
+            } else if (respuesta.type === "error") {
+                guardando = false;
+                actualizarGuardar();
+                mostrarError(respuesta.message || "No se pudo guardar el inventario.");
+            }
+            if (productosCargados && inventariosCargados && estadosCargados) clearTimeout(esperaCatalogos);
+        }
+
+        if (window.chrome?.webview?.addEventListener) window.chrome.webview.addEventListener("message", recibir);
+        window.addEventListener("message", recibir);
+        enviar({ type: "productos:selectAll" });
+        enviar({ type: "inventario:selectAll" });
+        enviar({ type: "obtenerEstados" });
+        esperaCatalogos = setTimeout(() => {
+            if (!productosCargados || !inventariosCargados || !estadosCargados) {
+                mostrarError("No llegaron todas las listas desde MainForm.cs. Verifica el puente WebView2 y la conexión a SQL Server.");
+            }
+        }, 15000);
+    </script>
+</body>
+</html>

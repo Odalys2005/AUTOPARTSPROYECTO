@@ -28,6 +28,8 @@ namespace AutoParts.View
 
             services.AddSingleton(new ConnectionFactory(connectionString));
 
+            //DAL
+
             // Categorías y productos
             services.AddTransient<CategoriaRepository>();
             services.AddTransient<SubcategoriaRepository>();
@@ -60,17 +62,46 @@ namespace AutoParts.View
             // Garantías
             services.AddTransient<GarantiaRepository>();
             services.AddTransient<ReemplazoGarantiaRepository>();
-            //BL
 
+
+           //BL
+
+            // Categorías y productos
             services.AddScoped<CategoriaBL>();
+            services.AddScoped<SubcategoriaBL>();
+            services.AddScoped<ProductoBL>();
+            services.AddScoped<InventarioBL>();
+
+            // Marcas y vehículos
+            services.AddScoped<MarcaBL>();
+            services.AddScoped<ModeloBL>();
+            services.AddScoped<VehiculoBL>();
+            services.AddScoped<CompatibilidadRepuestoBL>();
+
+            // Personal y seguridad
             services.AddScoped<EstadoBL>();
             services.AddScoped<RolBL>();
-            services.AddScoped<ProveedorBL>();
-            services.AddScoped<ClienteBL>();
-            services.AddScoped<MarcaBL>();
             services.AddScoped<PuestoBL>();
-            //VIEW
-           
+            services.AddScoped<EmpleadoBL>();
+            services.AddScoped<UsuarioBL>();
+
+            // Proveedores y compras
+            services.AddScoped<ProveedorBL>();
+            services.AddScoped<CompraBL>();
+            services.AddScoped<Detalle_CompraBL>();
+
+            // Clientes y ventas
+            services.AddScoped<ClienteBL>();
+            services.AddScoped<VentaBL>();
+            services.AddScoped<Detalle_VentaBL>();
+
+            // Garantías
+            services.AddScoped<GarantiaBL>();
+            services.AddScoped<ReemplazoGarantiaBL>();
+
+
+           //VIEW
+
             services.AddTransient<MainForm>();
 
             services.AddTransient<frmCategoriasNuevo>();
@@ -95,11 +126,14 @@ namespace AutoParts.View
             services.AddTransient<frmPuestos>();
             services.AddTransient<frmPuestosNuevo>();
 
+
             
 
-            var serviceProvider = services.BuildServiceProvider();
+            using var serviceProvider = services.BuildServiceProvider();
+            using var scope = serviceProvider.CreateScope();
 
-            var mainForm = serviceProvider.GetRequiredService<MainForm>();
+            var mainForm = scope.ServiceProvider
+                .GetRequiredService<MainForm>();
 
             Application.Run(mainForm);
         }

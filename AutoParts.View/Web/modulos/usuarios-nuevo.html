@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoParts | Nuevo usuario</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 100% 0%,rgba(136,16,25,.20),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
+button,input,select{font:inherit}
+.contenedor{max-width:1080px;margin:0 auto;padding:34px}
+.encabezado{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:29px}
+.etiqueta{display:flex;align-items:center;gap:9px;color:#ffbd37;font-size:11px;font-weight:750;letter-spacing:2.7px;margin-bottom:12px}
+.etiqueta:before{content:'';width:22px;height:3px;background:#ff3543;border-radius:10px;box-shadow:0 0 12px #ff243a}
+h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}h1 span{color:#ffbd2e}
+.descripcion{color:#adaeb8;margin:10px 0 0;font-size:13px;line-height:1.6}
+.icono{width:50px;height:50px;display:grid;place-items:center;border-radius:12px;border:1px solid #f43848;background:#3b1119;color:#ffbd35;box-shadow:0 0 18px #e9243444;flex-shrink:0}
+.panel{background:linear-gradient(140deg,#171519,#0d0e11 70%,#140f12);border:1px solid #56323c;border-radius:15px;padding:30px;box-shadow:0 12px 35px #0005}
+.seccion{font-size:11px;letter-spacing:2px;font-weight:750;color:#ffbd35;margin:0 0 25px}
+.campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 24px}
+.campo{min-width:0}
+.campo label{display:block;font-size:13px;font-weight:650;margin-bottom:9px;color:#f4f4f6}
+.requerido{color:#ff4653}
+.campo input,.campo select{width:100%;height:47px;border-radius:9px;border:1px solid #554a52;background:#111216;padding:0 14px;color:#fff;outline:0;transition:border-color .2s,box-shadow .2s}
+.campo input:focus,.campo select:focus{border-color:#ff3543;box-shadow:0 0 14px #ff354333}
+.campo input::placeholder{color:#777982}.campo select:disabled{opacity:.58}
+.mensaje{min-height:22px;margin-top:25px;color:#ffc075;font-size:12px;line-height:1.5}.mensaje:empty{min-height:0}
+.acciones{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;border-top:1px solid #382d34;padding-top:23px;margin-top:24px}
+.acciones button{border-radius:9px;border:1px solid transparent;padding:13px 25px;font-weight:750;font-size:13px;cursor:pointer;transition:filter .2s,transform .2s}
+.cancelar{color:#e6e6eb;background:#25232a;border-color:#58535c}.cancelar:hover{background:#37313a}
+.guardar{color:#190d0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);box-shadow:0 0 16px #e5233533}
+.guardar:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-2px)}.guardar:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:720px){.contenedor{padding:20px}.panel{padding:20px}.campos{grid-template-columns:1fr;gap:18px}}
+
+.campo .contrasena-wrap{position:relative}
+.campo .contrasena-wrap input{padding-right:55px}
+.ver-contrasena{position:absolute;right:8px;top:6px;width:35px;height:35px;border:0;border-radius:7px;background:transparent;color:#b1aab2;display:grid;place-items:center;cursor:pointer;transition:background .2s,color .2s}
+.ver-contrasena:hover{background:#30242b;color:#ffbd35}
+.ver-contrasena:focus-visible{outline:2px solid #ffbd35;outline-offset:1px}
+.campo.span-dos{grid-column:1/-1}
+@media(max-width:720px){.campo.span-dos{grid-column:auto}}
+</style>
+</head>
+<body>
+<main class="contenedor">
+    <header class="encabezado">
+        <div>
+            <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
+            <h1>Nuevo <span>Usuario</span></h1>
+            <p class="descripcion">Crear una cuenta de acceso a AutoParts.</p>
+        </div>
+        <div class="icono" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3z"/></svg></div>
+    </header>
+    <section class="panel">
+        <form id="formUsuario" novalidate>
+            <p class="seccion">INFORMACIÓN DE LA CUENTA</p>
+            <div class="campos">
+                <div class="campo">
+                    <label for="empleado">Empleado <span class="requerido">*</span></label>
+                    <select id="empleado" disabled required><option value="">Cargando empleados...</option></select>
+                </div>
+                <div class="campo">
+                    <label for="rol">Rol <span class="requerido">*</span></label>
+                    <select id="rol" disabled required><option value="">Cargando roles...</option></select>
+                </div>
+                <div class="campo">
+                    <label for="nombreUsuario">Nombre de usuario <span class="requerido">*</span></label>
+                    <input id="nombreUsuario" type="text" minlength="3" maxlength="50" placeholder="Nombre de usuario" autocomplete="off" autocapitalize="none" spellcheck="false" required>
+                </div>
+                <div class="campo">
+                    <label for="estado">Estado <span class="requerido">*</span></label>
+                    <select id="estado" disabled required><option value="">Cargando estados...</option></select>
+                </div>
+                <div class="campo">
+                    <label for="contrasena">Contraseña <span class="requerido">*</span></label>
+                    <div class="contrasena-wrap">
+                        <input id="contrasena" type="password" minlength="8" maxlength="72" placeholder="Contraseña" autocomplete="new-password" required>
+                        <button type="button" class="ver-contrasena" data-ver="contrasena" aria-label="Mostrar contraseña" aria-pressed="false"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12S5.5 5.5 12 5.5 22 12 22 12 18.5 18.5 12 18.5 2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    </div>
+                </div>
+                <div class="campo">
+                    <label for="confirmarContrasena">Confirmar contraseña <span class="requerido">*</span></label>
+                    <div class="contrasena-wrap">
+                        <input id="confirmarContrasena" type="password" minlength="8" maxlength="72" placeholder="Confirmar contraseña" autocomplete="new-password" required>
+                        <button type="button" class="ver-contrasena" data-ver="confirmarContrasena" aria-label="Mostrar confirmación" aria-pressed="false"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12S5.5 5.5 12 5.5 22 12 22 12 18.5 18.5 12 18.5 2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    </div>
+                </div>
+            </div>
+            <div id="mensaje" class="mensaje" role="status" aria-live="polite"></div>
+            <div class="acciones">
+                <button type="button" class="cancelar" id="cancelar">Cancelar</button>
+                <button type="submit" class="guardar" id="guardar" disabled>Guardar usuario</button>
+            </div>
+        </form>
+    </section>
+</main>
+<script>
+"use strict";
+const formulario = document.getElementById('formUsuario');
+const empleadoSelect = document.getElementById('empleado');
+const rolSelect = document.getElementById('rol');
+const estadoSelect = document.getElementById('estado');
+const mensaje = document.getElementById('mensaje');
+const guardar = document.getElementById('guardar');
+const entradaNombre = document.getElementById('nombreUsuario');
+const entradaContrasena = document.getElementById('contrasena');
+const entradaConfirmacion = document.getElementById('confirmarContrasena');
+let empleados = [], roles = [], estados = [], usuarios = [];
+let empleadosCargados = false, rolesCargados = false, estadosCargados = false, usuariosCargados = false;
+let guardando = false;
+let temporizadorCarga, temporizadorGuardado;
+
+function valor(objeto, ...campos) {
+    for (const campo of campos) if (objeto && objeto[campo] !== null && objeto[campo] !== undefined) return objeto[campo];
+    return '';
+}
+function id(objeto, campo) {return Number(valor(objeto,campo,campo[0].toLowerCase()+campo.slice(1))) || 0;}
+function enviar(peticion) {
+    if (window.parent !== window) {window.parent.postMessage(peticion,'*'); return true;}
+    if (window.chrome?.webview?.postMessage) {window.chrome.webview.postMessage(peticion); return true;}
+    mostrar('Abre este formulario desde AutoParts.');
+    return false;
+}
+function mostrar(texto) { mensaje.textContent = texto; }
+function llenar(select, datos, campoId, obtenerNombre, textoInicial) {
+    const anterior = select.value;
+    select.replaceChildren();
+    const opcion = document.createElement('option');
+    opcion.value = '';
+    opcion.textContent = textoInicial;
+    select.appendChild(opcion);
+    datos.forEach(item => {
+        const numero = id(item, campoId);
+        const nombre = String(obtenerNombre(item) || '').trim();
+        if (!numero || !nombre) return;
+        const opt = document.createElement('option');
+        opt.value = String(numero);
+        opt.textContent = nombre;
+        select.appendChild(opt);
+    });
+    select.disabled = select.options.length <= 1;
+    if ([...select.options].some(o => o.value === anterior)) select.value = anterior;
+    actualizarGuardar();
+}
+function actualizarEmpleados() {
+    const yaAsignados = new Set(usuarios.map(u => id(u, 'EmpleadoId')));
+    const sinCuenta = empleados.filter(e => !usuariosCargados || !yaAsignados.has(id(e,'EmpleadoId')));
+    llenar(empleadoSelect, sinCuenta, 'EmpleadoId', e => {
+        const nombre = [valor(e,'Nombre','nombre'), valor(e,'Apellido','apellido')].filter(Boolean).join(' ');
+        return nombre || `Empleado #${id(e,'EmpleadoId')}`;
+    }, 'Selecciona un empleado');
+}
+function actualizarGuardar() {
+    guardar.disabled = guardando || !empleadosCargados || !rolesCargados || !estadosCargados ||
+        empleadoSelect.disabled || rolSelect.disabled || estadoSelect.disabled;
+}
+function procesarRespuesta(evento) {
+    let respuesta = evento.data;
+    if (typeof respuesta === 'string') { try { respuesta = JSON.parse(respuesta); } catch { return; } }
+    if (!respuesta || typeof respuesta !== 'object') return;
+    if (respuesta.type === 'empleados:list') {
+        empleadosCargados = true;
+        empleados = Array.isArray(respuesta.data) ? respuesta.data : [];
+        actualizarEmpleados();
+    } else if (respuesta.type === 'roles:list') {
+        rolesCargados = true;
+        roles = Array.isArray(respuesta.data) ? respuesta.data : [];
+        llenar(rolSelect, roles, 'RolId', r => valor(r,'Nombre','nombre'), 'Selecciona un rol');
+    } else if (respuesta.type === 'estados') {
+        estadosCargados = true;
+        estados = Array.isArray(respuesta.data) ? respuesta.data : [];
+        llenar(estadoSelect, estados, 'EstadoId', e => valor(e,'Nombre','nombre'), 'Selecciona un estado');
+    } else if (respuesta.type === 'usuarios:list') {
+        usuariosCargados = true;
+        usuarios = Array.isArray(respuesta.data) ? respuesta.data : [];
+        if (empleadosCargados) actualizarEmpleados();
+    } else if (respuesta.type === 'error') {
+        clearTimeout(temporizadorGuardado);
+        guardando = false;
+        entradaContrasena.value = '';
+        entradaConfirmacion.value = '';
+        mostrar(String(respuesta.message || 'Ocurrió un error al procesar la solicitud.'));
+        actualizarGuardar();
+        return;
+    }
+    actualizarGuardar();
+    if (empleadosCargados && rolesCargados && estadosCargados) {
+        clearTimeout(temporizadorCarga);
+        if (empleadoSelect.disabled || rolSelect.disabled || estadoSelect.disabled) {
+            mostrar('No hay empleados disponibles, roles o estados registrados.');
+        } else if (!guardando) mostrar('');
+    }
+}
+window.addEventListener('message', procesarRespuesta);
+if (window.chrome?.webview?.addEventListener && window.parent === window) {
+    window.chrome.webview.addEventListener('message', procesarRespuesta);
+}
+
+document.querySelectorAll('[data-ver]').forEach(boton => {
+    boton.addEventListener('click', () => {
+        const campo = document.getElementById(boton.dataset.ver);
+        const mostrarAhora = campo.type === 'password';
+        campo.type = mostrarAhora ? 'text' : 'password';
+        boton.setAttribute('aria-pressed', String(mostrarAhora));
+        boton.setAttribute('aria-label', mostrarAhora ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+});
+document.getElementById('cancelar').addEventListener('click', () => {
+    entradaContrasena.value = '';
+    entradaConfirmacion.value = '';
+    enviar({type:'cancelar'});
+});
+formulario.addEventListener('input', () => { if (!guardando) mostrar(''); });
+formulario.addEventListener('change', () => { if (!guardando) mostrar(''); });
+formulario.addEventListener('submit', evento => {
+    evento.preventDefault();
+    if (guardando) return;
+    const NombreUsuario = entradaNombre.value.trim();
+    const EmpleadoId = Number(empleadoSelect.value);
+    const RolId = Number(rolSelect.value);
+    const EstadoId = Number(estadoSelect.value);
+    const Contrasena = entradaContrasena.value;
+    if (!NombreUsuario || !EmpleadoId || !RolId || !EstadoId || !Contrasena || !entradaConfirmacion.value) {
+        mostrar('Completa todos los campos.'); return;
+    }
+    if (NombreUsuario.length < 3 || NombreUsuario.length > 50 || !/^[A-Za-z0-9._-]+$/.test(NombreUsuario)) {
+        mostrar('Usa de 3 a 50 caracteres: letras, números, punto, guion o guion bajo.');
+        entradaNombre.focus(); return;
+    }
+    if (Contrasena.length < 8 || Contrasena.length > 72) {
+        mostrar('La contraseña debe tener entre 8 y 72 caracteres.');
+        entradaContrasena.focus(); return;
+    }
+    if (Contrasena !== entradaConfirmacion.value) {
+        mostrar('Las contraseñas no coinciden.');
+        entradaConfirmacion.focus(); return;
+    }
+    if (usuariosCargados && usuarios.some(u => String(valor(u,'NombreUsuario','nombreUsuario')).toLocaleLowerCase('es') === NombreUsuario.toLocaleLowerCase('es'))) {
+        mostrar('Ese nombre de usuario ya está registrado.');
+        entradaNombre.focus(); return;
+    }
+    if (usuariosCargados && usuarios.some(u => id(u,'EmpleadoId') === EmpleadoId)) {
+        mostrar('El empleado seleccionado ya tiene una cuenta.'); return;
+    }
+    if (!formulario.checkValidity()) {mostrar('Revisa los datos del usuario.'); return;}
+    guardando = true;
+    actualizarGuardar();
+    mostrar('Guardando usuario...');
+    if (!enviar({type:'guardar',data:{EmpleadoId,RolId,NombreUsuario,Contrasena,EstadoId}})) {
+        guardando = false; actualizarGuardar(); return;
+    }
+    clearTimeout(temporizadorGuardado);
+    temporizadorGuardado = setTimeout(() => {
+        if (guardando) {
+            guardando = false;
+            entradaContrasena.value = '';
+            entradaConfirmacion.value = '';
+            actualizarGuardar();
+            mostrar('No llegó respuesta de AutoParts. Comprueba MainForm.cs antes de intentar guardar otra vez.');
+        }
+    }, 12000);
+});
+if (enviar({type:'empleados:selectAll'})) {
+    enviar({type:'roles:selectAll'});
+    enviar({type:'obtenerEstados'});
+    enviar({type:'usuarios:selectAll'});
+    temporizadorCarga = setTimeout(() => {
+        if (!empleadosCargados || !rolesCargados || !estadosCargados) {
+            mostrar('No se pudieron cargar empleados, roles o estados desde AutoParts.');
+        }
+    },12000);
+}
+</script>
+</body>
+</html>

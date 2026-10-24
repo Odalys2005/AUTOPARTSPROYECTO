@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoParts | Usuarios</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 95% 0%,rgba(136,16,25,.19),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
+button,input{font:inherit}button{cursor:pointer}
+.contenedor{max-width:1520px;margin:0 auto;padding:34px}
+.etiqueta{display:flex;align-items:center;gap:9px;color:#ffbd37;font-size:11px;font-weight:750;letter-spacing:2.7px;margin-bottom:12px}
+.etiqueta:before{content:'';width:22px;height:3px;background:#ff3543;border-radius:10px;box-shadow:0 0 12px #ff243a}
+h1{margin:0;font-size:clamp(28px,3vw,38px);letter-spacing:-.8px;font-weight:800}h1 span{color:#ffbd2e}
+.subtitulo{margin-top:9px;color:#adaeb8;font-size:13px;line-height:1.6}
+.encabezado{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;margin-bottom:31px}
+.btn-principal{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid #ff6053;border-radius:10px;padding:14px 20px;background:linear-gradient(110deg,#b10b1f,#e52a37,#ffac28);color:#fff;font-size:13px;font-weight:750;box-shadow:0 0 18px rgba(233,31,48,.27);transition:filter .2s,transform .2s;white-space:nowrap}
+.btn-principal:hover{filter:brightness(1.13);transform:translateY(-2px)}
+.panel{border:1px solid #4d3038;border-radius:15px;background:linear-gradient(140deg,#171519,#0d0e11 65%,#140f12);box-shadow:0 12px 35px #0005;overflow:hidden}
+.panel-cabecera{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:17px;padding:24px 25px;border-bottom:1px solid #352c32}
+.panel-cabecera h2{font-size:18px;margin:0 0 7px}.panel-cabecera p{font-size:12px;color:#9a9aa4;margin:0}
+.herramientas{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
+.buscador{display:flex;align-items:center;gap:10px;height:44px;border:1px solid #51454c;background:#111216;border-radius:9px;padding:0 13px;width:min(345px,100%)}
+.buscador:focus-within{border-color:#ff3d46;box-shadow:0 0 12px #ff334022}.buscador svg{color:#aba9b0;flex-shrink:0}
+.buscador input{width:100%;border:0;outline:0;background:transparent;color:white;font-size:12px}.buscador input::placeholder{color:#898992}
+.btn-actualizar{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0 15px;color:#eee;font-size:12px;transition:.2s}.btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
+.aviso{padding:0 25px;font-size:12px;color:#ffbd69;line-height:1.6}.aviso:empty{display:none}.aviso:not(:empty){padding-top:14px;padding-bottom:12px}
+.tabla-wrap{overflow-x:auto;min-height:240px}table{width:100%;min-width:830px;border-collapse:collapse;font-size:12px}thead{background:#1b1b21}
+th{text-align:left;color:#bcbcc6;border-bottom:1px solid #373035;padding:16px 18px;font-size:11px;font-weight:750;letter-spacing:.25px;white-space:nowrap}
+td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-align:middle}tbody tr:hover{background:#25181e}
+.codigo{color:#ffbd35;font-weight:750;font-variant-numeric:tabular-nums}.principal{font-weight:700;color:#fff;font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:750;white-space:nowrap}
+.chip.ok{color:#79eaaa;border:1px solid #17643e;background:#103d29}.chip.sin{color:#ffd274;border:1px solid #746027;background:#403514}
+.chip:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.vacio{text-align:center;padding:66px 20px;color:#9ea0ab}.vacio svg{color:#ffbd35;margin-bottom:11px}.vacio strong{display:block;color:#e8e8ee;margin-bottom:7px;font-size:14px}.vacio p{font-size:12px;margin:0}
+.pie{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;padding:16px 25px;border-top:1px solid #34292e;color:#9999a3;font-size:12px}.pie strong{color:#ffbd35}
+@media(max-width:960px){.contenedor{padding:22px}}
+@media(max-width:600px){.encabezado{align-items:flex-start}.panel-cabecera{padding:18px}.herramientas{width:100%}.buscador{flex:1;min-width:190px}.pie{padding:16px 18px}}
+
+.avatar{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #783d46;border-radius:11px;background:#2e151c;color:#ffbd35;flex-shrink:0}.usuario-celda{display:flex;align-items:center;gap:11px}
+</style>
+</head>
+<body>
+<main class="contenedor">
+    <header class="encabezado">
+        <div>
+            <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
+            <h1>Gestión de <span>Usuarios</span></h1>
+            <p class="subtitulo">Administración de cuentas de acceso al sistema.</p>
+        </div>
+        <button type="button" class="btn-principal" id="btnNuevo">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Nuevo usuario
+        </button>
+    </header>
+    <section class="panel">
+        <div class="panel-cabecera">
+            <div><h2>Listado de usuarios</h2><p>Cuentas registradas en AutoParts.</p></div>
+            <div class="herramientas">
+                <label class="buscador" aria-label="Buscar usuario">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+                    <input type="search" id="buscar" autocomplete="off" placeholder="Buscar usuario, empleado o rol...">
+                </label>
+                <button type="button" id="btnActualizar" class="btn-actualizar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>
+                    Actualizar
+                </button>
+            </div>
+        </div>
+        <div id="aviso" class="aviso" role="status" aria-live="polite"></div>
+        <div class="tabla-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Usuario</th><th>Empleado</th><th>Rol</th><th>Estado</th></tr>
+                </thead>
+                <tbody id="filas">
+                    <tr><td class="vacio" colspan="5"><strong>Cargando usuarios...</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pie"><span>Usuarios mostrados: <strong id="conteo">0</strong></span><span>AutoParts · Accesos</span></div>
+    </section>
+</main>
+<script>
+"use strict";
+const filas = document.getElementById('filas');
+const buscador = document.getElementById('buscar');
+const aviso = document.getElementById('aviso');
+let usuarios = [], empleados = [], roles = [], estados = [];
+let usuariosCargados = false;
+let temporizadorCarga;
+
+function valor(objeto, ...propiedades) {
+    for (const propiedad of propiedades) {
+        if (objeto && objeto[propiedad] !== null && objeto[propiedad] !== undefined) return objeto[propiedad];
+    }
+    return '';
+}
+function id(objeto, campo) { return Number(valor(objeto, campo, campo[0].toLowerCase() + campo.slice(1))) || 0; }
+function escapar(texto) {
+    return String(texto ?? '').replace(/[&<>"']/g, caracter => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[caracter]));
+}
+function enviar(mensaje) {
+    if (window.parent !== window) { window.parent.postMessage(mensaje, '*'); return true; }
+    if (window.chrome?.webview?.postMessage) { window.chrome.webview.postMessage(mensaje); return true; }
+    aviso.textContent = 'Abre Usuarios desde AutoParts para cargar los datos.';
+    return false;
+}
+function nombreEmpleado(usuario) {
+    const empleadoId = id(usuario, 'EmpleadoId');
+    const empleado = empleados.find(e => id(e, 'EmpleadoId') === empleadoId);
+    const nombre = empleado ? [valor(empleado,'Nombre','nombre'), valor(empleado,'Apellido','apellido')].filter(Boolean).join(' ') : '';
+    return nombre || (empleadoId ? `Empleado #${empleadoId}` : 'Sin empleado');
+}
+function nombreRol(usuario) {
+    const rolId = id(usuario, 'RolId');
+    const rol = roles.find(r => id(r, 'RolId') === rolId);
+    return rol ? String(valor(rol,'Nombre','nombre')) : (rolId ? `Rol #${rolId}` : 'Sin rol');
+}
+function nombreEstado(usuario) {
+    const estadoId = id(usuario, 'EstadoId');
+    const estado = estados.find(e => id(e, 'EstadoId') === estadoId);
+    return estado ? String(valor(estado,'Nombre','nombre')) : (estadoId ? `Estado #${estadoId}` : 'Sin estado');
+}
+function pintarMensaje(texto) {
+    filas.innerHTML = `<tr><td class="vacio" colspan="5"><svg width="37" height="37" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3z"/></svg><strong>${escapar(texto)}</strong></td></tr>`;
+}
+function pintar() {
+    if (!usuariosCargados) return;
+    const texto = buscador.value.trim().toLocaleLowerCase('es');
+    const encontrados = usuarios.filter(u => {
+        const columnas = [id(u,'UsuarioId'), valor(u,'NombreUsuario','nombreUsuario'), nombreEmpleado(u), nombreRol(u), nombreEstado(u)];
+        return columnas.some(c => String(c).toLocaleLowerCase('es').includes(texto));
+    });
+    document.getElementById('conteo').textContent = String(encontrados.length);
+    if (!encontrados.length) {
+        pintarMensaje(texto ? 'No se encontraron usuarios.' : 'No hay usuarios registrados.');
+        return;
+    }
+    filas.innerHTML = encontrados.map(u => {
+        const estado = nombreEstado(u);
+        const activo = estado.trim().toLocaleLowerCase('es') === 'activo';
+        const nombre = String(valor(u,'NombreUsuario','nombreUsuario'));
+        return `<tr>
+            <td class="codigo">#${escapar(id(u,'UsuarioId'))}</td>
+            <td><div class="usuario-celda"><span class="avatar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3z"/></svg></span><span class="principal">${escapar(nombre)}</span></div></td>
+            <td>${escapar(nombreEmpleado(u))}</td>
+            <td>${escapar(nombreRol(u))}</td>
+            <td><span class="chip ${activo ? 'ok' : 'sin'}">${escapar(estado)}</span></td>
+        </tr>`;
+    }).join('');
+}
+function recibir(evento) {
+    let respuesta = evento.data;
+    if (typeof respuesta === 'string') { try { respuesta = JSON.parse(respuesta); } catch { return; } }
+    if (!respuesta || typeof respuesta !== 'object') return;
+    if (respuesta.type === 'usuarios:list') {
+        clearTimeout(temporizadorCarga);
+        usuarios = Array.isArray(respuesta.data) ? respuesta.data : [];
+        usuariosCargados = true;
+        aviso.textContent = '';
+        pintar();
+    } else if (respuesta.type === 'empleados:list') {
+        empleados = Array.isArray(respuesta.data) ? respuesta.data : [];
+        pintar();
+    } else if (respuesta.type === 'roles:list') {
+        roles = Array.isArray(respuesta.data) ? respuesta.data : [];
+        pintar();
+    } else if (respuesta.type === 'estados') {
+        estados = Array.isArray(respuesta.data) ? respuesta.data : [];
+        pintar();
+    } else if (respuesta.type === 'error') {
+        clearTimeout(temporizadorCarga);
+        aviso.textContent = String(respuesta.message || 'No fue posible cargar los datos.');
+        if (!usuariosCargados) pintarMensaje('Error al cargar usuarios.');
+    }
+}
+window.addEventListener('message', recibir);
+if (window.chrome?.webview?.addEventListener && window.parent === window) window.chrome.webview.addEventListener('message', recibir);
+function cargar() {
+    usuariosCargados = false;
+    pintarMensaje('Cargando usuarios...');
+    aviso.textContent = '';
+    document.getElementById('conteo').textContent = '0';
+    clearTimeout(temporizadorCarga);
+    if (!enviar({type:'usuarios:selectAll'})) return;
+    enviar({type:'empleados:selectAll'});
+    enviar({type:'roles:selectAll'});
+    enviar({type:'obtenerEstados'});
+    temporizadorCarga = setTimeout(() => {
+        if (!usuariosCargados) {
+            pintarMensaje('No se recibió respuesta de AutoParts.');
+            aviso.textContent = 'Comprueba que MainForm.cs procese usuarios:selectAll.';
+        }
+    }, 12000);
+}
+document.getElementById('btnNuevo').addEventListener('click', () => enviar({type:'usuarios:abrirNuevo'}));
+document.getElementById('btnActualizar').addEventListener('click', cargar);
+buscador.addEventListener('input', pintar);
+cargar();
+</script>
+</body>
+</html>
