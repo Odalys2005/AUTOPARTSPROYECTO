@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AutoParts | Ticket de venta</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #e9e9e9; color: #111; font-family: 'Courier New', monospace; }
+    .barra { max-width: 420px; margin: 20px auto 0; display: flex; gap: 10px; font-family: Arial, sans-serif; }
+    .barra button { flex: 1; padding: 12px; background: #a5202b; color: white; border: 0; border-radius: 7px; font-weight: 700; cursor: pointer; }
+    .barra button:disabled { opacity: .5; cursor: not-allowed; }
+    .barra #cerrar { background: #333; }
+    .papel { width: 57mm; min-height: 90mm; margin: 20px auto; padding: 3mm 2mm; background: white; box-shadow: 0 4px 18px #0002; font-size: 10px; overflow-wrap: anywhere; }
+    .centro { text-align: center; }
+    .marca { font-size: 16px; font-weight: bold; margin: 2mm 0; }
+    .separador { border-top: 1px dashed #222; margin: 3mm 0; }
+    .datos div { margin: 1mm 0; }
+    .producto-ticket { font-weight: 700; padding-bottom: 0; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 9px; }
+    th { text-align: left; padding: 1mm 0; border-bottom: 1px solid #111; }
+    td { padding: 1.5mm 1mm 1.5mm 0; vertical-align: top; }
+    .der { text-align: right; }
+    .total { font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; margin: 3mm 0; }
+    #aviso { max-width: 420px; margin: 14px auto; font: 13px Arial, sans-serif; color: #5d232a; text-align: center; }
+    @page { size: 57mm auto; margin: 0; }
+    @media print {
+      html, body { width: 57mm; margin: 0 !important; padding: 0 !important; background: white; }
+      .barra, #aviso { display: none !important; }
+      .papel { width: 57mm; min-height: 0; margin: 0; padding: 2mm; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="barra">
+    <button id="imprimir" type="button" disabled>🖨 Imprimir ticket</button>
+    <button id="cerrar" type="button">Cerrar</button>
+  </div>
+  <div id="aviso" role="status">Esperando los datos de una venta registrada. No se imprimirá ningún ticket sin confirmación.</div>
+  <main class="papel" id="ticket" hidden>
+    <header class="centro">
+      <div class="marca">AUTOPARTS</div>
+      <div>Repuestos y accesorios</div>
+      <div>COMPROBANTE INTERNO DE VENTA</div>
+      <div>NO ES DOCUMENTO TRIBUTARIO ELECTRÓNICO</div>
+    </header>
+    <div class="separador"></div>
+    <section class="datos">
+      <div>Factura: <strong id="factura"></strong></div>
+      <div>Fecha: <span id="fecha"></span></div>
+      <div>Cliente: <span id="cliente"></span></div>
+      <div>Atendió: <span id="empleado"></span></div>
+    </section>
+    <div class="separador"></div>
+    <table aria-label="Productos vendidos">
+      <colgroup><col style="width:19%"><col style="width:38%"><col style="width:43%"></colgroup>
+      <thead><tr><th>Cant.</th><th class="der">Precio</th><th class="der">Importe</th></tr></thead>
+      <tbody id="lineas"></tbody>
+    </table>
+    <div class="separador"></div>
+    <div class="total"><span>TOTAL USD</span><span id="total"></span></div>
+    <div class="separador"></div>
+    <footer class="centro">Gracias por su compra.<div>Conserve este comprobante.</div></footer>
+  </main>
+  <script>
+    'use strict';
+    const el = id => document.getElementById(id);
+    const usd = valor => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(valor);
+    let cargado = false;
+    function texto(id, valor) { el(id).textContent = String(valor ?? ''); }
+    function mostrarTicket(datos) {
+      if (!datos || typeof datos !== 'object') return;
+      const numero = String(datos.NumeroFactura ?? '').trim();
+      const total = Number(datos.Total);
+      const filas = datos.Lineas;
+      if (!numero || !Number.isFinite(total) || total < 0 || !Array.isArray(filas) || !filas.length) {
+        el('aviso').textContent = 'Faltan datos confirmados de la venta. No es posible imprimir.';
+        return;
+      }
+      const cuerpo = el('lineas');
+      cuerpo.replaceChildren();
+      for (const item of filas) {
+        const cantidad = Number(item.Cantidad), precio = Number(item.PrecioUnitario);
+        if (!Number.isInteger(cantidad) || cantidad < 1 || !Number.isFinite(precio) || precio < 0) {
+          el('aviso').textContent = 'Hay una línea inválida. No es posible imprimir.';
+          return;
+        }
+        // Papel de 57 mm: nombre en una línea completa y valores debajo.
+        const titulo = document.createElement('tr');
+        const celdaNombre = document.createElement('td');
+        celdaNombre.colSpan = 3;
+        celdaNombre.className = 'producto-ticket';
+        celdaNombre.textContent = String(item.Nombre ?? 'Producto');
+        titulo.appendChild(celdaNombre);
+        cuerpo.appendChild(titulo);
+        const detalle = document.createElement('tr');
+        [String(cantidad), usd(precio), usd(precio * cantidad)].forEach((valor, indice) => {
+          const td = document.createElement('td');
+          td.textContent = valor;
+          if (indice > 0) td.className = 'der';
+          detalle.appendChild(td);
+        });
+        cuerpo.appendChild(detalle);
+      }
+      texto('factura', numero);
+      texto('fecha', datos.FechaVenta ?? new Date().toLocaleString('es-SV'));
+      texto('cliente', datos.Cliente ?? 'Consumidor final');
+      texto('empleado', datos.Empleado ?? 'AutoParts');
+      texto('total', usd(total));
+      el('ticket').hidden = false;
+      el('aviso').textContent = 'Ticket de 57 mm listo. Selecciona la PT-210 y papel de 57 mm al imprimir.';
+      el('imprimir').disabled = false;
+      cargado = true;
+    }
+    // Solo recibe la venta desde el Dashboard principal, que la consultará
+    // a la base de datos en los siguientes pasos. Nunca inventar una venta.
+    window.addEventListener('message', evento => {
+      if (evento.source !== window.parent || evento.source === window) return;
+      const mensaje = evento.data;
+      if (mensaje && mensaje.type === 'ticket:mostrar') mostrarTicket(mensaje.data);
+    });
+    el('imprimir').addEventListener('click', () => { if (cargado) window.print(); });
+    el('cerrar').addEventListener('click', () => {
+      if (window.parent !== window) window.parent.postMessage({ type: 'ticket:cerrar' }, '*');
+    });
+  </script>
+</body>
+</html>

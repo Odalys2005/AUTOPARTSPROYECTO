@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -49,6 +48,50 @@ namespace AutoParts.DataAccess
             }
 
             return result;
+        }
+
+        // Registra cabecera + detalles + salida de inventario en UNA transacción SQL.
+        public VentaRegistroResultado RegistrarCompleta(VentaRegistroCompleto solicitud)
+        {
+            if (solicitud == null) throw new ArgumentNullException(nameof(solicitud));
+
+            DataTable lineas = new DataTable();
+            lineas.Columns.Add("ProductoId", typeof(int));
+            lineas.Columns.Add("Cantidad", typeof(int));
+            foreach (VentaLineaRegistro linea in solicitud.Lineas)
+                lineas.Rows.Add(linea.ProductoId, linea.Cantidad);
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spVentaRegistrarCompleta", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 45;
+                cmd.Parameters.Add("@ClienteId", SqlDbType.Int).Value = solicitud.ClienteId;
+                cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int).Value = solicitud.EmpleadoId;
+                cmd.Parameters.Add("@NumeroFactura", SqlDbType.VarChar, 50).Value =
+                    string.IsNullOrWhiteSpace(solicitud.NumeroFactura)
+                        ? DBNull.Value
+                        : solicitud.NumeroFactura.Trim();
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int).Value = solicitud.EstadoId;
+
+                SqlParameter carrito = cmd.Parameters.Add("@Lineas", SqlDbType.Structured);
+                carrito.TypeName = "dbo.AutoPartsVentaLinea";
+                carrito.Value = lineas;
+
+                conn.Open();
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                {
+                    if (!dr.Read())
+                        throw new InvalidOperationException("SQL Server no devolvió la confirmación de la venta.");
+
+                    return new VentaRegistroResultado
+                    {
+                        VentaId = dr.GetInt32(dr.GetOrdinal("VentaId")),
+                        Total = dr.GetDecimal(dr.GetOrdinal("Total")),
+                        NumeroFactura = dr.GetString(dr.GetOrdinal("NumeroFactura"))
+                    };
+                }
+            }
         }
 
         public int Insert(Venta entity)

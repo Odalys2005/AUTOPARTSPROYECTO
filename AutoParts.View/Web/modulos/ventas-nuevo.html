@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AutoParts | Nuevo Venta</title><style>
+<title>AutoParts | Nueva venta</title><style>
 :root{color-scheme:dark}*{box-sizing:border-box}
 body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 100% 0%,rgba(136,16,25,.20),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
 button,input,select,textarea{font:inherit}
@@ -28,121 +28,191 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
 .guardar{color:#190d0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);box-shadow:0 0 16px #e5233533}
 .guardar:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-2px)}.guardar:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:720px){.contenedor{padding:20px}.panel{padding:20px}.campos{grid-template-columns:1fr;gap:18px}.campo.ancho{grid-column:auto}}
+
+/* Punto de venta: extensión del diseño original */
+.contenedor{max-width:1390px}.panel{margin-bottom:18px}
+.panel .seccion{margin-bottom:20px}.scan-row{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap}
+.scan-row input{flex:1;min-width:240px;min-height:52px;background:#111216;color:#fff;border:1px solid #79515b;border-radius:9px;padding:0 16px;outline:0;font-size:17px;letter-spacing:.6px}
+.scan-row input:focus{border-color:#ffbd35;box-shadow:0 0 14px #ffbd3529}
+.btn-secondary{background:#312029;border:1px solid #8d4852;border-radius:9px;color:#fff;padding:0 18px;min-height:48px;cursor:pointer;font-weight:700}
+.btn-secondary:hover{border-color:#ffbd35}.hint{font-size:12px;color:#b1a9b0;margin-top:10px;line-height:1.7}
+.status{padding:13px 16px;border:1px solid #57454b;background:#231b21;border-radius:9px;margin-top:16px;font-size:13px;color:#ffcd82;min-height:44px}
+.status.ok{border-color:#276342;background:#142820;color:#9cf0b8}.status.error{border-color:#a5424b;background:#351c23;color:#ffb9ba}
+.search-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:15px;max-height:270px;overflow:auto}
+.result{background:#1b181d;border:1px solid #47353e;border-radius:10px;padding:13px;text-align:left;color:#f4f4f7;cursor:pointer;display:flex;flex-direction:column;gap:7px}
+.result:hover:not(:disabled){border-color:#ffbd35}.result:disabled{opacity:.45;cursor:not-allowed}
+.result strong{font-size:13px}.result small{color:#bab0b6}.result .price{color:#ffbd35;font-weight:800}
+.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:710px;font-size:13px}
+th{text-align:left;background:#201b21;color:#c6c1c5;padding:12px;border-bottom:1px solid #55424a}
+td{padding:13px 12px;border-bottom:1px solid #3b2f36;vertical-align:middle}.c-name{font-weight:700}.c-sub{font-size:11px;color:#ada6b0;margin-top:4px}
+.qty{display:flex;align-items:center;gap:6px}.qty button,.remove{background:#30252d;border:1px solid #74505a;border-radius:6px;color:#fff;cursor:pointer;min-height:32px;min-width:32px}
+.qty output{min-width:22px;text-align:center}.remove{color:#ff9ca3}.empty{text-align:center;color:#ada4ae;padding:32px}
+.totals{display:flex;justify-content:flex-end;gap:16px;align-items:center;flex-wrap:wrap;padding:22px 4px 0}
+.totals strong{color:#ffbd35;font-size:30px;letter-spacing:-1px}.summary{font-size:12px;color:#b7afb7}
+.form-note{padding:12px 14px;border-radius:8px;background:#291d20;border:1px solid #85424a;font-size:12px;line-height:1.7;color:#ffcd9d;margin-top:18px}
+.imprimir{background:#243628;border-color:#528b63!important;color:#adf5bd}.imprimir:disabled{opacity:.45;cursor:not-allowed}#guardar:disabled{cursor:not-allowed}.readinput{font-variant-numeric:tabular-nums}
+@media(max-width:720px){.scan-row input{min-width:180px}.status{font-size:12px}}
 </style></head><body>
-<main class="contenedor"><header class="encabezado"><div><div class="etiqueta">VENTAS Y FACTURACIÓN</div>
-<h1>Nueva <span>Venta</span></h1><p class="descripcion">Registro de venta en AutoParts.</p></div>
-<div class="icono" aria-hidden="true"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h8m-8 4h5"/></svg></div></header>
-<section class="panel"><form id="formRegistro" novalidate><p class="seccion">DATOS DEL REGISTRO</p><div class="campos"><div class="campo"><label for="NumeroFactura">Número de factura <span class="requerido">*</span></label><input type="text" id="NumeroFactura" required maxlength="50" autocomplete="off"></div>
+<main class="contenedor">
+<header class="encabezado"><div><div class="etiqueta">VENTAS Y FACTURACIÓN · AUTOPARTS POS</div><h1>Nueva <span>Venta</span></h1>
+<p class="descripcion">Escanea una etiqueta Code 128 o busca un repuesto manualmente.</p></div>
+<div class="icono" aria-hidden="true"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v5M8 4v5M12 4v5M16 4v5M20 4v5M4 15v5M8 15v5M12 15v5M16 15v5M20 15v5"/></svg></div></header>
+<section class="panel"><p class="seccion">01 · LECTOR DE CÓDIGOS DE BARRAS</p>
+<div class="scan-row"><input id="codigoEscaneo" type="text" autocomplete="off" spellcheck="false" placeholder="Escanea AP0000000001 y presiona Enter" aria-label="Código de barras">
+<button type="button" class="btn-secondary" id="btnEscanear">Agregar por código</button><button type="button" class="btn-secondary" id="btnEnfocar">Activar lector</button></div>
+<div class="hint">Los lectores USB normalmente escriben como un teclado. Configura el sufijo Enter en el lector. Escanear nuevamente aumenta la cantidad.</div>
+<div id="estadoCatalogo" class="status" role="status" aria-live="polite">Conectando con el catálogo y el inventario...</div>
+<div class="campo" style="margin-top:19px"><label for="buscarProducto">Buscar manualmente por nombre, código OEM o código de barras</label><input id="buscarProducto" type="search" autocomplete="off" placeholder="Ej. filtro de aire, OEM o AP0000000001"></div>
+<div id="resultados" class="search-results" aria-live="polite"></div></section>
+<section class="panel"><p class="seccion">02 · PRODUCTOS DE LA VENTA</p>
+<div class="tablewrap"><table><thead><tr><th>Producto</th><th>Código</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th>Quitar</th></tr></thead><tbody id="lineas"><tr><td colspan="6" class="empty">Escanea un repuesto o selecciónalo en la búsqueda.</td></tr></tbody></table></div>
+<div class="totals"><span class="summary" id="resumen">0 productos · 0 unidades</span><span>Total</span><strong id="totalVista">$0.00</strong></div></section>
+<section class="panel"><form id="formRegistro" novalidate><p class="seccion">03 · DATOS DE LA VENTA</p><div class="campos">
+<div class="campo"><label for="NumeroFactura">Número de factura (automático)</label><input type="text" id="NumeroFactura" readonly value="Se generará al confirmar" aria-label="Número de factura automático"></div>
 <div class="campo"><label for="FechaVenta">Fecha de venta <span class="requerido">*</span></label><input type="datetime-local" id="FechaVenta" required></div>
-<div class="campo"><label for="ClienteId">Cliente <span class="requerido">*</span></label><select id="ClienteId" required disabled><option value="">Cargando...</option></select></div>
-<div class="campo"><label for="EmpleadoId">Empleado responsable <span class="requerido">*</span></label><select id="EmpleadoId" required disabled><option value="">Cargando...</option></select></div>
-<div class="campo"><label for="Total">Total de venta <span class="requerido">*</span></label><input type="number" id="Total" required min="0" step="0.01" placeholder="0.00"></div>
-<div class="campo"><label for="EstadoId">Estado <span class="requerido">*</span></label><select id="EstadoId" required disabled><option value="">Cargando...</option></select></div></div>
+<div class="campo"><label for="ClienteId">Cliente <span class="requerido">*</span></label><select id="ClienteId" required disabled><option value="">Cargando clientes...</option></select></div>
+<div class="campo"><label for="EmpleadoId">Empleado responsable <span class="requerido">*</span></label><select id="EmpleadoId" required disabled><option value="">Cargando empleados...</option></select></div>
+<div class="campo"><label for="Total">Total de venta (USD)</label><input type="number" id="Total" class="readinput" readonly value="0.00" step="0.01"></div>
+<div class="campo"><label for="EstadoId">Estado <span class="requerido">*</span></label><select id="EstadoId" required disabled><option value="">Cargando estados...</option></select></div>
+</div><div class="form-note">El total que se muestra es estimado; SQL Server verificará nuevamente precios y existencias al confirmar. La fecha oficial de venta se asigna en SQL Server.</div>
 <div id="mensaje" class="mensaje" role="status" aria-live="polite"></div>
-<div class="acciones"><button type="button" id="cancelar" class="cancelar">Cancelar</button>
-<button type="submit" id="guardar" class="guardar" disabled>Guardar venta</button></div></form></section></main>
+<div class="acciones"><button type="button" id="cancelar" class="cancelar">Cancelar</button><button type="button" id="imprimirTicket" class="imprimir" disabled title="Disponible al conectar AutoParts con la PT-210">Imprimir ticket PT-210</button><button type="submit" id="guardar" class="guardar" disabled>Confirmar venta</button></div>
+</form></section></main>
 <script>
 'use strict';
-function val(obj, ...keys){for(const k of keys){if(obj && Object.prototype.hasOwnProperty.call(obj,k) && obj[k]!==null && obj[k]!==undefined)return obj[k];}return '';}
-function campo(obj,key){return val(obj,key,key[0].toLowerCase()+key.slice(1));}
-function idDe(obj,key){return Number(campo(obj,key))||0;}
-function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const $=id=>document.getElementById(id);
+const campo=(obj,n)=>obj?.[n]??obj?.[n.charAt(0).toLowerCase()+n.slice(1)]??null;
+const num=(obj,n)=>Number(campo(obj,n));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dinero=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n||0);
+const codigo=v=>String(v??'').trim().toUpperCase();
 function emitir(data){if(window.parent!==window){window.parent.postMessage(data,'*');return true;}
-  if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(data);return true;}
-  return false;}
-function dinero(x){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(x)||0);}
-function fecha(x){if(!x)return '—'; const s=String(x);return s.replace('T',' ').slice(0,16);}
-function leer(evento){let data=evento.data;if(typeof data==='string'){try{data=JSON.parse(data);}catch{return null;}}return data&&typeof data==='object'?data:null;}
-const IDS={compras:'CompraId','detalles-compra':'DetalleCompraId',ventas:'VentaId','detalles-venta':'DetalleVentaId',garantias:'GarantiaId','reemplazos-garantia':'ReemplazoId',proveedores:'ProveedorId',clientes:'ClienteId',empleados:'EmpleadoId',productos:'ProductoId',estados:'EstadoId'};
-function nombreRelacionado(tipo,reg){if(!reg)return '—';
-  switch(tipo){
-    case 'proveedores':return String(campo(reg,'NombreEmpresa')||`Proveedor #${idDe(reg,'ProveedorId')}`);
-    case 'clientes':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Cliente #${idDe(reg,'ClienteId')}`;
-    case 'empleados':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Empleado #${idDe(reg,'EmpleadoId')}`;
-    case 'productos':return [campo(reg,'CodigoOEM'),campo(reg,'Nombre')].filter(Boolean).join(' · ')||`Producto #${idDe(reg,'ProductoId')}`;
-    case 'compras':return String(campo(reg,'NumeroComprobante')||`Compra #${idDe(reg,'CompraId')}`);
-    case 'ventas':return String(campo(reg,'NumeroFactura')||`Venta #${idDe(reg,'VentaId')}`);
-    case 'detalles-venta':return `Detalle #${idDe(reg,'DetalleVentaId')} · Venta #${idDe(reg,'VentaId')} · Producto #${idDe(reg,'ProductoId')}`;
-    case 'garantias':return `Garantía #${idDe(reg,'GarantiaId')}`;
-    case 'estados':return String(campo(reg,'Nombre')||`Estado #${idDe(reg,'EstadoId')}`);
-    default:return String(campo(reg,'Nombre')||'—');
-  }
+ if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(data);return true;}return false;}
+function leer(e){let m=e.data;if(typeof m==='string'){try{m=JSON.parse(m);}catch{return null;}}return m&&typeof m==='object'?m:null;}
+let productos=[],inventarios=[],carrito=new Map(),catalogoListo=false,stockListo=false;
+let confirmando=false,ventaConfirmada=false;
+let ticketPendiente=null; // Solo se crea al confirmar SQL Server; no vuelve a registrar ventas.
+const listas={clientes:[],empleados:[],estados:[]};
+function estado(texto,clase=''){const e=$('estadoCatalogo');e.textContent=texto;e.className='status '+clase;}
+function aviso(texto){$('mensaje').textContent=texto;}
+function stockDisponible(id){
+ if(!stockListo)return null;
+ const coinciden=inventarios.filter(i=>num(i,'ProductoId')===id);
+ if(!coinciden.length)return 0;
+ return coinciden.reduce((acc,i)=>acc+Math.max(0,Number(campo(i,'StockActual'))||0),0);
 }
-
-
-const CFG={"slug": "ventas", "menu": "Ventas", "single": "venta", "title": "Ventas", "newtitle": "Venta", "tag": "VENTAS Y FACTURACIÓN", "desc": "Consulta las facturas y ventas del negocio.", "info": "Ventas y facturas registradas.", "search": "Buscar factura, cliente o empleado...", "id": "VentaId", "lookups": {"clientes": "ClienteId", "empleados": "EmpleadoId", "estados": "EstadoId"}, "columns": [["VentaId", "ID", "id"], ["NumeroFactura", "Factura", "code"], ["FechaVenta", "Fecha", "date"], ["ClienteId", "Cliente", "lookup:clientes"], ["EmpleadoId", "Empleado", "lookup:empleados"], ["Total", "Total", "money"], ["EstadoId", "Estado", "status"]], "fields": [["NumeroFactura", "Número de factura", "text", true, 50], ["FechaVenta", "Fecha de venta", "datetime", true], ["ClienteId", "Cliente", "select:clientes", true], ["EmpleadoId", "Empleado responsable", "select:empleados", true], ["Total", "Total de venta", "money", true], ["EstadoId", "Estado", "select:estados", true]]};
-const form=document.getElementById('formRegistro'),mensaje=document.getElementById('mensaje'),guardar=document.getElementById('guardar');
-let guardando=false,cargado={},temporizadorCarga,temporizadorGuardar;
-const colecciones={};for(const k of Object.keys(CFG.lookups)){colecciones[k]=[];cargado[k]=false;}
-function aviso(t){mensaje.textContent=t;}
-function llenar(tipo){const idCampo=CFG.lookups[tipo],control=CFG.fields.find(x=>x[0]===idCampo);if(!control)return;
-  const sel=document.getElementById(idCampo);if(!sel)return;const anterior=sel.value;sel.replaceChildren();
-  const op=document.createElement('option');op.value='';op.textContent=`Selecciona ${control[1].toLowerCase()}`;sel.appendChild(op);
-  let registros=colecciones[tipo];
-  if(tipo==='garantias'){const usados=new Set((colecciones['reemplazos-garantia']||[]).map(r=>idDe(r,'GarantiaId')));registros=registros.filter(r=>!usados.has(idDe(r,'GarantiaId')));}
-  for(const r of registros){const id=idDe(r,IDS[tipo]);if(!id)continue;const item=document.createElement('option');item.value=String(id);item.textContent=nombreRelacionado(tipo,r);sel.appendChild(item);}
-  if([...sel.options].some(o=>o.value===anterior))sel.value=anterior;
-  sel.disabled=sel.options.length===1;
-  habilitar();
+function nombre(r,tipo){if(tipo==='estados')return String(campo(r,'Nombre')||'Estado');
+ return [campo(r,'Nombre'),campo(r,'Apellido')].filter(Boolean).join(' ')||`${tipo} #${num(r,tipo==='clientes'?'ClienteId':'EmpleadoId')}`;}
+function actualizarConfirmacion(){
+ const listasListas=['clientes','empleados','estados'].every(k=>listas[k].length>0);
+ $('guardar').disabled=confirmando||ventaConfirmada||!catalogoListo||!stockListo||!listasListas||carrito.size===0;
 }
-function habilitar(){guardar.disabled=guardando||!Object.entries(CFG.lookups).filter(([k])=>CFG.fields.some(f=>f[2]===`select:${k}`)).every(([k])=>cargado[k]);}
-function recibir(evento){const m=leer(evento);if(!m||!m.type)return;
-  if(m.type.endsWith(':list')){const tipo=m.type.slice(0,-5);if(tipo in colecciones){colecciones[tipo]=Array.isArray(m.data)?m.data:[];cargado[tipo]=true;llenar(tipo);if(tipo==='reemplazos-garantia')llenar('garantias');}}
-  else if(m.type==='estados'&&'estados' in colecciones){colecciones.estados=Array.isArray(m.data)?m.data:[];cargado.estados=true;llenar('estados');}
-  else if(m.type==='error'){clearTimeout(temporizadorGuardar);guardando=false;aviso(String(m.message||'No se pudo completar la operación.'));habilitar();}
-  if(Object.values(cargado).every(Boolean)){clearTimeout(temporizadorCarga);if(!guardando&&!mensaje.textContent){const faltan=CFG.fields.some(f=>f[2].startsWith('select:')&&document.getElementById(f[0]).disabled);if(faltan)aviso('No hay registros disponibles en una de las listas necesarias.');}}
+function llenarLista(tipo){const llave={clientes:'ClienteId',empleados:'EmpleadoId',estados:'EstadoId'}[tipo];const sel=$(llave);const valor=sel.value;
+ sel.replaceChildren();const opcion=document.createElement('option');opcion.value='';opcion.textContent=`Selecciona ${tipo==='clientes'?'un cliente':tipo==='empleados'?'un empleado':'un estado'}`;sel.appendChild(opcion);
+ for(const r of listas[tipo]){const id=num(r,llave);if(!Number.isInteger(id)||id<=0)continue;const op=document.createElement('option');op.value=String(id);op.textContent=nombre(r,tipo);sel.appendChild(op);}
+ if([...sel.options].some(o=>o.value===valor))sel.value=valor;sel.disabled=sel.options.length===1;actualizarConfirmacion();
+}
+function recibir(e){const m=leer(e);if(!m||typeof m.type!=='string')return;
+ if(m.type==='productos:list'){productos=Array.isArray(m.data)?m.data:[];catalogoListo=true;actualizarEstado();buscar();actualizarConfirmacion();}
+ else if(m.type==='inventario:list'){inventarios=Array.isArray(m.data)?m.data:[];stockListo=true;actualizarEstado();buscar();renderCarrito();actualizarConfirmacion();}
+ else if(m.type==='clientes:list'){listas.clientes=Array.isArray(m.data)?m.data:[];llenarLista('clientes');}
+ else if(m.type==='empleados:list'){listas.empleados=Array.isArray(m.data)?m.data:[];llenarLista('empleados');}
+ else if(m.type==='estados:list'||m.type==='estados'){listas.estados=Array.isArray(m.data)?m.data:[];llenarLista('estados');}
+ else if(m.type==='ventas:registrada'){
+    confirmando=false;ventaConfirmada=true;actualizarConfirmacion();
+    const id=Number(campo(m.data,'VentaId'));
+    const total=Number(campo(m.data,'Total'));
+    const factura=String(campo(m.data,'NumeroFactura')||'').trim();
+    if(factura)$('NumeroFactura').value=factura;
+    // La impresión se activará cuando C# implemente el mensaje
+    // ventas:imprimirTicket y consulte el detalle definitivo desde SQL Server.
+    if(Number.isInteger(id)&&id>0&&factura&&Number.isFinite(total)){
+      ticketPendiente={VentaId:id,NumeroFactura:factura,Total:total};
+      $('imprimirTicket').disabled=false;
+      $('imprimirTicket').title='Solicitar la impresión del ticket de esta venta';
+    }
+    aviso(`¡Venta registrada correctamente! ${factura?'Factura '+factura+' · ':''}Venta #${id} · Total confirmado: ${dinero(total)}. El inventario se actualizó en SQL Server.`);
+    estado('Venta confirmada y existencias descontadas. Puedes regresar al listado.','ok');
+    $('guardar').textContent='Venta registrada';
+ }
+ else if(m.type==='error'){confirmando=false;actualizarConfirmacion();estado('Error recibido desde C#: '+String(m.message||'Sin detalles'),'error');aviso(String(m.message||'Error en la consulta.'));}
 }
 window.addEventListener('message',recibir);
-if(window.chrome?.webview?.addEventListener&&window.parent===window)window.chrome.webview.addEventListener('message',recibir);
-function valorCampo(f){const [k,label,tipo,req]=f,el=document.getElementById(k);const raw=el.value.trim();
-  if(tipo.startsWith('select:'))return Number(raw);
-  if(tipo==='int'||tipo==='intzero')return raw===''?null:Number(raw);
-  if(tipo==='money'||tipo==='calculated')return raw===''?null:Number(raw);
-  return raw===''?null:raw;
+if(window.parent===window&&window.chrome?.webview?.addEventListener)window.chrome.webview.addEventListener('message',recibir);
+function actualizarEstado(){if(catalogoListo&&stockListo){estado(`Catálogo: ${productos.length} productos · Inventario: ${inventarios.length} registros. Lector listo.`,'ok');}
+ else if(catalogoListo){estado(`Catálogo cargado (${productos.length}). Esperando inventario para validar existencias...`);}
+ else{estado('Esperando respuesta de productos e inventario...');}}
+function agregar(p){const id=num(p,'ProductoId');const precio=Number(campo(p,'PrecioVenta'));
+ if(!Number.isInteger(id)||id<=0||!Number.isFinite(precio)||precio<0){estado('Este producto tiene datos o precio inválidos.','error');return;}
+ const disponible=stockDisponible(id);
+ if(disponible===null){estado('Todavía no tenemos respuesta del inventario. No se puede agregar sin validar stock.','error');return;}
+ const actual=carrito.get(id)?.cantidad||0;
+ if(actual+1>disponible){estado(`Stock insuficiente para ${campo(p,'Nombre')||'este producto'}. Disponible: ${disponible}.`,'error');return;}
+ carrito.set(id,{producto:p,cantidad:actual+1});renderCarrito();estado(`${campo(p,'Nombre')||'Producto'} agregado. Cantidad: ${actual+1}.`,'ok');$('codigoEscaneo').value='';}
+function escanear(){const c=codigo($('codigoEscaneo').value);if(!c){estado('Escanea o escribe un código de barras.','error');return;}
+ if(!catalogoListo){estado('Aún no se ha recibido el catálogo de productos.','error');return;}
+ const p=productos.find(x=>codigo(campo(x,'CodigoBarras'))===c);
+ if(!p){estado(`No existe un producto con código ${c}.`,'error');return;}
+ agregar(p);$('codigoEscaneo').focus();}
+function buscar(){const q=codigo($('buscarProducto').value);const div=$('resultados');div.replaceChildren();
+ if(!q)return;if(!catalogoListo){div.textContent='Esperando catálogo...';return;}
+ const encontrados=productos.filter(p=>[campo(p,'Nombre'),campo(p,'CodigoOEM'),campo(p,'CodigoBarras')].some(v=>codigo(v).includes(q))).slice(0,20);
+ if(!encontrados.length){div.textContent='No se encontraron repuestos.';return;}
+ for(const p of encontrados){const b=document.createElement('button');b.type='button';b.className='result';const disponible=stockDisponible(num(p,'ProductoId'));
+ const titulo=document.createElement('strong');titulo.textContent=String(campo(p,'Nombre')||'Producto');
+ const detalle=document.createElement('small');detalle.textContent=`${campo(p,'CodigoOEM')||'Sin OEM'} · ${campo(p,'CodigoBarras')||'Sin código'} · Stock: ${disponible===null?'Consultando':disponible}`;
+ const precio=document.createElement('span');precio.className='price';precio.textContent=dinero(num(p,'PrecioVenta'));
+ b.append(titulo,detalle,precio);b.disabled=disponible===null||disponible<1;b.addEventListener('click',()=>agregar(p));div.appendChild(b);}
 }
-function totalizar(){if(!CFG.calc)return;
-  const cantidad=Number(document.getElementById('Cantidad').value)||0;
-  const costo=Number(document.getElementById(CFG.calc==='purchase'?'PrecioCosto':'PrecioUnitario').value)||0;
-  const desc=CFG.calc==='sale'?Number(document.getElementById('Descuento').value)||0:0;
-  const subtotal=Math.max(0,Math.round((cantidad*costo-desc)*100)/100);
-  document.getElementById('Subtotal').value=subtotal.toFixed(2);
+function variar(id,d){const linea=carrito.get(id);if(!linea)return;const nuevo=linea.cantidad+d;
+ if(nuevo<=0){carrito.delete(id);}else{const s=stockDisponible(id);if(s===null||nuevo>s){estado('La cantidad supera las existencias disponibles.','error');return;}linea.cantidad=nuevo;}
+ renderCarrito();}
+function renderCarrito(){const tbody=$('lineas');tbody.replaceChildren();let centavos=0,unidades=0;
+ if(!carrito.size){const tr=document.createElement('tr');tr.innerHTML='<td colspan="6" class="empty">Escanea un repuesto o selecciónalo en la búsqueda.</td>';tbody.appendChild(tr);}
+ for(const [id,item] of carrito){const p=item.producto;const precio=Math.round(num(p,'PrecioVenta')*100);const subtotal=precio*item.cantidad;centavos+=subtotal;unidades+=item.cantidad;
+ const tr=document.createElement('tr');tr.innerHTML=`<td><div class="c-name">${esc(campo(p,'Nombre'))}</div><div class="c-sub">${esc(campo(p,'CodigoOEM'))}</div></td><td>${esc(campo(p,'CodigoBarras')||'—')}</td><td>${esc(dinero(precio/100))}</td><td><div class="qty"><button type="button" data-action="minus" aria-label="Reducir">−</button><output>${item.cantidad}</output><button type="button" data-action="plus" aria-label="Aumentar">+</button></div></td><td>${esc(dinero(subtotal/100))}</td><td><button class="remove" type="button" data-action="remove" aria-label="Quitar producto">×</button></td>`;
+ tr.querySelector('[data-action="minus"]').addEventListener('click',()=>variar(id,-1));tr.querySelector('[data-action="plus"]').addEventListener('click',()=>variar(id,1));
+ tr.querySelector('[data-action="remove"]').addEventListener('click',()=>{carrito.delete(id);renderCarrito();});tbody.appendChild(tr);}
+ const total=centavos/100;$('Total').value=total.toFixed(2);$('totalVista').textContent=dinero(total);$('resumen').textContent=`${carrito.size} productos · ${unidades} unidades`;actualizarConfirmacion();
 }
-if(CFG.calc){for(const k of ['Cantidad',CFG.calc==='purchase'?'PrecioCosto':'PrecioUnitario',...(CFG.calc==='sale'?['Descuento']:[])])document.getElementById(k).addEventListener('input',totalizar);totalizar();}
-// El diseño propone el formulario, pero la confirmación de guardado depende del C#.
-document.getElementById('cancelar').addEventListener('click',()=>emitir({type:'cancelar'}));
-form.addEventListener('submit',evento=>{evento.preventDefault();if(guardando)return;const datos={};
-  for(const campoDef of CFG.fields){const [key,label,tipo,req]=campoDef;const x=valorCampo(campoDef);
-    if(req&&(x===null||x===''||((tipo.startsWith('select:'))&&x<=0))){aviso(`Completa el campo: ${label}.`);document.getElementById(key).focus();return;}
-    if(x!==null&&x!==''&&['int','intzero','money','calculated'].includes(tipo)){
-      if(!Number.isFinite(x)||x<(tipo==='int'?1:0)||(['int','intzero'].includes(tipo)&&!Number.isInteger(x))){aviso(`Revisa el valor de ${label.toLowerCase()}.`);document.getElementById(key).focus();return;}
-    }
-    if(x!==null)datos[key]=x;
-  }
-  if(!form.checkValidity()){aviso('Revisa los campos marcados.');form.reportValidity();return;}
-  if(CFG.slug==='detalles-venta' && Number(datos.Descuento||0)>Number(datos.Cantidad)*Number(datos.PrecioUnitario)){aviso('El descuento no puede superar el importe de la línea.');return;}
-  if(CFG.slug==='garantias'){
-    const detalle=colecciones['detalles-venta'].find(r=>idDe(r,'DetalleVentaId')===datos.DetalleVentaId);
-    if(detalle&&datos.CantidadReclamada>Number(campo(detalle,'Cantidad'))){aviso('La cantidad reclamada no puede exceder la cantidad vendida.');return;}
-    if(datos.FechaResolucion&&datos.FechaResolucion<datos.FechaSolicitud){aviso('La resolución no puede ser anterior a la solicitud.');return;}
-  }
-  if(CFG.slug==='reemplazos-garantia'){
-    const g=colecciones.garantias.find(r=>idDe(r,'GarantiaId')===datos.GarantiaId);
-    if(g&&datos.Cantidad>Number(campo(g,'CantidadReclamada'))){aviso('La cantidad a reemplazar no puede superar la reclamada.');return;}
-  }
-  if(!emitir({type:'guardar',data:datos})){aviso('Abre este formulario desde AutoParts.');return;}
-  guardando=true;habilitar();aviso('Enviando registro...');clearTimeout(temporizadorGuardar);
-  temporizadorGuardar=setTimeout(()=>{if(guardando){guardando=false;habilitar();aviso('No hubo confirmación de guardado. Comprueba la conexión de MainForm.cs antes de intentarlo de nuevo.');}},12000);
+$('codigoEscaneo').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();escanear();}});
+$('btnEscanear').addEventListener('click',escanear);
+$('btnEnfocar').addEventListener('click',()=>$('codigoEscaneo').focus());
+$('buscarProducto').addEventListener('input',buscar);
+$('cancelar').addEventListener('click',()=>emitir({type:'cancelar'}));
+$('imprimirTicket').addEventListener('click',()=>{
+  if(!ventaConfirmada||!ticketPendiente){aviso('Confirma primero una venta para obtener su ticket.');return;}
+  // Este mensaje solicita SOLO la impresión: no crea otra venta ni cambia el stock.
+  // El puente JavaScript y el manejador de impresión en C# son los pasos siguientes.
+  const enviado=emitir({type:'ventas:imprimirTicket',data:{VentaId:ticketPendiente.VentaId}});
+  aviso(enviado
+    ? 'Solicitud de ticket enviada. Falta conectar el receptor de impresión de la PT-210 en AutoParts (siguiente paso).'
+    : 'No se pudo enviar la solicitud de impresión a AutoParts.');
 });
-form.addEventListener('input',()=>{if(!guardando && mensaje.textContent && !mensaje.textContent.startsWith('No hubo'))aviso('');});
-function iniciar(){
-  for(const dep of Object.keys(CFG.lookups)){emitir({type:dep==='estados'?'obtenerEstados':`${dep}:selectAll`});}
-  clearTimeout(temporizadorCarga);
-  temporizadorCarga=setTimeout(()=>{const sinCargar=Object.keys(cargado).filter(k=>!cargado[k]);if(sinCargar.length)aviso('No se pudieron cargar las listas: '+sinCargar.join(', ')+'.');},12000);
-  habilitar();
-}
-// Inicio de formularios: la fecha se llena con hora local, no UTC.
-const ahora=new Date(),ajustada=new Date(ahora.getTime()-ahora.getTimezoneOffset()*60000).toISOString().slice(0,16);
-for(const f of CFG.fields){if(f[2]==='datetime'&&/^(FechaCompra|FechaVenta|FechaSolicitud|FechaReemplazo)$/.test(f[0]))document.getElementById(f[0]).value=ajustada;}
-iniciar();
-
+$('formRegistro').addEventListener('submit',e=>{
+ e.preventDefault();
+ if(confirmando||ventaConfirmada)return;
+ if(!catalogoListo||!stockListo||carrito.size===0){aviso('Agrega productos y espera a que cargue el inventario.');return;}
+ if(!$('formRegistro').checkValidity()){$('formRegistro').reportValidity();aviso('Completa los campos obligatorios.');return;}
+ const solicitud={
+   ClienteId:Number($('ClienteId').value),
+   EmpleadoId:Number($('EmpleadoId').value),
+   NumeroFactura:'', // SQL Server genera la numeración definitiva al confirmar.
+   EstadoId:Number($('EstadoId').value),
+   Lineas:[...carrito].map(([ProductoId,item])=>({ProductoId,Cantidad:item.cantidad}))
+ };
+ if(!solicitud.ClienteId||!solicitud.EmpleadoId||!solicitud.EstadoId){aviso('Selecciona cliente, empleado y estado.');return;}
+ for(const l of solicitud.Lineas){if(!Number.isInteger(l.Cantidad)||l.Cantidad<1||l.Cantidad>stockDisponible(l.ProductoId)){aviso('Revisa las cantidades: hay un producto sin existencias suficientes.');return;}}
+ if(!window.confirm(`¿Confirmar venta por aproximadamente ${$('totalVista').textContent}? SQL Server validará el importe final y descontará existencias.`))return;
+ confirmando=true;actualizarConfirmacion();aviso('Registrando venta en SQL Server...');
+ if(!emitir({type:'ventas:registrarCompleta',data:solicitud})){
+  confirmando=false;actualizarConfirmacion();aviso('No se pudo enviar la venta a AutoParts.');
+ }
+});
+const ahora=new Date();$('FechaVenta').value=new Date(ahora.getTime()-ahora.getTimezoneOffset()*60000).toISOString().slice(0,16);
+const requeridas=['productos:selectAll','inventario:selectAll','clientes:selectAll','empleados:selectAll','obtenerEstados'];
+let conectado=true;for(const type of requeridas)conectado=emitir({type})&&conectado;
+if(!conectado)estado('Abre esta pantalla desde el Dashboard de AutoParts (WebView2).','error');
+setTimeout(()=>{if(!catalogoListo||!stockListo){estado(`Sin respuesta de: ${[!catalogoListo?'productos':null,!stockListo?'inventario':null].filter(Boolean).join(' e ')}. Comprueba la comunicación con MainForm.`, 'error');}},12000);
+$('codigoEscaneo').focus();
 </script></body></html>

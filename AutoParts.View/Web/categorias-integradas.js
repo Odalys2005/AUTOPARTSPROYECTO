@@ -204,6 +204,18 @@ window.addEventListener('message', evento => {
         return;
     }
 
+    // PASO 5: reenviar el carrito completo sin usar guardarIntegrado.
+    if (modulo === 'ventas' && mensaje.type === 'ventas:registrarCompleta') {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    // PT-210: solicitar impresión de una venta YA registrada (sin guardar otra vez).
+    if (modulo === 'ventas' && mensaje.type === 'ventas:imprimirTicket') {
+        enviarACSharp(mensaje);
+        return;
+    }
+
     if (mensaje.type === 'guardar') {
         if (!configuracion.soloLectura) {
             enviarACSharp({
@@ -254,6 +266,21 @@ if (window.chrome?.webview?.addEventListener) {
 
         const modulo = marco.dataset.modulo;
         if (!slugsModulosIntegrados.has(modulo)) return;
+
+        // PASO 5: entregar al POS la confirmación con ID y total de la venta.
+        if (modulo === 'ventas' && mensaje.type === 'ventas:registrada') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        // PT-210: respuestas del servicio de impresión de C# al POS.
+        if (modulo === 'ventas' && (
+            mensaje.type === 'ventas:ticketImpreso' ||
+            mensaje.type === 'ventas:ticketError'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
 
         if (mensaje.type === `${modulo}:guardado`) {
             marco.src = rutaListado(modulo);

@@ -2,6 +2,9 @@
 using Microsoft.Web.WebView2.Core;
 using System;
 using System.IO;
+using System.Text;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +40,12 @@ namespace AutoParts.View
         private readonly UsuarioBL _usuarioBL;
         private SesionUsuario? _sesionActual;
         private bool _loginEnProceso;
+
+        private const string HostImagenes = "autoparts-imagenes.local";
+        private const int MaxImagenBytes = 5 * 1024 * 1024;
+        private static readonly string CarpetaImagenes = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "AutoParts", "Productos");
 
 
         public MainForm(
@@ -99,6 +108,12 @@ namespace AutoParts.View
             try
             {
                 await webViewMain.EnsureCoreWebView2Async();
+                // Solo las fotos del catálogo se exponen a WebView2.
+                Directory.CreateDirectory(CarpetaImagenes);
+                webViewMain.CoreWebView2.SetVirtualHostNameToFolderMapping(
+                    HostImagenes,
+                    CarpetaImagenes,
+                    CoreWebView2HostResourceAccessKind.DenyCors);
                 webViewMain.CoreWebView2.WebMessageReceived += WebViewMain_WebMessageReceived;
                 webViewMain.CoreWebView2.NavigationStarting += (s, args) =>
                 {
@@ -260,6 +275,17 @@ namespace AutoParts.View
                 }
                 if (tipo == "auth:login") return;
 
+                if (!PermisosSistema.EsAdministrador(_sesionActual))
+                {
+                    EnviarAlDashboard(new
+                    {
+                        type = "error",
+                        message = "No tienes permisos para realizar esta operación."
+                    });
+
+                    return;
+                }
+
                 switch (tipo)
                 {
                     case "categorias:abrirLista":
@@ -416,6 +442,64 @@ namespace AutoParts.View
 
                         break;
 
+                    // PASO 4: Confirmación de ventas completas (factura, detalles y stock).
+                    case "ventas:registrarCompleta":
+                        try
+                        {
+                            if (!raiz.TryGetProperty("data", out JsonElement datosVenta) ||
+                                datosVenta.ValueKind != JsonValueKind.Object)
+                                throw new ArgumentException("No se recibieron datos válidos de la venta.");
+
+                            VentaRegistroCompleto solicitudVenta =
+                                datosVenta.Deserialize<VentaRegistroCompleto>(
+                                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                                ?? throw new ArgumentException("La venta recibida no es válida.");
+
+                            VentaRegistroResultado resultadoVenta = _ventaBL.RegistrarCompleta(solicitudVenta);
+                            EnviarAlDashboard(new
+                            {
+                                type = "ventas:registrada",
+                                data = new { resultadoVenta.VentaId, resultadoVenta.NumeroFactura, resultadoVenta.Total }
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "error",
+                                message = "Venta no registrada: " + ex.Message
+                            });
+                        }
+                        break;
+
+                    // PT-210: imprimir una venta existente. NO registra ni descuenta inventario.
+                    case "ventas:imprimirTicket":
+                        try
+                        {
+                            if (!raiz.TryGetProperty("data", out JsonElement datosTicket) ||
+                                datosTicket.ValueKind != JsonValueKind.Object ||
+                                !datosTicket.TryGetProperty("VentaId", out JsonElement idTicketJson) ||
+                                !idTicketJson.TryGetInt32(out int idVentaTicket) || idVentaTicket <= 0)
+                                throw new ArgumentException("Selecciona una venta registrada válida.");
+
+                            // Recuperar la factura y sus líneas desde SQL, nunca desde HTML.
+                            await Task.Run(() => ImprimirTicketVentaPt210(idVentaTicket));
+                            EnviarAlDashboard(new
+                            {
+                                type = "ventas:ticketImpreso",
+                                message = "Ticket enviado a la cola de impresión AutoParts PT-210."
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "ventas:ticketError",
+                                message = "No se pudo enviar el ticket: " + ex.Message
+                            });
+                        }
+                        break;
+
                     // PRODUCTOS: consulta y registro desde WebView2.
                     case "productos:selectAll":
                     case "productos:guardarIntegrado":
@@ -495,6 +579,175 @@ namespace AutoParts.View
                     MessageBoxIcon.Error
                 );
             }
+        }
+
+        // ==========================================================
+        // IMPRESIÓN PT-210 / Windows Generic-Text Only / papel de 57 mm
+        // 32 columnas ASCII: compatible con impresión RAW de texto.
+        // Los datos se recuperan de las tablas existentes mediante BL.
+        // ==========================================================
+        private const string NombreImpresoraPt210 = "AutoParts PT-210";
+        private const int AnchoTicketPt210 = 32;
+
+        private void ImprimirTicketVentaPt210(int ventaId)
+        {
+            var venta = _ventaBL.SelectAll().FirstOrDefault(v => v.VentaId == ventaId)
+                ?? throw new InvalidOperationException("La venta no existe en SQL Server.");
+            var lineas = _detalleVentaBL.SelectAll().Where(d => d.VentaId == ventaId).ToList();
+            if (lineas.Count == 0)
+                throw new InvalidOperationException("La venta no tiene detalles registrados.");
+
+            var productos = _productoBL.SelectAll().ToDictionary(p => p.ProductoId);
+            var cliente = _clienteBL.SelectAll().FirstOrDefault(c => c.ClienteId == venta.ClienteId);
+            var empleado = _empleadoBL.SelectAll().FirstOrDefault(e => e.EmpleadoId == venta.EmpleadoId);
+            var t = new StringBuilder();
+            AgregarCentradoPt210(t, "AUTOPARTS");
+            AgregarCentradoPt210(t, "REPUESTOS Y ACCESORIOS");
+            AgregarCentradoPt210(t, "COMPROBANTE INTERNO");
+            t.AppendLine(new string('-', AnchoTicketPt210));
+            AgregarPartidoPt210(t, "Factura: " + venta.NumeroFactura);
+            t.AppendLine("Venta: " + venta.VentaId);
+            t.AppendLine("Fecha: " + venta.FechaVenta.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
+            AgregarPartidoPt210(t, "Cliente: " + (cliente == null ? "No identificado" : cliente.Nombre + " " + cliente.Apellido));
+            AgregarPartidoPt210(t, "Atendio: " + (empleado == null ? "No identificado" : empleado.Nombre + " " + empleado.Apellido));
+            t.AppendLine(new string('-', AnchoTicketPt210));
+
+            foreach (var detalle in lineas)
+            {
+                string nombre = productos.TryGetValue(detalle.ProductoId, out var producto)
+                    ? producto.Nombre : "Producto #" + detalle.ProductoId;
+                AgregarPartidoPt210(t, nombre);
+                string izquierda = detalle.Cantidad.ToString(CultureInfo.InvariantCulture)
+                    + " x $" + detalle.PrecioUnitario.ToString("0.00", CultureInfo.InvariantCulture);
+                AgregarDosColumnasPt210(t, izquierda,
+                    "$" + detalle.Subtotal.ToString("0.00", CultureInfo.InvariantCulture));
+            }
+            t.AppendLine(new string('-', AnchoTicketPt210));
+            AgregarDosColumnasPt210(t, "TOTAL", "$" + venta.Total.ToString("0.00", CultureInfo.InvariantCulture));
+            t.AppendLine(new string('-', AnchoTicketPt210));
+            AgregarCentradoPt210(t, "GRACIAS POR SU COMPRA!");
+            AgregarCentradoPt210(t, "Conserve su comprobante");
+            t.AppendLine();
+            t.AppendLine();
+            t.AppendLine();
+
+            // El controlador Generic / Text Only ya fue probado en Windows.
+            // RAW envía solamente texto ASCII; no necesita comandos ESC/POS.
+            byte[] datos = Encoding.ASCII.GetBytes(t.ToString().Replace("\n", "\r\n"));
+            EnviarTextoCrudoPt210(NombreImpresoraPt210, datos);
+        }
+
+        private static string LimpiarPt210(string? texto)
+        {
+            string descompuesto = (texto ?? string.Empty).Normalize(NormalizationForm.FormD);
+            var limpio = new StringBuilder();
+            foreach (char c in descompuesto)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) == UnicodeCategory.NonSpacingMark) continue;
+                limpio.Append(c >= 32 && c <= 126 ? c : ' ');
+            }
+            return limpio.ToString();
+        }
+
+        private static void AgregarPartidoPt210(StringBuilder t, string texto)
+        {
+            string[] palabras = LimpiarPt210(texto).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string linea = "";
+            foreach (string palabra in palabras)
+            {
+                string pendiente = palabra;
+                while (pendiente.Length > AnchoTicketPt210)
+                {
+                    if (linea.Length > 0) { t.AppendLine(linea); linea = ""; }
+                    t.AppendLine(pendiente.Substring(0, AnchoTicketPt210));
+                    pendiente = pendiente.Substring(AnchoTicketPt210);
+                }
+                if (pendiente.Length == 0) continue;
+                if (linea.Length == 0) linea = pendiente;
+                else if (linea.Length + 1 + pendiente.Length <= AnchoTicketPt210) linea += " " + pendiente;
+                else { t.AppendLine(linea); linea = pendiente; }
+            }
+            if (linea.Length > 0) t.AppendLine(linea);
+        }
+
+        private static void AgregarCentradoPt210(StringBuilder t, string texto)
+        {
+            string x = LimpiarPt210(texto);
+            if (x.Length > AnchoTicketPt210) { AgregarPartidoPt210(t, x); return; }
+            t.AppendLine(x.PadLeft((AnchoTicketPt210 + x.Length) / 2));
+        }
+
+        private static void AgregarDosColumnasPt210(StringBuilder t, string izquierda, string derecha)
+        {
+            string izq = LimpiarPt210(izquierda);
+            string der = LimpiarPt210(derecha);
+            if (izq.Length + der.Length + 1 > AnchoTicketPt210)
+            {
+                AgregarPartidoPt210(t, izq);
+                t.AppendLine(der.PadLeft(AnchoTicketPt210));
+            }
+            else t.AppendLine(izq + new string(' ', AnchoTicketPt210 - izq.Length - der.Length) + der);
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private class DocumentoCrudoPt210
+        {
+            [MarshalAs(UnmanagedType.LPWStr)] public string Nombre = "Ticket AutoParts";
+            [MarshalAs(UnmanagedType.LPWStr)] public string? ArchivoSalida;
+            [MarshalAs(UnmanagedType.LPWStr)] public string TipoDatos = "RAW";
+        }
+
+        [DllImport("winspool.drv", EntryPoint = "OpenPrinterW", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool AbrirImpresoraPt210(string nombre, out IntPtr manejador, IntPtr opciones);
+
+        [DllImport("winspool.drv", EntryPoint = "StartDocPrinterW", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern int IniciarDocumentoPt210(IntPtr impresora, int nivel,
+            [In, MarshalAs(UnmanagedType.LPStruct)] DocumentoCrudoPt210 documento);
+
+        [DllImport("winspool.drv", EntryPoint = "StartPagePrinter", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool IniciarPaginaPt210(IntPtr impresora);
+
+        [DllImport("winspool.drv", EntryPoint = "WritePrinter", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool EscribirPt210(IntPtr impresora, byte[] bytes, int longitud, out int escritos);
+
+        [DllImport("winspool.drv", EntryPoint = "EndPagePrinter", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool TerminarPaginaPt210(IntPtr impresora);
+
+        [DllImport("winspool.drv", EntryPoint = "EndDocPrinter", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool TerminarDocumentoPt210(IntPtr impresora);
+
+        [DllImport("winspool.drv", EntryPoint = "ClosePrinter", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool CerrarImpresoraPt210(IntPtr impresora);
+
+        private static void EnviarTextoCrudoPt210(string impresora, byte[] bytes)
+        {
+            if (!AbrirImpresoraPt210(impresora, out IntPtr manejador, IntPtr.Zero))
+                throw new InvalidOperationException("Windows no encuentra la impresora '" + impresora +
+                    "'. Revisa su nombre en Impresoras y escáneres. Error " + Marshal.GetLastWin32Error());
+            try
+            {
+                if (IniciarDocumentoPt210(manejador, 1, new DocumentoCrudoPt210()) == 0)
+                    throw new InvalidOperationException("No se pudo iniciar el trabajo de impresión. Error " + Marshal.GetLastWin32Error());
+                try
+                {
+                    if (!IniciarPaginaPt210(manejador))
+                        throw new InvalidOperationException("No se pudo iniciar la página. Error " + Marshal.GetLastWin32Error());
+                    try
+                    {
+                        if (!EscribirPt210(manejador, bytes, bytes.Length, out int escritos) || escritos != bytes.Length)
+                            throw new InvalidOperationException("No se pudo enviar el ticket completo. Error " + Marshal.GetLastWin32Error());
+                    }
+                    finally { TerminarPaginaPt210(manejador); }
+                }
+                finally { TerminarDocumentoPt210(manejador); }
+            }
+            finally { CerrarImpresoraPt210(manejador); }
         }
 
         private void AbrirCategorias()
@@ -600,10 +853,36 @@ namespace AutoParts.View
                         throw new ArgumentException("El producto recibido no es válido.");
 
                     ValidarProducto(producto);
-                    int resultado = _productoBL.Insert(producto);
 
-                    if (resultado <= 0)
-                        throw new InvalidOperationException("SQL Server no confirmó el registro del producto.");
+                    // Nunca aceptar rutas de archivos suministradas por el HTML.
+                    producto.Imagen = null;
+                    string? rutaImagenCreada = null;
+                    try
+                    {
+                        if (datos.TryGetProperty("ImagenArchivo", out JsonElement imagenArchivo)
+                            && imagenArchivo.ValueKind != JsonValueKind.Null
+                            && imagenArchivo.ValueKind != JsonValueKind.Undefined)
+                        {
+                            string nuevoNombre = GuardarFotografia(imagenArchivo);
+                            producto.Imagen = nuevoNombre;
+                            rutaImagenCreada = Path.Combine(CarpetaImagenes, nuevoNombre);
+                        }
+
+                        int resultado = _productoBL.Insert(producto);
+                        if (resultado <= 0)
+                            throw new InvalidOperationException("SQL Server no confirmó el registro del producto.");
+                    }
+                    catch
+                    {
+                        // Si SQL Server falla, no dejamos la fotografía huérfana.
+                        if (rutaImagenCreada != null)
+                        {
+                            try { File.Delete(rutaImagenCreada); }
+                            catch (IOException) { }
+                            catch (UnauthorizedAccessException) { }
+                        }
+                        throw;
+                    }
 
                     EnviarAlDashboard(new { type = "productos:guardado" });
                 }
@@ -617,6 +896,70 @@ namespace AutoParts.View
                     message = "Productos: " + ex.Message
                 });
             }
+        }
+
+
+        // Guardar una sola fotografía principal en la carpeta privada de AutoParts.
+        // ImagenArchivo = { TipoMime: "image/jpeg|png|webp", Base64: "..." }.
+        private static string GuardarFotografia(JsonElement archivo)
+        {
+            if (archivo.ValueKind != JsonValueKind.Object)
+                throw new ArgumentException("La fotografía recibida no es válida.");
+
+            if (!archivo.TryGetProperty("TipoMime", out var tipoJson) ||
+                tipoJson.ValueKind != JsonValueKind.String ||
+                !archivo.TryGetProperty("Base64", out var base64Json) ||
+                base64Json.ValueKind != JsonValueKind.String)
+                throw new ArgumentException("Faltan los datos de la fotografía.");
+
+            string tipoMime = tipoJson.GetString() ?? "";
+            string base64 = base64Json.GetString() ?? "";
+            string extension = tipoMime switch
+            {
+                "image/jpeg" => ".jpg",
+                "image/png" => ".png",
+                "image/webp" => ".webp",
+                _ => throw new ArgumentException("Solo se permiten imágenes JPG, PNG o WebP.")
+            };
+
+            if (base64.Length == 0 || base64.Length > ((MaxImagenBytes + 2) / 3 * 4) + 8)
+                throw new ArgumentException("La fotografía no puede superar los 5 MB.");
+
+            byte[] bytes;
+            try { bytes = Convert.FromBase64String(base64); }
+            catch (FormatException)
+            {
+                throw new ArgumentException("El contenido de la fotografía no es válido.");
+            }
+
+            if (bytes.Length == 0 || bytes.Length > MaxImagenBytes)
+                throw new ArgumentException("La fotografía no puede superar los 5 MB.");
+
+            bool tipoCorrecto = tipoMime switch
+            {
+                "image/jpeg" => bytes.Length >= 3 && bytes[0] == 0xFF &&
+                                bytes[1] == 0xD8 && bytes[2] == 0xFF,
+                "image/png" => bytes.Length >= 8 &&
+                               bytes[0] == 0x89 && bytes[1] == 0x50 &&
+                               bytes[2] == 0x4E && bytes[3] == 0x47 &&
+                               bytes[4] == 0x0D && bytes[5] == 0x0A &&
+                               bytes[6] == 0x1A && bytes[7] == 0x0A,
+                "image/webp" => bytes.Length >= 12 &&
+                                bytes[0] == (byte)'R' && bytes[1] == (byte)'I' &&
+                                bytes[2] == (byte)'F' && bytes[3] == (byte)'F' &&
+                                bytes[8] == (byte)'W' && bytes[9] == (byte)'E' &&
+                                bytes[10] == (byte)'B' && bytes[11] == (byte)'P',
+                _ => false
+            };
+            if (!tipoCorrecto)
+                throw new ArgumentException("El archivo no corresponde al formato de imagen seleccionado.");
+
+            Directory.CreateDirectory(CarpetaImagenes);
+            string nombre = Guid.NewGuid().ToString("N") + extension;
+            string ruta = Path.Combine(CarpetaImagenes, nombre);
+            using (FileStream destino = new FileStream(ruta, FileMode.CreateNew, FileAccess.Write))
+                destino.Write(bytes, 0, bytes.Length);
+            return nombre;
         }
 
         private void ProcesarCategoriaIntegrada(

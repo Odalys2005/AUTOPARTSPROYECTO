@@ -12,6 +12,8 @@ namespace AutoParts.Entity
         public string Descripcion { get; set; }
         public decimal PrecioVenta { get; set; }
         public int DiasGarantia { get; set; }
+        public string? Imagen { get; set; }
+        public string? CodigoBarras { get; set; }
 
         public int SubcategoriaId { get; set; }
         public int EstadoId { get; set; }
@@ -23,7 +25,7 @@ namespace AutoParts.Entity
 
         public Producto(int productoId, string codigoOEM,
                         string nombre, string descripcion,
-                        decimal precioVenta, int diasGarantia,
+                        decimal precioVenta, int diasGarantia, string? imagen, string? codigoBarras,
                         int subcategoriaId, int estadoId)
         {
             ProductoId = productoId;
@@ -32,6 +34,8 @@ namespace AutoParts.Entity
             Descripcion = descripcion;
             PrecioVenta = precioVenta;
             DiasGarantia = diasGarantia;
+            Imagen = imagen;
+            CodigoBarras = codigoBarras;
             SubcategoriaId = subcategoriaId;
             EstadoId = estadoId;
         }

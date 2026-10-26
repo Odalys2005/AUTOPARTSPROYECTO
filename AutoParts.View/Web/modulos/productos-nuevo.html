@@ -1,310 +1,403 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoParts | Nuevo producto</title>
-    <style>
-        :root { color-scheme:dark; }
-        * { box-sizing:border-box; }
-        body { margin:0; min-height:100vh; background:radial-gradient(circle at 100% 0%,#581016 0%,transparent 45%),#0a0a0d; color:white; font-family:'Segoe UI',Arial,sans-serif; }
-        .contenedor { max-width:990px; margin:0 auto; padding:29px; }
-        .encabezado { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:25px; }
-        .subtitulo { color:#ffbd35; font-size:11px; letter-spacing:3px; font-weight:700; margin-bottom:8px; }
-        h1 { margin:0; font-size:27px; }
-        .descripcion { color:#a9a7ae; font-size:13px; line-height:1.6; }
-        .icono { width:47px; height:47px; display:grid; place-items:center; color:#ffc42f; font-size:24px; background:#5c111a; border:1px solid #ee3642; border-radius:12px; box-shadow:0 0 20px #ca263044; flex-shrink:0; }
-        .panel { background:linear-gradient(145deg,#171418,#0e0e12); border:1px solid #5a3139; border-radius:14px; padding:25px; }
-        .seccion { color:#ffbd35; font-size:11px; font-weight:800; letter-spacing:2px; margin:2px 0 20px; padding-bottom:12px; border-bottom:1px solid #392b30; }
-        .campos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:18px; }
-        .campo { margin-bottom:21px; min-width:0; }
-        .campo.ancho { grid-column:1/-1; }
-        label { display:block; font-size:13px; font-weight:600; margin-bottom:9px; }
-        input, select, textarea { width:100%; padding:13px 14px; background:#111216; color:white; border:1px solid #554c55; border-radius:9px; font:inherit; outline:none; }
-        input:focus, select:focus, textarea:focus { border-color:#ff3d46; box-shadow:0 0 10px #e41b303b; }
-        input::placeholder, textarea::placeholder { color:#85858f; }
-        select:disabled { opacity:.6; }
-        textarea { min-height:96px; resize:vertical; }
-        .ayuda { color:#898a94; font-size:11px; margin-top:7px; line-height:1.5; }
-        .requerido { color:#ff4753; }
-        .nota { border:1px solid #473633; background:#201a18; padding:11px 13px; border-radius:9px; color:#c5bfc0; font-size:12px; margin-bottom:22px; line-height:1.6; }
-        .nota strong { color:#ffca4c; }
-        .mensaje { color:#ffb64e; min-height:19px; font-size:12px; margin-bottom:12px; }
-        .acciones { display:flex; justify-content:flex-end; gap:12px; margin-top:22px; }
-        button { padding:13px 23px; border-radius:9px; font-weight:700; border:0; cursor:pointer; transition:.2s; }
-        .cancelar { background:#242328; color:#e5e5e5; border:1px solid #56535b; }
-        .cancelar:hover { background:#353039; }
-        .guardar { color:#140c0d; background:linear-gradient(105deg,#ff3543,#ffbd2b); box-shadow:0 0 16px #e5233533; }
-        .guardar:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-2px); }
-        .guardar:disabled { opacity:.55; cursor:not-allowed; }
-        @media(max-width:650px) { .contenedor{padding:17px;} .panel{padding:18px;} .campos{grid-template-columns:1fr;} .campo.ancho{grid-column:auto;} .acciones{flex-wrap:wrap;} }
-    </style>
-</head>
-<body>
-    <main class="contenedor">
-        <header class="encabezado">
-            <div>
-                <div class="subtitulo">AUTOPARTS · CATÁLOGO DE REPUESTOS</div>
-                <h1>Nuevo producto</h1>
-                <p class="descripcion">Registra un repuesto nuevo para incorporarlo al catálogo de AutoParts.</p>
-            </div>
-            <div class="icono" aria-hidden="true">+</div>
-        </header>
+	<head>
+		<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>AutoParts | Nuevo producto</title>
+				<style>
+					:root { color-scheme:dark; }
+					* { box-sizing:border-box; }
+					body { margin:0; min-height:100vh; background:radial-gradient(circle at 100% 0%,#581016 0%,transparent 45%),#0a0a0d; color:white; font-family:'Segoe UI',Arial,sans-serif; }
+					.contenedor { max-width:990px; margin:0 auto; padding:29px; }
+					.encabezado { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:25px; }
+					.subtitulo { color:#ffbd35; font-size:11px; letter-spacing:3px; font-weight:700; margin-bottom:8px; }
+					h1 { margin:0; font-size:27px; }
+					.icono { width:47px; height:47px; display:grid; place-items:center; color:#ffc42f; font-size:24px; background:#5c111a; border:1px solid #ee3642; border-radius:12px; box-shadow:0 0 20px #ca263044; flex-shrink:0; }
+					.panel { background:linear-gradient(145deg,#171418,#0e0e12); border:1px solid #5a3139; border-radius:14px; padding:25px; }
+					.seccion { color:#ffbd35; font-size:11px; font-weight:800; letter-spacing:2px; margin:2px 0 20px; padding-bottom:12px; border-bottom:1px solid #392b30; }
+					.campos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:18px; }
+					.campo { margin-bottom:21px; min-width:0; }
+					.campo.ancho { grid-column:1/-1; }
+					label { display:block; font-size:13px; font-weight:600; margin-bottom:9px; }
+					input, select, textarea { width:100%; padding:13px 14px; background:#111216; color:white; border:1px solid #554c55; border-radius:9px; font:inherit; outline:none; }
+					input:focus, select:focus, textarea:focus { border-color:#ff3d46; box-shadow:0 0 10px #e41b303b; }
+					input::placeholder, textarea::placeholder { color:#85858f; }
+					select:disabled { opacity:.6; }
+					textarea { min-height:96px; resize:vertical; }
+					.requerido { color:#ff4753; }
+					.mensaje { color:#ffb64e; min-height:19px; font-size:12px; margin-bottom:12px; }
+					.foto-box { display:flex; align-items:center; gap:18px; border:1px dashed #79505a; border-radius:12px; padding:17px; background:#131116; flex-wrap:wrap; }
+					.foto-preview { height:128px; width:148px; flex:0 0 148px; background:#1c1a20; border-radius:10px; border:1px solid #4d353c; display:grid; place-items:center; overflow:hidden; color:#89848a; }
+					.foto-preview img { display:block; width:100%; height:100%; object-fit:contain; }
+					.foto-actions { display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
+					.foto-seleccionar { background:#342026; border:1px solid #b6434c; color:#fff; padding:10px 16px; }
+					.foto-seleccionar:hover { border-color:#ffbd35; }
+					.foto-quitar { background:transparent; border:1px solid #5b5058; color:#d4cfd2; padding:9px 15px; }
+					.foto-quitar:disabled { opacity:.4; cursor:not-allowed; }
+					.foto-input { position:absolute; height:1px; width:1px; overflow:hidden; clip-path:inset(50%); }
+					@media(max-width:450px) { .foto-preview{width:100%;flex:1 1 100%;} }
+					.acciones { display:flex; justify-content:flex-end; gap:12px; margin-top:22px; }
+					button { padding:13px 23px; border-radius:9px; font-weight:700; border:0; cursor:pointer; transition:.2s; }
+					.cancelar { background:#242328; color:#e5e5e5; border:1px solid #56535b; }
+					.cancelar:hover { background:#353039; }
+					.guardar { color:#140c0d; background:linear-gradient(105deg,#ff3543,#ffbd2b); box-shadow:0 0 16px #e5233533; }
+					.guardar:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-2px); }
+					.guardar:disabled { opacity:.55; cursor:not-allowed; }
+					@media(max-width:650px) { .contenedor{padding:17px;} .panel{padding:18px;} .campos{grid-template-columns:1fr;} .campo.ancho{grid-column:auto;} .acciones{flex-wrap:wrap;} }
+				</style>
+			</head>
+	<body>
+		<main class="contenedor">
+			<header class="encabezado">
+				<div>
+					<div class="subtitulo">AUTOPARTS · CATÁLOGO DE REPUESTOS</div>
+					<h1>Nuevo producto</h1>
+				</div>
+				<div class="icono" aria-hidden="true">+</div>
+			</header>
 
-        <section class="panel">
-            <form id="formProducto" novalidate>
-                <p class="seccion">INFORMACIÓN GENERAL</p>
-                <div class="campos">
-                    <div class="campo">
-                        <label for="codigoOEM">Código OEM <span class="requerido">*</span></label>
-                        <input id="codigoOEM" type="text" maxlength="50" placeholder="Ej. OEM-12345" autocomplete="off" required>
-                        <div class="ayuda">Código original o referencia del repuesto.</div>
+			<section class="panel">
+				<form id="formProducto" novalidate="">
+					<p class="seccion">INFORMACIÓN GENERAL</p>
+					<div class="campos">
+						<div class="campo">
+							<label for="codigoOEM">
+								Código OEM <span class="requerido">*</span>
+							</label>
+							<input id="codigoOEM" type="text" maxlength="50" placeholder="Ej. OEM-12345" autocomplete="off" required="">
                     </div>
-                    <div class="campo">
-                        <label for="nombre">Nombre del producto <span class="requerido">*</span></label>
-                        <input id="nombre" type="text" maxlength="100" placeholder="Ej. Pastillas de freno delanteras" autocomplete="off" required>
+						<div class="campo">
+							<label for="nombre">
+								Nombre del producto <span class="requerido">*</span>
+							</label>
+							<input id="nombre" type="text" maxlength="100" placeholder="Ej. Pastillas de freno delanteras" autocomplete="off" required="">
                     </div>
-                    <div class="campo ancho">
-                        <label for="descripcion">Descripción <span class="requerido">*</span></label>
-                        <textarea id="descripcion" maxlength="500" placeholder="Describe el repuesto, sus características y especificaciones..."></textarea>
+						<div class="campo ancho">
+							<label for="descripcion">
+								Descripción <span class="requerido">*</span>
+							</label>
+							<textarea id="descripcion" maxlength="500" placeholder="Describe el repuesto, sus características y especificaciones..."></textarea>
+						</div>
+					</div>
+
+					<p class="seccion">CLASIFICACIÓN DEL REPUESTO</p>
+					<div class="campos">
+						<div class="campo">
+							<label for="categoria">
+								Categoría <span class="requerido">*</span>
+							</label>
+							<select id="categoria" disabled="" required="">
+								<option value="">Cargando categorías...</option>
+							</select>
+						</div>
+						<div class="campo">
+							<label for="subcategoria">
+								Subcategoría <span class="requerido">*</span>
+							</label>
+							<select id="subcategoria" disabled="" required="">
+								<option value="">Selecciona primero una categoría</option>
+							</select>
+						</div>
+					</div>
+
+					<p class="seccion">PRECIO, GARANTÍA Y ESTADO</p>
+					<div class="campos">
+						<div class="campo">
+							<label for="precioVenta">
+								Precio de venta (USD) <span class="requerido">*</span>
+							</label>
+							<input id="precioVenta" type="number" min="0.01" max="999999999" step="0.01" inputmode="decimal" placeholder="Ej. 25.50" required="">
                     </div>
-                </div>
-
-                <p class="seccion">CLASIFICACIÓN DEL REPUESTO</p>
-                <div class="campos">
-                    <div class="campo">
-                        <label for="categoria">Categoría <span class="requerido">*</span></label>
-                        <select id="categoria" disabled required><option value="">Cargando categorías...</option></select>
-                        <div class="ayuda">Filtra las subcategorías disponibles.</div>
+						<div class="campo">
+							<label for="diasGarantia">
+								Días de garantía <span class="requerido">*</span>
+							</label>
+							<input id="diasGarantia" type="number" min="0" max="36500" step="1" value="0" required="">
                     </div>
-                    <div class="campo">
-                        <label for="subcategoria">Subcategoría <span class="requerido">*</span></label>
-                        <select id="subcategoria" disabled required><option value="">Selecciona primero una categoría</option></select>
-                        <div class="ayuda">Esta es la clasificación que se guardará en Producto.</div>
-                    </div>
-                </div>
+						<div class="campo ancho">
+							<label for="estado">
+								Estado <span class="requerido">*</span>
+							</label>
+							<select id="estado" disabled="" required="">
+								<option value="">Cargando estados...</option>
+							</select>
+						</div>
+					</div>
+					<p class="seccion">FOTOGRAFÍA DEL PRODUCTO</p>
+					<div class="campo ancho">
+						<label for="imagenProducto">Imagen (opcional)</label>
+						<div class="foto-box">
+							<div class="foto-preview" id="vistaFoto" aria-label="Vista previa de fotografía">
+								<span id="fotoSinImagen">Sin fotografía</span>
+								<img id="fotoImagen" alt="Vista previa del producto" hidden="">
+                        </div>
+							<div class="foto-actions">
+								<input class="foto-input" type="file" id="imagenProducto" accept="image/jpeg,image/png,image/webp">
+									<button type="button" id="seleccionarFoto" class="foto-seleccionar">Seleccionar fotografía</button>
+									<button type="button" id="quitarFoto" class="foto-quitar" disabled="">Quitar fotografía</button>
+								</div>
+						</div>
+					</div>
 
-                <p class="seccion">PRECIO, GARANTÍA Y ESTADO</p>
-                <div class="campos">
-                    <div class="campo">
-                        <label for="precioVenta">Precio de venta (USD) <span class="requerido">*</span></label>
-                        <input id="precioVenta" type="number" min="0.01" max="999999999" step="0.01" inputmode="decimal" placeholder="Ej. 25.50" required>
-                        <div class="ayuda">Precio por unidad. La venta se paga completamente.</div>
-                    </div>
-                    <div class="campo">
-                        <label for="diasGarantia">Días de garantía <span class="requerido">*</span></label>
-                        <input id="diasGarantia" type="number" min="0" max="36500" step="1" value="0" required>
-                        <div class="ayuda">Escribe 0 si el producto no tiene garantía.</div>
-                    </div>
-                    <div class="campo ancho">
-                        <label for="estado">Estado <span class="requerido">*</span></label>
-                        <select id="estado" disabled required><option value="">Cargando estados...</option></select>
-                    </div>
-                </div>
+					<div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
+					<div class="acciones">
+						<button class="cancelar" id="cancelar" type="button">Cancelar</button>
+						<button class="guardar" id="guardar" type="submit" disabled="">Guardar producto</button>
+					</div>
+				</form>
+			</section>
+		</main>
 
-                <div class="nota"><strong>Nota:</strong> El inventario y la compatibilidad con vehículos se gestionan en sus módulos correspondientes. Este formulario registra únicamente los datos de Producto.</div>
-                <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
-                <div class="acciones">
-                    <button class="cancelar" id="cancelar" type="button">Cancelar</button>
-                    <button class="guardar" id="guardar" type="submit" disabled>Guardar producto</button>
-                </div>
-            </form>
-        </section>
-    </main>
+		<script>
+			const formulario = document.getElementById("formProducto");
+			const campoOEM = document.getElementById("codigoOEM");
+			const campoNombre = document.getElementById("nombre");
+			const campoDescripcion = document.getElementById("descripcion");
+			const campoCategoria = document.getElementById("categoria");
+			const campoSubcategoria = document.getElementById("subcategoria");
+			const campoPrecio = document.getElementById("precioVenta");
+			const campoGarantia = document.getElementById("diasGarantia");
+			const campoEstado = document.getElementById("estado");
+			const botonGuardar = document.getElementById("guardar");
+			const mensaje = document.getElementById("mensaje");
+			const campoImagen = document.getElementById("imagenProducto");
+			const fotoImagen = document.getElementById("fotoImagen");
+			const fotoSinImagen = document.getElementById("fotoSinImagen");
+			const quitarFoto = document.getElementById("quitarFoto");
+			let archivoImagen = null;
+			let imagenBase64 = null;
+			let categorias = [];
+			let subcategorias = [];
+			let guardando = false;
 
-    <script>
-        const formulario = document.getElementById("formProducto");
-        const campoOEM = document.getElementById("codigoOEM");
-        const campoNombre = document.getElementById("nombre");
-        const campoDescripcion = document.getElementById("descripcion");
-        const campoCategoria = document.getElementById("categoria");
-        const campoSubcategoria = document.getElementById("subcategoria");
-        const campoPrecio = document.getElementById("precioVenta");
-        const campoGarantia = document.getElementById("diasGarantia");
-        const campoEstado = document.getElementById("estado");
-        const botonGuardar = document.getElementById("guardar");
-        const mensaje = document.getElementById("mensaje");
-        let categorias = [];
-        let subcategorias = [];
-        let guardando = false;
+			function obtener(objeto, ...nombres) {
+			for (const nombre of nombres) {
+			if (objeto?.[nombre] !== undefined && objeto[nombre] !== null) return objeto[nombre];
+			}
+			return "";
+			}
 
-        function obtener(objeto, ...nombres) {
-            for (const nombre of nombres) {
-                if (objeto?.[nombre] !== undefined && objeto[nombre] !== null) return objeto[nombre];
-            }
-            return "";
-        }
+			function enviar(datos) {
+			if (window.parent !== window) {
+			window.parent.postMessage(datos, "*");
+			return true;
+			}
+			if (window.chrome?.webview?.postMessage) {
+			window.chrome.webview.postMessage(datos);
+			return true;
+			}
+			mensaje.textContent = "Esta pantalla necesita abrirse desde AutoParts.";
+			return false;
+			}
 
-        function enviar(datos) {
-            if (window.parent !== window) {
-                window.parent.postMessage(datos, "*");
-                return true;
-            }
-            if (window.chrome?.webview?.postMessage) {
-                window.chrome.webview.postMessage(datos);
-                return true;
-            }
-            mensaje.textContent = "Esta pantalla necesita abrirse desde AutoParts.";
-            return false;
-        }
+			function llenarSelect(select, lista, idPropiedad, textoInicial) {
+			const valorActual = select.value;
+			select.replaceChildren();
+			const opcionVacia = document.createElement("option");
+			opcionVacia.value = "";
+			opcionVacia.textContent = textoInicial;
+			select.appendChild(opcionVacia);
+			lista.forEach(item => {
+			const id = obtener(item, idPropiedad, idPropiedad.charAt(0).toLowerCase() + idPropiedad.slice(1));
+			const nombre = obtener(item, "Nombre", "nombre");
+			if (Number(id) <= 0 || !nombre) return;
+			const opcion = document.createElement("option");
+			opcion.value = String(id);
+			opcion.textContent = String(nombre);
+			select.appendChild(opcion);
+			});
+			select.disabled = select.options.length <= 1;
+			if ([...select.options].some(opcion => opcion.value === valorActual)) select.value = valorActual;
+			actualizarGuardar();
+			}
 
-        function llenarSelect(select, lista, idPropiedad, textoInicial) {
-            const valorActual = select.value;
-            select.replaceChildren();
-            const opcionVacia = document.createElement("option");
-            opcionVacia.value = "";
-            opcionVacia.textContent = textoInicial;
-            select.appendChild(opcionVacia);
-            lista.forEach(item => {
-                const id = obtener(item, idPropiedad, idPropiedad.charAt(0).toLowerCase() + idPropiedad.slice(1));
-                const nombre = obtener(item, "Nombre", "nombre");
-                if (Number(id) <= 0 || !nombre) return;
-                const opcion = document.createElement("option");
-                opcion.value = String(id);
-                opcion.textContent = String(nombre);
-                select.appendChild(opcion);
-            });
-            select.disabled = select.options.length <= 1;
-            if ([...select.options].some(opcion => opcion.value === valorActual)) select.value = valorActual;
-            actualizarGuardar();
-        }
+			function actualizarSubcategorias() {
+			const idCategoria = Number(campoCategoria.value);
+			const opciones = subcategorias.filter(sub =>
+			Number(obtener(sub, "CategoriaId", "categoriaId")) === idCategoria
+			);
+			llenarSelect(
+			campoSubcategoria,
+			opciones,
+			"SubcategoriaId",
+			idCategoria > 0 ? "Selecciona una subcategoría" : "Selecciona primero una categoría"
+			);
+			}
 
-        function actualizarSubcategorias() {
-            const idCategoria = Number(campoCategoria.value);
-            const opciones = subcategorias.filter(sub =>
-                Number(obtener(sub, "CategoriaId", "categoriaId")) === idCategoria
-            );
-            llenarSelect(
-                campoSubcategoria,
-                opciones,
-                "SubcategoriaId",
-                idCategoria > 0 ? "Selecciona una subcategoría" : "Selecciona primero una categoría"
-            );
-        }
+			function actualizarGuardar() {
+			botonGuardar.disabled = guardando || campoCategoria.disabled || campoSubcategoria.disabled || campoEstado.disabled;
+			}
 
-        function actualizarGuardar() {
-            botonGuardar.disabled = guardando || campoCategoria.disabled || campoSubcategoria.disabled || campoEstado.disabled;
-        }
+			// Selección y vista previa de fotografía (JPG, PNG o WebP, hasta 5 MB).
+			document.getElementById("seleccionarFoto").addEventListener("click", () => campoImagen.click());
+			quitarFoto.addEventListener("click", () => {
+			archivoImagen = null;
+			imagenBase64 = null;
+			campoImagen.value = "";
+			fotoImagen.removeAttribute("src");
+			fotoImagen.hidden = true;
+			fotoSinImagen.hidden = false;
+			quitarFoto.disabled = true;
+			mensaje.textContent = "";
+			});
 
-        campoCategoria.addEventListener("change", () => {
-            campoSubcategoria.value = "";
-            actualizarSubcategorias();
-        });
+			campoImagen.addEventListener("change", async () => {
+			const archivo = campoImagen.files?.[0];
+			if (!archivo) return;
+			const formatos = ["image/jpeg", "image/png", "image/webp"];
+			if (!formatos.includes(archivo.type) || archivo.size > 5 * 1024 * 1024 || archivo.size === 0) {
+			mensaje.textContent = "Selecciona una imagen JPG, PNG o WebP de hasta 5 MB.";
+			quitarFoto.click();
+			return;
+			}
+			try {
+			// El contenido se entrega a C# como Base64, no como ruta local del usuario.
+			const dataUrl = await new Promise((resolve, reject) => {
+			const lector = new FileReader();
+			lector.onload = () => resolve(String(lector.result));
+			lector.onerror = () => reject(new Error("No se pudo leer la fotografía."));
+			lector.readAsDataURL(archivo);
+			});
+			archivoImagen = archivo;
+			imagenBase64 = dataUrl.slice(dataUrl.indexOf(",") + 1);
+			fotoImagen.src = dataUrl;
+			fotoImagen.hidden = false;
+			fotoSinImagen.hidden = true;
+			quitarFoto.disabled = false;
+			mensaje.textContent = "";
+			} catch {
+			quitarFoto.click();
+			mensaje.textContent = "No se pudo cargar la fotografía seleccionada.";
+			}
+			});
 
-        document.getElementById("cancelar").addEventListener("click", () => {
-            enviar({ type: "cancelar" });
-        });
+			campoCategoria.addEventListener("change", () => {
+			campoSubcategoria.value = "";
+			actualizarSubcategorias();
+			});
 
-        formulario.addEventListener("submit", evento => {
-            evento.preventDefault();
-            if (guardando) return;
+			document.getElementById("cancelar").addEventListener("click", () => {
+			enviar({ type: "cancelar" });
+			});
 
-            const codigoOEM = campoOEM.value.trim();
-            const nombre = campoNombre.value.trim();
-            const descripcion = campoDescripcion.value.trim();
-            const precio = Number(campoPrecio.value);
-            const diasGarantia = Number(campoGarantia.value);
-            const subcategoriaId = Number(campoSubcategoria.value);
-            const estadoId = Number(campoEstado.value);
-            const categoriaId = Number(campoCategoria.value);
-            const registroSub = subcategorias.find(sub =>
-                Number(obtener(sub, "SubcategoriaId", "subcategoriaId")) === subcategoriaId
-            );
+			formulario.addEventListener("submit", evento => {
+			evento.preventDefault();
+			if (guardando) return;
 
-            if (!codigoOEM || codigoOEM.length > 50) {
-                mensaje.textContent = "Ingresa un código OEM válido de hasta 50 caracteres.";
-                campoOEM.focus(); return;
-            }
-            if (!nombre || nombre.length > 100) {
-                mensaje.textContent = "Ingresa un nombre válido de hasta 100 caracteres.";
-                campoNombre.focus(); return;
-            }
-            if (!descripcion || descripcion.length > 500) {
-                mensaje.textContent = "Ingresa una descripción válida de hasta 500 caracteres.";
-                campoDescripcion.focus(); return;
-            }
-            if (!Number.isInteger(categoriaId) || categoriaId <= 0) {
-                mensaje.textContent = "Selecciona una categoría.";
-                campoCategoria.focus(); return;
-            }
-            if (!Number.isInteger(subcategoriaId) || subcategoriaId <= 0 ||
-                Number(obtener(registroSub, "CategoriaId", "categoriaId")) !== categoriaId) {
-                mensaje.textContent = "Selecciona una subcategoría perteneciente a la categoría elegida.";
-                campoSubcategoria.focus(); return;
-            }
-            if (campoPrecio.value.trim() === "" || !Number.isFinite(precio) || precio <= 0 ||
-                precio > 999999999 || Math.round(precio * 100) !== precio * 100 && Math.abs(precio * 100 - Math.round(precio * 100)) > 1e-7) {
-                mensaje.textContent = "Ingresa un precio mayor que cero, con hasta dos decimales.";
-                campoPrecio.focus(); return;
-            }
-            if (campoGarantia.value.trim() === "" || !Number.isInteger(diasGarantia) || diasGarantia < 0 || diasGarantia > 36500) {
+			const codigoOEM = campoOEM.value.trim();
+			const nombre = campoNombre.value.trim();
+			const descripcion = campoDescripcion.value.trim();
+			const precio = Number(campoPrecio.value);
+			const diasGarantia = Number(campoGarantia.value);
+			const subcategoriaId = Number(campoSubcategoria.value);
+			const estadoId = Number(campoEstado.value);
+			const categoriaId = Number(campoCategoria.value);
+			const registroSub = subcategorias.find(sub =>
+			Number(obtener(sub, "SubcategoriaId", "subcategoriaId")) === subcategoriaId
+			);
+
+			if (!codigoOEM || codigoOEM.length > 50) {
+			mensaje.textContent = "Ingresa un código OEM válido de hasta 50 caracteres.";
+			campoOEM.focus(); return;
+			}
+			if (!nombre || nombre.length > 100) {
+			mensaje.textContent = "Ingresa un nombre válido de hasta 100 caracteres.";
+			campoNombre.focus(); return;
+			}
+			if (!descripcion || descripcion.length > 500) {
+			mensaje.textContent = "Ingresa una descripción válida de hasta 500 caracteres.";
+			campoDescripcion.focus(); return;
+			}
+			if (!Number.isInteger(categoriaId) || categoriaId <= 0) {
+			mensaje.textContent = "Selecciona una categoría.";
+			campoCategoria.focus(); return;
+			}
+			if (!Number.isInteger(subcategoriaId) || subcategoriaId <= 0 ||
+			Number(obtener(registroSub, "CategoriaId", "categoriaId")) !== categoriaId) {
+			mensaje.textContent = "Selecciona una subcategoría perteneciente a la categoría elegida.";
+			campoSubcategoria.focus(); return;
+			}
+			if (campoPrecio.value.trim() === "" || !Number.isFinite(precio) || precio <= 0 ||
+			precio > 999999999 || Math.round(precio * 100) !== precio * 100 && Math.abs(precio * 100 - Math.round(precio * 100)) > 1e-7) {
+			mensaje.textContent = "Ingresa un precio mayor que cero, con hasta dos decimales.";
+			campoPrecio.focus(); return;
+			}
+			if (campoGarantia.value.trim() === "" || !Number.isInteger(diasGarantia) || diasGarantia < 0 || diasGarantia > 36500) {
                 mensaje.textContent = "Ingresa días de garantía válidos (0 significa sin garantía).";
                 campoGarantia.focus(); return;
             }
             if (!Number.isInteger(estadoId) || estadoId <= 0) {
-                mensaje.textContent = "Selecciona un estado válido.";
-                campoEstado.focus(); return;
-            }
+			mensaje.textContent = "Selecciona un estado válido.";
+			campoEstado.focus(); return;
+			}
 
-            guardando = true;
-            actualizarGuardar();
-            botonGuardar.textContent = "Guardando...";
-            mensaje.textContent = "";
+			if (archivoImagen) {
+			// Por seguridad no se permite confirmar una foto si MainForm.cs aún
+			// no guarda físicamente ImagenArchivo; así no se pierde silenciosamente.
+			mensaje.textContent = "La vista previa funciona. Falta conectar el guardado de fotografías en MainForm.cs; por ahora quita la foto para registrar el producto.";
+			return;
+			}
 
-            const enviado = enviar({
-                type: "guardar",
-                data: {
-                    CodigoOEM: codigoOEM,
-                    Nombre: nombre,
-                    Descripcion: descripcion,
-                    PrecioVenta: precio,
-                    DiasGarantia: diasGarantia,
-                    SubcategoriaId: subcategoriaId,
-                    EstadoId: estadoId
-                }
-            });
+			guardando = true;
+			actualizarGuardar();
+			botonGuardar.textContent = "Guardando...";
+			mensaje.textContent = "";
 
-            if (!enviado) {
-                guardando = false;
-                actualizarGuardar();
-                botonGuardar.textContent = "Guardar producto";
-            }
-        });
+			const enviado = enviar({
+			type: "guardar",
+			data: {
+			CodigoOEM: codigoOEM,
+			Nombre: nombre,
+			Descripcion: descripcion,
+			PrecioVenta: precio,
+			DiasGarantia: diasGarantia,
+			SubcategoriaId: subcategoriaId,
+			EstadoId: estadoId,
+			Imagen: null
+			}
+			});
 
-        function recibir(evento) {
-            if (evento.source && window.parent !== window && evento.source !== window.parent) return;
-            let respuesta = evento.data;
-            if (typeof respuesta === "string") {
-                try { respuesta = JSON.parse(respuesta); } catch { return; }
-            }
-            if (!respuesta || typeof respuesta !== "object") return;
+			if (!enviado) {
+			guardando = false;
+			actualizarGuardar();
+			botonGuardar.textContent = "Guardar producto";
+			}
+			});
 
-            if (respuesta.type === "categorias:list") {
-                categorias = Array.isArray(respuesta.data) ? respuesta.data : [];
-                llenarSelect(campoCategoria, categorias, "CategoriaId", "Selecciona una categoría");
-                actualizarSubcategorias();
-            } else if (respuesta.type === "subcategorias:list") {
-                subcategorias = Array.isArray(respuesta.data) ? respuesta.data : [];
-                actualizarSubcategorias();
-            } else if (respuesta.type === "estados") {
-                const estados = Array.isArray(respuesta.data) ? respuesta.data : [];
-                llenarSelect(campoEstado, estados, "EstadoId", "Selecciona un estado");
-            } else if (respuesta.type === "error") {
-                guardando = false;
-                actualizarGuardar();
-                botonGuardar.textContent = "Guardar producto";
-                mensaje.textContent = respuesta.message || "No se pudo registrar el producto.";
-            }
-        }
+			function recibir(evento) {
+			if (evento.source && window.parent !== window && evento.source !== window.parent) return;
+			let respuesta = evento.data;
+			if (typeof respuesta === "string") {
+			try { respuesta = JSON.parse(respuesta); } catch { return; }
+			}
+			if (!respuesta || typeof respuesta !== "object") return;
 
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", recibir);
-        }
-        window.addEventListener("message", recibir);
+			if (respuesta.type === "categorias:list") {
+			categorias = Array.isArray(respuesta.data) ? respuesta.data : [];
+			llenarSelect(campoCategoria, categorias, "CategoriaId", "Selecciona una categoría");
+			actualizarSubcategorias();
+			} else if (respuesta.type === "subcategorias:list") {
+			subcategorias = Array.isArray(respuesta.data) ? respuesta.data : [];
+			actualizarSubcategorias();
+			} else if (respuesta.type === "estados") {
+			const estados = Array.isArray(respuesta.data) ? respuesta.data : [];
+			llenarSelect(campoEstado, estados, "EstadoId", "Selecciona un estado");
+			} else if (respuesta.type === "error") {
+			guardando = false;
+			actualizarGuardar();
+			botonGuardar.textContent = "Guardar producto";
+			mensaje.textContent = respuesta.message || "No se pudo registrar el producto.";
+			}
+			}
 
-        enviar({ type: "categorias:selectAll" });
-        enviar({ type: "subcategorias:selectAll" });
-        enviar({ type: "obtenerEstados" });
-    </script>
-</body>
+			if (window.chrome?.webview?.addEventListener) {
+			window.chrome.webview.addEventListener("message", recibir);
+			}
+			window.addEventListener("message", recibir);
+
+			enviar({ type: "categorias:selectAll" });
+			enviar({ type: "subcategorias:selectAll" });
+			enviar({ type: "obtenerEstados" });
+		</script>
+	</body>
 </html>
