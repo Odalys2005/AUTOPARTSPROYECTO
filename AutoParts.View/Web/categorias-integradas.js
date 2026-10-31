@@ -1,6 +1,6 @@
 // VERSIÓN CORREGIDA: Productos + 21 módulos; reemplaza TODO el JS viejo.
 // Prueba en DevTools: window.AUTOPARTS_INTEGRADOS_VERSION
-window.AUTOPARTS_INTEGRADOS_VERSION = '21-modulos-productos-corregido-20261024';
+window.AUTOPARTS_INTEGRADOS_VERSION = '21-modulos-garantias-integradas-20261031';
 console.info('AutoParts módulos integrados cargados:', window.AUTOPARTS_INTEGRADOS_VERSION);
 
 // ============================================================
@@ -223,7 +223,28 @@ window.addEventListener('message', evento => {
         return;
     }
 
+    // GARANTÍAS: operaciones especiales, validadas por MainForm y SQL.
+    // No utilizar la inserción genérica para solicitudes ni entregas.
+    const operacionesGarantia = {
+        'garantias:registrarSolicitud': 'garantias',
+        'garantias:evaluar': 'garantias',
+        'reemplazos-garantia:entregar': 'reemplazos-garantia'
+    };
+    if (Object.prototype.hasOwnProperty.call(operacionesGarantia, mensaje.type)) {
+        if (operacionesGarantia[mensaje.type] === modulo) {
+            enviarACSharp(mensaje);
+        }
+        return;
+    }
+
     if (mensaje.type === 'guardar') {
+        if (modulo === 'garantias' || modulo === 'reemplazos-garantia') {
+            marco.contentWindow?.postMessage({
+                type: 'error',
+                message: 'Utiliza la operación específica de solicitud, evaluación o entrega de garantía.'
+            }, '*');
+            return;
+        }
         if (!configuracion.soloLectura) {
             enviarACSharp({
                 type: `${modulo}:guardarIntegrado`,
@@ -295,6 +316,25 @@ if (window.chrome?.webview?.addEventListener) {
             mensaje.type === 'ventas:ticketImpreso' ||
             mensaje.type === 'ventas:ticketError'
         )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        // Respuestas de las operaciones de garantía y entrega.
+        // Mantener el iframe actual para mostrar al usuario el resultado,
+        // incluso cuando queda PENDIENTE_REEMPLAZO.
+        const respuestasGarantias = new Set([
+            'garantias:solicitudRegistrada',
+            'garantias:solicitudError',
+            'garantias:evaluada',
+            'garantias:evaluacionError'
+        ]);
+        const respuestasReemplazos = new Set([
+            'reemplazos-garantia:resultadoEntrega',
+            'reemplazos-garantia:entregaError'
+        ]);
+        if ((modulo === 'garantias' && respuestasGarantias.has(mensaje.type)) ||
+            (modulo === 'reemplazos-garantia' && respuestasReemplazos.has(mensaje.type))) {
             marco.contentWindow?.postMessage(mensaje, '*');
             return;
         }

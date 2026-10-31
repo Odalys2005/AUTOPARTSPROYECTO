@@ -576,6 +576,14 @@ namespace AutoParts.View
                         }
                         break;
 
+                    // GARANTÍAS: operaciones validadas en SQL Server.
+                    // EmpleadoId se obtiene de la sesión, nunca de los datos HTML.
+                    case "garantias:registrarSolicitud":
+                    case "garantias:evaluar":
+                    case "reemplazos-garantia:entregar":
+                        ProcesarOperacionGarantia(tipo, raiz);
+                        break;
+
                     // PRODUCTOS: consulta y registro desde WebView2.
                     case "productos:selectAll":
                     case "productos:guardarIntegrado":
@@ -655,6 +663,95 @@ namespace AutoParts.View
                     MessageBoxIcon.Error
                 );
             }
+        }
+
+        // ==========================================================
+        // GARANTÍAS - SOLICITUD, EVALUACIÓN Y ENTREGA
+        // La autorización del administrador ya se verifica en el receptor
+        // central antes de llegar a este método.
+        // ==========================================================
+        private void ProcesarOperacionGarantia(string tipo, JsonElement raiz)
+        {
+            try
+            {
+                if (_sesionActual == null || !PermisosSistema.EsAdministrador(_sesionActual))
+                    throw new UnauthorizedAccessException("No tienes permisos para gestionar garantías.");
+
+                if (!raiz.TryGetProperty("data", out JsonElement datos) ||
+                    datos.ValueKind != JsonValueKind.Object)
+                    throw new ArgumentException("No se recibieron los datos de la garantía.");
+
+                // Nunca confiar en el EmpleadoId proporcionado por JavaScript.
+                int empleadoId = _sesionActual.EmpleadoId;
+                if (empleadoId <= 0)
+                    throw new InvalidOperationException("La sesión no tiene un empleado válido.");
+
+                if (tipo == "garantias:registrarSolicitud")
+                {
+                    int detalleVentaId = LeerEnteroGarantia(datos, "DetalleVentaId");
+                    int cantidad = LeerEnteroGarantia(datos, "CantidadReclamada");
+                    string descripcion = LeerTextoGarantia(datos, "DescripcionFalla") ?? "";
+                    string? observaciones = LeerTextoGarantia(datos, "Observaciones");
+
+                    GarantiaSolicitudResultado resultado = _garantiaBL.RegistrarSolicitud(
+                        detalleVentaId, empleadoId, cantidad, descripcion, observaciones);
+
+                    EnviarAlDashboard(new { type = "garantias:solicitudRegistrada", data = resultado });
+                }
+                else if (tipo == "garantias:evaluar")
+                {
+                    int garantiaId = LeerEnteroGarantia(datos, "GarantiaId");
+                    string decision = LeerTextoGarantia(datos, "Decision") ?? "";
+                    if (!datos.TryGetProperty("DefectoFabricacion", out JsonElement defecto) ||
+                        (defecto.ValueKind != JsonValueKind.True && defecto.ValueKind != JsonValueKind.False))
+                        throw new ArgumentException("Indica si se confirmó un defecto de fabricación.");
+                    string? observaciones = LeerTextoGarantia(datos, "Observaciones");
+
+                    GarantiaEvaluacionResultado resultado = _garantiaBL.Evaluar(
+                        garantiaId, empleadoId, decision, defecto.GetBoolean(), observaciones);
+
+                    EnviarAlDashboard(new { type = "garantias:evaluada", data = resultado });
+                }
+                else if (tipo == "reemplazos-garantia:entregar")
+                {
+                    int garantiaId = LeerEnteroGarantia(datos, "GarantiaId");
+                    string? observaciones = LeerTextoGarantia(datos, "Observaciones");
+
+                    ReemplazoEntregaResultado resultado = _reemplazoGarantiaBL.EntregarReemplazo(
+                        garantiaId, empleadoId, observaciones);
+
+                    // El estado del resultado distingue entrega efectiva de pendiente.
+                    EnviarAlDashboard(new { type = "reemplazos-garantia:resultadoEntrega", data = resultado });
+                }
+            }
+            catch (Exception ex)
+            {
+                string respuesta = tipo switch
+                {
+                    "garantias:registrarSolicitud" => "garantias:solicitudError",
+                    "garantias:evaluar" => "garantias:evaluacionError",
+                    _ => "reemplazos-garantia:entregaError"
+                };
+                EnviarAlDashboard(new { type = respuesta, message = ex.Message });
+            }
+        }
+
+        private static int LeerEnteroGarantia(JsonElement datos, string propiedad)
+        {
+            if (!datos.TryGetProperty(propiedad, out JsonElement campo) ||
+                campo.ValueKind != JsonValueKind.Number || !campo.TryGetInt32(out int valor) || valor <= 0)
+                throw new ArgumentException("Selecciona un valor válido para " + propiedad + ".");
+            return valor;
+        }
+
+        private static string? LeerTextoGarantia(JsonElement datos, string propiedad)
+        {
+            if (!datos.TryGetProperty(propiedad, out JsonElement campo) ||
+                campo.ValueKind == JsonValueKind.Null || campo.ValueKind == JsonValueKind.Undefined)
+                return null;
+            if (campo.ValueKind != JsonValueKind.String)
+                throw new ArgumentException("El campo " + propiedad + " debe ser texto.");
+            return campo.GetString();
         }
 
         // Datos reales para las dos tablas del Dashboard.
