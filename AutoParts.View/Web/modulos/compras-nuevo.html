@@ -28,120 +28,64 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
 .guardar{color:#190d0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);box-shadow:0 0 16px #e5233533}
 .guardar:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-2px)}.guardar:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:720px){.contenedor{padding:20px}.panel{padding:20px}.campos{grid-template-columns:1fr;gap:18px}.campo.ancho{grid-column:auto}}
-</style></head><body>
-<main class="contenedor"><header class="encabezado"><div><div class="etiqueta">COMPRAS Y ABASTECIMIENTO</div>
-<h1>Nueva <span>Compra</span></h1><p class="descripcion">Registro de compra en AutoParts.</p></div>
-<div class="icono" aria-hidden="true"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h8m-8 4h5"/></svg></div></header>
-<section class="panel"><form id="formRegistro" novalidate><p class="seccion">DATOS DEL REGISTRO</p><div class="campos"><div class="campo"><label for="NumeroComprobante">N.º de comprobante <span class="requerido">*</span></label><input type="text" id="NumeroComprobante" required maxlength="50" autocomplete="off"></div>
+
+.seccion-detalles{margin-top:30px;border-top:1px solid #382d34;padding-top:28px}
+.lineas{width:100%;border-collapse:collapse;margin-top:18px;font-size:13px}
+.lineas th,.lineas td{text-align:left;padding:11px 9px;border-bottom:1px solid #392e35}
+.lineas th{color:#ffbd35;font-size:11px;letter-spacing:.6px}
+.lineas td.numero{text-align:right;font-variant-numeric:tabular-nums}
+.lineas button{background:#332127;color:#ffb6b8;border:1px solid #733a43;border-radius:7px;padding:7px 10px;cursor:pointer}
+.total{text-align:right;font-size:23px;font-weight:800;color:#ffbd35;margin-top:18px}
+.lineas-vacia{color:#a7a6ac;font-size:13px;margin-top:15px}
+.agregar{background:#29232b;border:1px solid #75515b;border-radius:9px;padding:12px 18px;color:#fff;cursor:pointer;font-weight:700}
+.estado-ok{color:#90dfaa}.estado-error{color:#ffa4a4}
+@media(max-width:720px){.tabla-scroll{overflow-x:auto}.lineas{min-width:620px}}
+</style>
+</head><body>
+<main class="contenedor"><header class="encabezado"><div><div class="etiqueta">COMPRAS Y ABASTECIMIENTO</div><h1>Nueva <span>Compra</span></h1><p class="descripcion">Registra los productos recibidos y actualiza las existencias en una operación.</p></div><div class="icono" aria-hidden="true">▣</div></header>
+<section class="panel"><form id="formCompra" novalidate>
+<p class="seccion">DATOS DE LA COMPRA</p>
+<div class="campos">
+<div class="campo"><label for="NumeroComprobante">N.º de comprobante <span class="requerido">*</span></label><input id="NumeroComprobante" required maxlength="50" autocomplete="off"></div>
 <div class="campo"><label for="FechaCompra">Fecha de compra <span class="requerido">*</span></label><input type="datetime-local" id="FechaCompra" required></div>
-<div class="campo"><label for="ProveedorId">Proveedor <span class="requerido">*</span></label><select id="ProveedorId" required disabled><option value="">Cargando...</option></select></div>
-<div class="campo"><label for="EmpleadoId">Empleado responsable <span class="requerido">*</span></label><select id="EmpleadoId" required disabled><option value="">Cargando...</option></select></div>
-<div class="campo"><label for="TotalCompra">Total de compra <span class="requerido">*</span></label><input type="number" id="TotalCompra" required min="0" step="0.01" placeholder="0.00"></div></div>
+<div class="campo"><label for="ProveedorId">Proveedor <span class="requerido">*</span></label><select id="ProveedorId" required disabled><option value="">Cargando proveedores...</option></select></div>
+<div class="campo"><label for="EmpleadoId">Empleado responsable <span class="requerido">*</span></label><select id="EmpleadoId" required disabled><option value="">Cargando empleados...</option></select></div>
+</div>
+<div class="seccion-detalles"><p class="seccion">PRODUCTOS DE LA COMPRA</p>
+<div class="campos">
+<div class="campo ancho"><label for="ProductoId">Producto <span class="requerido">*</span></label><select id="ProductoId" disabled><option value="">Cargando productos...</option></select></div>
+<div class="campo"><label for="Cantidad">Cantidad <span class="requerido">*</span></label><input id="Cantidad" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
+<div class="campo"><label for="PrecioCosto">Precio de costo unitario ($) <span class="requerido">*</span></label><input id="PrecioCosto" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal"></div>
+</div>
+<div style="margin-top:16px"><button type="button" class="agregar" id="agregar">+ Agregar producto</button></div>
+<div class="tabla-scroll"><table class="lineas" aria-label="Detalle de la compra"><thead><tr><th>Producto</th><th>Cantidad</th><th>Costo unitario</th><th>Subtotal</th><th></th></tr></thead><tbody id="cuerpoDetalles"></tbody></table></div>
+<div id="vacia" class="lineas-vacia">Todavía no agregaste productos.</div>
+<div class="total" id="total">TOTAL: $0.00</div>
+<p class="descripcion">Si las existencias superan el máximo recomendado, la compra se permitirá y se mostrará una advertencia.</p>
+</div>
 <div id="mensaje" class="mensaje" role="status" aria-live="polite"></div>
-<div class="acciones"><button type="button" id="cancelar" class="cancelar">Cancelar</button>
-<button type="submit" id="guardar" class="guardar" disabled>Guardar compra</button></div></form></section></main>
+<div class="acciones"><button type="button" id="cancelar" class="cancelar">Cancelar</button><button type="submit" id="guardar" class="guardar" disabled>Confirmar compra</button></div>
+</form></section></main>
 <script>
 'use strict';
-function val(obj, ...keys){for(const k of keys){if(obj && Object.prototype.hasOwnProperty.call(obj,k) && obj[k]!==null && obj[k]!==undefined)return obj[k];}return '';}
-function campo(obj,key){return val(obj,key,key[0].toLowerCase()+key.slice(1));}
-function idDe(obj,key){return Number(campo(obj,key))||0;}
-function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function emitir(data){if(window.parent!==window){window.parent.postMessage(data,'*');return true;}
-  if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(data);return true;}
-  return false;}
-function dinero(x){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(x)||0);}
-function fecha(x){if(!x)return '—'; const s=String(x);return s.replace('T',' ').slice(0,16);}
-function leer(evento){let data=evento.data;if(typeof data==='string'){try{data=JSON.parse(data);}catch{return null;}}return data&&typeof data==='object'?data:null;}
-const IDS={compras:'CompraId','detalles-compra':'DetalleCompraId',ventas:'VentaId','detalles-venta':'DetalleVentaId',garantias:'GarantiaId','reemplazos-garantia':'ReemplazoId',proveedores:'ProveedorId',clientes:'ClienteId',empleados:'EmpleadoId',productos:'ProductoId',estados:'EstadoId'};
-function nombreRelacionado(tipo,reg){if(!reg)return '—';
-  switch(tipo){
-    case 'proveedores':return String(campo(reg,'NombreEmpresa')||`Proveedor #${idDe(reg,'ProveedorId')}`);
-    case 'clientes':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Cliente #${idDe(reg,'ClienteId')}`;
-    case 'empleados':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Empleado #${idDe(reg,'EmpleadoId')}`;
-    case 'productos':return [campo(reg,'CodigoOEM'),campo(reg,'Nombre')].filter(Boolean).join(' · ')||`Producto #${idDe(reg,'ProductoId')}`;
-    case 'compras':return String(campo(reg,'NumeroComprobante')||`Compra #${idDe(reg,'CompraId')}`);
-    case 'ventas':return String(campo(reg,'NumeroFactura')||`Venta #${idDe(reg,'VentaId')}`);
-    case 'detalles-venta':return `Detalle #${idDe(reg,'DetalleVentaId')} · Venta #${idDe(reg,'VentaId')} · Producto #${idDe(reg,'ProductoId')}`;
-    case 'garantias':return `Garantía #${idDe(reg,'GarantiaId')}`;
-    case 'estados':return String(campo(reg,'Nombre')||`Estado #${idDe(reg,'EstadoId')}`);
-    default:return String(campo(reg,'Nombre')||'—');
-  }
-}
-
-
-const CFG={"slug": "compras", "menu": "Compras", "single": "compra", "title": "Compras", "newtitle": "Compra", "tag": "COMPRAS Y ABASTECIMIENTO", "desc": "Consulta las compras realizadas a proveedores.", "info": "Información de compras registradas.", "search": "Buscar comprobante, proveedor o empleado...", "id": "CompraId", "lookups": {"proveedores": "ProveedorId", "empleados": "EmpleadoId"}, "columns": [["CompraId", "ID", "id"], ["NumeroComprobante", "Comprobante", "code"], ["FechaCompra", "Fecha", "date"], ["ProveedorId", "Proveedor", "lookup:proveedores"], ["EmpleadoId", "Empleado", "lookup:empleados"], ["TotalCompra", "Total", "money"]], "fields": [["NumeroComprobante", "N.º de comprobante", "text", true, 50], ["FechaCompra", "Fecha de compra", "datetime", true], ["ProveedorId", "Proveedor", "select:proveedores", true], ["EmpleadoId", "Empleado responsable", "select:empleados", true], ["TotalCompra", "Total de compra", "money", true]]};
-const form=document.getElementById('formRegistro'),mensaje=document.getElementById('mensaje'),guardar=document.getElementById('guardar');
-let guardando=false,cargado={},temporizadorCarga,temporizadorGuardar;
-const colecciones={};for(const k of Object.keys(CFG.lookups)){colecciones[k]=[];cargado[k]=false;}
-function aviso(t){mensaje.textContent=t;}
-function llenar(tipo){const idCampo=CFG.lookups[tipo],control=CFG.fields.find(x=>x[0]===idCampo);if(!control)return;
-  const sel=document.getElementById(idCampo);if(!sel)return;const anterior=sel.value;sel.replaceChildren();
-  const op=document.createElement('option');op.value='';op.textContent=`Selecciona ${control[1].toLowerCase()}`;sel.appendChild(op);
-  let registros=colecciones[tipo];
-  if(tipo==='garantias'){const usados=new Set((colecciones['reemplazos-garantia']||[]).map(r=>idDe(r,'GarantiaId')));registros=registros.filter(r=>!usados.has(idDe(r,'GarantiaId')));}
-  for(const r of registros){const id=idDe(r,IDS[tipo]);if(!id)continue;const item=document.createElement('option');item.value=String(id);item.textContent=nombreRelacionado(tipo,r);sel.appendChild(item);}
-  if([...sel.options].some(o=>o.value===anterior))sel.value=anterior;
-  sel.disabled=sel.options.length===1;
-  habilitar();
-}
-function habilitar(){guardar.disabled=guardando||!Object.entries(CFG.lookups).filter(([k])=>CFG.fields.some(f=>f[2]===`select:${k}`)).every(([k])=>cargado[k]);}
-function recibir(evento){const m=leer(evento);if(!m||!m.type)return;
-  if(m.type.endsWith(':list')){const tipo=m.type.slice(0,-5);if(tipo in colecciones){colecciones[tipo]=Array.isArray(m.data)?m.data:[];cargado[tipo]=true;llenar(tipo);if(tipo==='reemplazos-garantia')llenar('garantias');}}
-  else if(m.type==='estados'&&'estados' in colecciones){colecciones.estados=Array.isArray(m.data)?m.data:[];cargado.estados=true;llenar('estados');}
-  else if(m.type==='error'){clearTimeout(temporizadorGuardar);guardando=false;aviso(String(m.message||'No se pudo completar la operación.'));habilitar();}
-  if(Object.values(cargado).every(Boolean)){clearTimeout(temporizadorCarga);if(!guardando&&!mensaje.textContent){const faltan=CFG.fields.some(f=>f[2].startsWith('select:')&&document.getElementById(f[0]).disabled);if(faltan)aviso('No hay registros disponibles en una de las listas necesarias.');}}
-}
-window.addEventListener('message',recibir);
-if(window.chrome?.webview?.addEventListener&&window.parent===window)window.chrome.webview.addEventListener('message',recibir);
-function valorCampo(f){const [k,label,tipo,req]=f,el=document.getElementById(k);const raw=el.value.trim();
-  if(tipo.startsWith('select:'))return Number(raw);
-  if(tipo==='int'||tipo==='intzero')return raw===''?null:Number(raw);
-  if(tipo==='money'||tipo==='calculated')return raw===''?null:Number(raw);
-  return raw===''?null:raw;
-}
-function totalizar(){if(!CFG.calc)return;
-  const cantidad=Number(document.getElementById('Cantidad').value)||0;
-  const costo=Number(document.getElementById(CFG.calc==='purchase'?'PrecioCosto':'PrecioUnitario').value)||0;
-  const desc=CFG.calc==='sale'?Number(document.getElementById('Descuento').value)||0:0;
-  const subtotal=Math.max(0,Math.round((cantidad*costo-desc)*100)/100);
-  document.getElementById('Subtotal').value=subtotal.toFixed(2);
-}
-if(CFG.calc){for(const k of ['Cantidad',CFG.calc==='purchase'?'PrecioCosto':'PrecioUnitario',...(CFG.calc==='sale'?['Descuento']:[])])document.getElementById(k).addEventListener('input',totalizar);totalizar();}
-// El diseño propone el formulario, pero la confirmación de guardado depende del C#.
-document.getElementById('cancelar').addEventListener('click',()=>emitir({type:'cancelar'}));
-form.addEventListener('submit',evento=>{evento.preventDefault();if(guardando)return;const datos={};
-  for(const campoDef of CFG.fields){const [key,label,tipo,req]=campoDef;const x=valorCampo(campoDef);
-    if(req&&(x===null||x===''||((tipo.startsWith('select:'))&&x<=0))){aviso(`Completa el campo: ${label}.`);document.getElementById(key).focus();return;}
-    if(x!==null&&x!==''&&['int','intzero','money','calculated'].includes(tipo)){
-      if(!Number.isFinite(x)||x<(tipo==='int'?1:0)||(['int','intzero'].includes(tipo)&&!Number.isInteger(x))){aviso(`Revisa el valor de ${label.toLowerCase()}.`);document.getElementById(key).focus();return;}
-    }
-    if(x!==null)datos[key]=x;
-  }
-  if(!form.checkValidity()){aviso('Revisa los campos marcados.');form.reportValidity();return;}
-  if(CFG.slug==='detalles-venta' && Number(datos.Descuento||0)>Number(datos.Cantidad)*Number(datos.PrecioUnitario)){aviso('El descuento no puede superar el importe de la línea.');return;}
-  if(CFG.slug==='garantias'){
-    const detalle=colecciones['detalles-venta'].find(r=>idDe(r,'DetalleVentaId')===datos.DetalleVentaId);
-    if(detalle&&datos.CantidadReclamada>Number(campo(detalle,'Cantidad'))){aviso('La cantidad reclamada no puede exceder la cantidad vendida.');return;}
-    if(datos.FechaResolucion&&datos.FechaResolucion<datos.FechaSolicitud){aviso('La resolución no puede ser anterior a la solicitud.');return;}
-  }
-  if(CFG.slug==='reemplazos-garantia'){
-    const g=colecciones.garantias.find(r=>idDe(r,'GarantiaId')===datos.GarantiaId);
-    if(g&&datos.Cantidad>Number(campo(g,'CantidadReclamada'))){aviso('La cantidad a reemplazar no puede superar la reclamada.');return;}
-  }
-  if(!emitir({type:'guardar',data:datos})){aviso('Abre este formulario desde AutoParts.');return;}
-  guardando=true;habilitar();aviso('Enviando registro...');clearTimeout(temporizadorGuardar);
-  temporizadorGuardar=setTimeout(()=>{if(guardando){guardando=false;habilitar();aviso('No hubo confirmación de guardado. Comprueba la conexión de MainForm.cs antes de intentarlo de nuevo.');}},12000);
-});
-form.addEventListener('input',()=>{if(!guardando && mensaje.textContent && !mensaje.textContent.startsWith('No hubo'))aviso('');});
-function iniciar(){
-  for(const dep of Object.keys(CFG.lookups)){emitir({type:dep==='estados'?'obtenerEstados':`${dep}:selectAll`});}
-  clearTimeout(temporizadorCarga);
-  temporizadorCarga=setTimeout(()=>{const sinCargar=Object.keys(cargado).filter(k=>!cargado[k]);if(sinCargar.length)aviso('No se pudieron cargar las listas: '+sinCargar.join(', ')+'.');},12000);
-  habilitar();
-}
-// Inicio de formularios: la fecha se llena con hora local, no UTC.
-const ahora=new Date(),ajustada=new Date(ahora.getTime()-ahora.getTimezoneOffset()*60000).toISOString().slice(0,16);
-for(const f of CFG.fields){if(f[2]==='datetime'&&/^(FechaCompra|FechaVenta|FechaSolicitud|FechaReemplazo)$/.test(f[0]))document.getElementById(f[0]).value=ajustada;}
-iniciar();
-
+const $ = x => document.getElementById(x);
+const campos = {proveedores:$('ProveedorId'),empleados:$('EmpleadoId'),productos:$('ProductoId')};
+const listas={proveedores:[],empleados:[],productos:[]},cargado={proveedores:false,empleados:false,productos:false};
+const detalles=[];let guardando=false,confirmada=false,timeoutCarga,timeoutGuardar;
+function campo(o,k){return o?.[k] ?? o?.[k[0].toLowerCase()+k.slice(1)];}
+function identificador(o,k){return Number(campo(o,k))||0;}
+function dinero(v){return '$'+Number(v).toFixed(2);}
+function aviso(s,clase=''){ $('mensaje').textContent=s; $('mensaje').className='mensaje '+clase; }
+function emitir(m){if(window.parent!==window){window.parent.postMessage(m,'*');return true;}if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(m);return true;}return false;}
+function nombreRegistro(tipo,o){if(tipo==='proveedores')return String(campo(o,'NombreEmpresa')||'Proveedor #'+identificador(o,'ProveedorId'));if(tipo==='empleados')return [campo(o,'Nombre'),campo(o,'Apellido')].filter(Boolean).join(' ')||'Empleado #'+identificador(o,'EmpleadoId');return [campo(o,'CodigoOEM'),campo(o,'Nombre')].filter(Boolean).join(' · ')||'Producto #'+identificador(o,'ProductoId');}
+function actualizar(){const listo=Object.values(cargado).every(Boolean)&&Object.values(campos).every(s=>!s.disabled);$('guardar').disabled=guardando||confirmada||!listo||detalles.length===0;$('agregar').disabled=guardando||confirmada||!cargado.productos;for(const sel of Object.values(campos))if(confirmada)sel.disabled=true;}
+function llenar(tipo){const s=campos[tipo],previo=s.value;s.replaceChildren();const op=document.createElement('option');op.value='';op.textContent='Selecciona '+(tipo==='productos'?'un producto':tipo==='empleados'?'un empleado':'un proveedor');s.appendChild(op);const key={proveedores:'ProveedorId',empleados:'EmpleadoId',productos:'ProductoId'}[tipo];for(const item of listas[tipo]){const id=identificador(item,key);if(!id)continue;const o=document.createElement('option');o.value=id;o.textContent=nombreRegistro(tipo,item);s.appendChild(o);}s.disabled=s.options.length<=1||confirmada;if([...s.options].some(o=>o.value===previo))s.value=previo;actualizar();}
+function pintar(){const cuerpo=$('cuerpoDetalles');cuerpo.replaceChildren();let centavos=0;detalles.forEach((d,i)=>{const sub=Math.round(d.Cantidad*Math.round(d.PrecioCosto*100));centavos+=sub;const fila=document.createElement('tr');const nombre=document.createElement('td');nombre.textContent=d.Nombre;fila.appendChild(nombre);for(const texto of [String(d.Cantidad),dinero(d.PrecioCosto),dinero(sub/100)]){const td=document.createElement('td');td.textContent=texto;td.className='numero';fila.appendChild(td);}const acciones=document.createElement('td'),b=document.createElement('button');b.type='button';b.textContent='Quitar';b.disabled=guardando||confirmada;b.addEventListener('click',()=>{if(guardando||confirmada)return;detalles.splice(i,1);pintar();});acciones.appendChild(b);fila.appendChild(acciones);cuerpo.appendChild(fila);});$('vacia').hidden=detalles.length>0;$('total').textContent='TOTAL: '+dinero(centavos/100);actualizar();}
+$('agregar').addEventListener('click',()=>{if(guardando||confirmada)return;const ProductoId=Number($('ProductoId').value),Cantidad=Number($('Cantidad').value),PrecioCosto=Number($('PrecioCosto').value);if(!ProductoId){aviso('Selecciona un producto.','estado-error');return;}if(!Number.isSafeInteger(Cantidad)||Cantidad<=0){aviso('Ingresa una cantidad entera mayor que cero.','estado-error');return;}if($('PrecioCosto').value.trim()===''||!Number.isFinite(PrecioCosto)||PrecioCosto<0||!/^\d+(?:\.\d{1,2})?$/.test($('PrecioCosto').value.trim())){aviso('El costo debe tener hasta dos decimales y no ser negativo.','estado-error');return;}if(detalles.some(d=>d.ProductoId===ProductoId)){aviso('Ese producto ya está agregado. Quítalo para cambiar su cantidad.','estado-error');return;}const producto=listas.productos.find(p=>identificador(p,'ProductoId')===ProductoId);if(!producto){aviso('Producto no encontrado.','estado-error');return;}detalles.push({ProductoId,Cantidad,PrecioCosto,Nombre:nombreRegistro('productos',producto)});$('ProductoId').value='';$('Cantidad').value='1';$('PrecioCosto').value='';aviso('');pintar();});
+$('cancelar').addEventListener('click',()=>{if(guardando)return;emitir({type:'cancelar'});});
+$('formCompra').addEventListener('submit',e=>{e.preventDefault();if(guardando||confirmada)return;if(!$('formCompra').checkValidity()){aviso('Completa los datos obligatorios.','estado-error');$('formCompra').reportValidity();return;}const ProveedorId=Number($('ProveedorId').value),EmpleadoId=Number($('EmpleadoId').value),NumeroComprobante=$('NumeroComprobante').value.trim(),FechaCompra=$('FechaCompra').value;if(!ProveedorId||!EmpleadoId||!NumeroComprobante||NumeroComprobante.length>50||!FechaCompra){aviso('Revisa proveedor, empleado, comprobante y fecha.','estado-error');return;}if(detalles.length===0){aviso('Agrega al menos un producto.','estado-error');return;}const mensaje={type:'compras:registrarCompleta',data:{Compra:{ProveedorId,EmpleadoId,NumeroComprobante,FechaCompra},Detalles:detalles.map(({ProductoId,Cantidad,PrecioCosto})=>({ProductoId,Cantidad,PrecioCosto}))}};guardando=true;actualizar();aviso('Registrando compra y actualizando inventario...');if(!emitir(mensaje)){guardando=false;actualizar();aviso('Abre este formulario desde AutoParts.','estado-error');return;}clearTimeout(timeoutGuardar);timeoutGuardar=setTimeout(()=>{if(!guardando)return;guardando=false;actualizar();aviso('No se recibió confirmación. Verifica las compras existentes antes de volver a intentar: podría haberse guardado.','estado-error');},20000);});
+function recibir(e){let m=e.data;if(typeof m==='string'){try{m=JSON.parse(m);}catch{return;}}if(!m||typeof m!=='object')return;if(m.type==='compras:registrada'){clearTimeout(timeoutGuardar);guardando=false;confirmada=true;actualizar();const d=m.data||{};aviso('Compra registrada correctamente. ID: '+String(d.CompraId??'—')+' · Comprobante: '+String(d.NumeroComprobante??'')+' · Total: '+dinero(d.TotalCompra??0)+(d.AdvertenciasStockMaximo?' · ADVERTENCIA DE STOCK: '+String(d.AdvertenciasStockMaximo):''),'estado-ok');return;}if(m.type==='compras:error'||m.type==='error'){if(guardando||m.type==='compras:error'){clearTimeout(timeoutGuardar);guardando=false;actualizar();}aviso(String(m.message||'Error al registrar compra. Comprueba los datos.'),'estado-error');return;}if(m.type?.endsWith(':list')){const tipo=m.type.slice(0,-5);if(tipo in listas){listas[tipo]=Array.isArray(m.data)?m.data:[];cargado[tipo]=true;llenar(tipo);}}if(Object.values(cargado).every(Boolean))clearTimeout(timeoutCarga);}
+window.addEventListener('message',recibir);if(window.parent===window&&window.chrome?.webview?.addEventListener)window.chrome.webview.addEventListener('message',recibir);
+const ahora=new Date();$('FechaCompra').value=new Date(ahora.getTime()-ahora.getTimezoneOffset()*60000).toISOString().slice(0,16);
+for(const tipo of Object.keys(campos))emitir({type:tipo+':selectAll'});timeoutCarga=setTimeout(()=>{const faltan=Object.keys(cargado).filter(k=>!cargado[k]);if(faltan.length)aviso('No se pudieron cargar las listas: '+faltan.join(', ')+'.','estado-error');},12000);actualizar();
 </script></body></html>

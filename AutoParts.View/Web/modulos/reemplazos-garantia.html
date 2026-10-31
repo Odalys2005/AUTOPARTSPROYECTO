@@ -1,121 +1,156 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AutoParts | Reemplazos de garantía</title><style>
-:root{color-scheme:dark}
-*{box-sizing:border-box}
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoParts | Reemplazos de garantía</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}
 body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 95% 0%,rgba(136,16,25,.20),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
-button,input,select,textarea{font:inherit}button{cursor:pointer}
+button,input,textarea{font:inherit}button{cursor:pointer}
 .contenedor{max-width:1520px;margin:0 auto;padding:34px}
 .etiqueta{display:flex;align-items:center;gap:9px;color:#ffbd37;font-size:11px;font-weight:750;letter-spacing:2.7px;margin-bottom:12px}
 .etiqueta:before{content:'';width:22px;height:3px;background:#ff3543;border-radius:10px;box-shadow:0 0 12px #ff243a}
 h1{margin:0;font-size:clamp(28px,3vw,38px);letter-spacing:-.8px;font-weight:800}h1 span{color:#ffbd2e}
 .subtitulo{margin-top:9px;color:#adaeb8;font-size:13px;line-height:1.6}
 .encabezado{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;margin-bottom:31px}
-.btn-principal{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid #ff6053;border-radius:10px;padding:14px 20px;background:linear-gradient(110deg,#b10b1f,#e52a37,#ffac28);color:#fff;font-size:13px;font-weight:750;box-shadow:0 0 18px rgba(233,31,48,.27);transition:filter .2s,transform .2s;white-space:nowrap}
-.btn-principal:hover{filter:brightness(1.13);transform:translateY(-2px)}
-.panel{border:1px solid #4d3038;border-radius:15px;background:linear-gradient(140deg,#171519,#0d0e11 65%,#140f12);box-shadow:0 12px 35px #0005;overflow:hidden}
+.btn-principal{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid #ff6053;border-radius:10px;padding:14px 20px;background:linear-gradient(110deg,#b10b1f,#e52a37,#ffac28);color:#fff;font-size:13px;font-weight:750;box-shadow:0 0 18px rgba(233,31,48,.27);white-space:nowrap}
+.btn-principal:hover{filter:brightness(1.12)}
+.panel{border:1px solid #4d3038;border-radius:15px;background:linear-gradient(140deg,#171519,#0d0e11 65%,#140f12);box-shadow:0 12px 35px #0005;overflow:hidden;margin-bottom:22px}
 .panel-cabecera{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:17px;padding:24px 25px;border-bottom:1px solid #352c32}
 .panel-cabecera h2{font-size:18px;margin:0 0 7px}.panel-cabecera p{font-size:12px;color:#9a9aa4;margin:0}
 .herramientas{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
-.buscador{display:flex;align-items:center;gap:10px;height:44px;border:1px solid #51454c;background:#111216;border-radius:9px;padding:0 13px;width:min(345px,100%)}
-.buscador:focus-within{border-color:#ff3d46;box-shadow:0 0 12px #ff334022}.buscador svg{color:#aba9b0;flex-shrink:0}
+.buscador{display:flex;align-items:center;height:44px;border:1px solid #51454c;background:#111216;border-radius:9px;padding:0 13px;width:min(345px,100%)}
 .buscador input{width:100%;border:0;outline:0;background:transparent;color:white;font-size:12px}.buscador input::placeholder{color:#898992}
-.btn-actualizar{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0 15px;color:#eee;font-size:12px;transition:.2s}.btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
+.btn-actualizar{height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0 15px;color:#eee;font-size:12px}.btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
 .aviso{padding:0 25px;font-size:12px;color:#ffbd69;line-height:1.6}.aviso:empty{display:none}.aviso:not(:empty){padding-top:14px;padding-bottom:12px}
-.tabla-wrap{overflow-x:auto;min-height:240px}table{width:100%;min-width:940px;border-collapse:collapse;font-size:12px}thead{background:#1b1b21}
-th{text-align:left;color:#bcbcc6;border-bottom:1px solid #373035;padding:16px 18px;font-size:11px;font-weight:750;letter-spacing:.25px;white-space:nowrap}
+.aviso.exito{color:#79eaaa}
+.tabla-wrap{overflow-x:auto;min-height:100px}table{width:100%;min-width:850px;border-collapse:collapse;font-size:12px}thead{background:#1b1b21}
+th{text-align:left;color:#bcbcc6;border-bottom:1px solid #373035;padding:16px 18px;font-size:11px;font-weight:750;white-space:nowrap}
 td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-align:middle}tbody tr:hover{background:#25181e}
 .codigo{color:#ffbd35;font-weight:750;font-variant-numeric:tabular-nums}.principal{font-weight:700;color:#fff;font-size:13px}
-.chip{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:750;white-space:nowrap}
-.chip.ok{color:#79eaaa;border:1px solid #17643e;background:#103d29}.chip.sin{color:#ffd274;border:1px solid #746027;background:#403514}.chip:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
-.vacio{text-align:center;padding:66px 20px;color:#9ea0ab}.vacio svg{color:#ffbd35;margin-bottom:11px}.vacio strong{display:block;color:#e8e8ee;margin-bottom:7px;font-size:14px}.vacio p{font-size:12px;margin:0}
+.chip{display:inline-flex;align-items:center;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:750;white-space:nowrap}
+.chip.ok{color:#79eaaa;border:1px solid #17643e;background:#103d29}.chip.sin{color:#ffd274;border:1px solid #746027;background:#403514}
+.vacio{text-align:center;padding:48px 20px;color:#9ea0ab}.vacio strong{display:block;color:#e8e8ee;margin-bottom:7px;font-size:14px}
 .pie{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;padding:16px 25px;border-top:1px solid #34292e;color:#9999a3;font-size:12px}.pie strong{color:#ffbd35}
-@media(max-width:960px){.contenedor{padding:22px}}
-@media(max-width:600px){.encabezado{align-items:flex-start}.panel-cabecera{padding:18px}.herramientas{width:100%}.buscador{flex:1;min-width:190px}.pie{padding:16px 18px}}
-</style></head><body>
-<main class="contenedor"><header class="encabezado"><div><div class="etiqueta">SERVICIO POSVENTA</div>
-<h1>Gestión de <span>Reemplazos de garantía</span></h1><p class="subtitulo">Consulta los repuestos reemplazados por garantía.</p></div>
-<button type="button" class="btn-principal" id="btnNuevo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nuevo reemplazo de garantía</button></header>
-<section class="panel"><div class="panel-cabecera"><div><h2>Listado de reemplazos de garantía</h2><p>Reemplazos registrados.</p></div>
-<div class="herramientas"><label class="buscador" aria-label="Buscar registro"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="buscar" type="search" placeholder="Buscar garantía, empleado o fecha..." autocomplete="off"></label>
-<button id="btnActualizar" type="button" class="btn-actualizar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg> Actualizar</button></div></div>
-<div id="aviso" class="aviso" role="status" aria-live="polite"></div>
-<div class="tabla-wrap"><table><thead><tr><th>ID</th><th>Garantía</th><th>Empleado</th><th>Fecha de reemplazo</th><th>Cantidad</th><th>Observaciones</th></tr></thead><tbody id="filas"><tr><td colspan="6" class="vacio"><strong>Cargando...</strong></td></tr></tbody></table></div>
-<div class="pie"><span>Registros mostrados: <strong id="conteo">0</strong></span><span>AutoParts · Reemplazos de garantía</span></div></section></main>
+.entregar{border:1px solid #ffad37;border-radius:9px;padding:10px 14px;color:#160e0c;background:linear-gradient(110deg,#ff4250,#ffbd30);font-weight:750;font-size:12px}
+.entregar:disabled{opacity:.5;cursor:not-allowed}
+.dialogo{border:1px solid #65404b;border-radius:15px;background:#171519;color:#f5f5f7;max-width:530px;width:calc(100% - 32px);padding:26px;box-shadow:0 30px 90px #000a}
+.dialogo::backdrop{background:#000b}.dialogo h2{margin:0 0 12px;font-size:21px}.dialogo p{color:#adaeb8;font-size:13px;line-height:1.6}
+.dialogo textarea{width:100%;min-height:100px;padding:12px;background:#101116;color:white;border:1px solid #554a52;border-radius:9px;resize:vertical;outline:0}
+.dialogo textarea:focus{border-color:#ff3543}.dialogo label{display:block;font-size:12px;margin:20px 0 9px}
+.acciones{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}
+@media(max-width:960px){.contenedor{padding:22px}}@media(max-width:600px){.herramientas{width:100%}.buscador{flex:1;min-width:190px}.panel-cabecera{padding:18px}}
+</style>
+</head>
+<body>
+<main class="contenedor">
+<header class="encabezado"><div><div class="etiqueta">SERVICIO POSVENTA</div><h1>Gestión de <span>Reemplazos de garantía</span></h1><p class="subtitulo">Entrega repuestos aprobados y consulta los reemplazos realizados.</p></div></header>
+<section class="panel">
+<div class="panel-cabecera"><div><h2>Garantías listas para entrega</h2><p>Garantías aprobadas o pendientes por falta de existencias.</p></div><button id="btnActualizar" class="btn-actualizar" type="button">Actualizar</button></div>
+<div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+<div class="tabla-wrap"><table><thead><tr><th>Garantía</th><th>Detalle venta</th><th>Cantidad</th><th>Fecha solicitud</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="filasPendientes"><tr><td colspan="6" class="vacio">Cargando...</td></tr></tbody></table></div>
+<div class="pie"><span>Garantías por entregar: <strong id="conteoPendientes">0</strong></span></div>
+</section>
+<section class="panel">
+<div class="panel-cabecera"><div><h2>Reemplazos realizados</h2><p>Historial de entregas registradas en SQL Server.</p></div><label class="buscador"><input id="buscar" type="search" placeholder="Buscar garantía, empleado o fecha..." autocomplete="off" aria-label="Buscar reemplazos"></label></div>
+<div class="tabla-wrap"><table><thead><tr><th>ID</th><th>Garantía</th><th>Empleado</th><th>Fecha de reemplazo</th><th>Cantidad</th><th>Observaciones</th></tr></thead><tbody id="filas"><tr><td colspan="6" class="vacio">Cargando...</td></tr></tbody></table></div>
+<div class="pie"><span>Registros mostrados: <strong id="conteo">0</strong></span><span>AutoParts · Reemplazos de garantía</span></div>
+</section>
+</main>
+<dialog id="confirmacion" class="dialogo" aria-labelledby="tituloDialogo">
+<h2 id="tituloDialogo">Entregar reemplazo</h2>
+<p id="detalleDialogo"></p>
+<form id="formEntrega" method="dialog">
+<label for="observaciones">Observaciones de entrega (opcional)</label>
+<textarea id="observaciones" maxlength="1000" placeholder="Observaciones de la entrega..."></textarea>
+<div class="acciones"><button type="button" class="btn-actualizar" id="btnCancelar">Cancelar</button><button class="entregar" type="submit" id="btnConfirmar">Confirmar entrega</button></div>
+</form></dialog>
 <script>
 'use strict';
-function val(obj, ...keys){for(const k of keys){if(obj && Object.prototype.hasOwnProperty.call(obj,k) && obj[k]!==null && obj[k]!==undefined)return obj[k];}return '';}
-function campo(obj,key){return val(obj,key,key[0].toLowerCase()+key.slice(1));}
-function idDe(obj,key){return Number(campo(obj,key))||0;}
-function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function emitir(data){if(window.parent!==window){window.parent.postMessage(data,'*');return true;}
-  if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(data);return true;}
-  return false;}
-function dinero(x){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(x)||0);}
-function fecha(x){if(!x)return '—'; const s=String(x);return s.replace('T',' ').slice(0,16);}
-function leer(evento){let data=evento.data;if(typeof data==='string'){try{data=JSON.parse(data);}catch{return null;}}return data&&typeof data==='object'?data:null;}
-const IDS={compras:'CompraId','detalles-compra':'DetalleCompraId',ventas:'VentaId','detalles-venta':'DetalleVentaId',garantias:'GarantiaId','reemplazos-garantia':'ReemplazoId',proveedores:'ProveedorId',clientes:'ClienteId',empleados:'EmpleadoId',productos:'ProductoId',estados:'EstadoId'};
-function nombreRelacionado(tipo,reg){if(!reg)return '—';
-  switch(tipo){
-    case 'proveedores':return String(campo(reg,'NombreEmpresa')||`Proveedor #${idDe(reg,'ProveedorId')}`);
-    case 'clientes':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Cliente #${idDe(reg,'ClienteId')}`;
-    case 'empleados':return [campo(reg,'Nombre'),campo(reg,'Apellido')].filter(Boolean).join(' ')||`Empleado #${idDe(reg,'EmpleadoId')}`;
-    case 'productos':return [campo(reg,'CodigoOEM'),campo(reg,'Nombre')].filter(Boolean).join(' · ')||`Producto #${idDe(reg,'ProductoId')}`;
-    case 'compras':return String(campo(reg,'NumeroComprobante')||`Compra #${idDe(reg,'CompraId')}`);
-    case 'ventas':return String(campo(reg,'NumeroFactura')||`Venta #${idDe(reg,'VentaId')}`);
-    case 'detalles-venta':return `Detalle #${idDe(reg,'DetalleVentaId')} · Venta #${idDe(reg,'VentaId')} · Producto #${idDe(reg,'ProductoId')}`;
-    case 'garantias':return `Garantía #${idDe(reg,'GarantiaId')}`;
-    case 'estados':return String(campo(reg,'Nombre')||`Estado #${idDe(reg,'EstadoId')}`);
-    default:return String(campo(reg,'Nombre')||'—');
-  }
+const $ = id => document.getElementById(id);
+const campo = (x,k) => x?.[k] ?? x?.[k[0].toLowerCase()+k.slice(1)] ?? '';
+const numero = (x,k) => Number(campo(x,k)) || 0;
+const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fecha = x => x ? String(x).replace('T',' ').slice(0,16) : '—';
+function emitir(x){if(window.parent!==window){window.parent.postMessage(x,'*');return true;}if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(x);return true;}return false;}
+function decodificar(e){let x=e.data;if(typeof x==='string'){try{x=JSON.parse(x);}catch{return null;}}return x&&typeof x==='object'?x:null;}
+const datos={garantias:[],reemplazos:[],empleados:[]};
+let cargados={garantias:false,reemplazos:false,empleados:false};
+let garantiaSeleccionada=null;
+let enviando=false;
+let timer=null;
+let busqueda='';
+function estado(g){return String(campo(g,'ResultadoEvaluacion')||'').toUpperCase().trim();}
+function nombreEmpleado(id){const e=datos.empleados.find(x=>numero(x,'EmpleadoId')===Number(id));return e?[campo(e,'Nombre'),campo(e,'Apellido')].filter(Boolean).join(' '):`Empleado #${id}`;}
+function aviso(texto,exito=false){$('aviso').textContent=texto;$('aviso').classList.toggle('exito',exito);}
+function pendientes(){
+ const entregados=new Set(datos.reemplazos.map(x=>numero(x,'GarantiaId')));
+ return datos.garantias.filter(g=>['APROBADA','PENDIENTE_REEMPLAZO'].includes(estado(g))&&!entregados.has(numero(g,'GarantiaId')));
 }
-
-const iconBox="<svg width=\"36\" height=\"36\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 2 9 5-9 5-9-5 9-5zm-9 5v10l9 5 9-5V7M12 12v10\"/></svg>";
-
-const CFG={"slug": "reemplazos-garantia", "menu": "Reemplazos de garantía", "single": "reemplazo de garantía", "title": "Reemplazos de garantía", "newtitle": "Reemplazo de garantía", "tag": "SERVICIO POSVENTA", "desc": "Consulta los repuestos reemplazados por garantía.", "info": "Reemplazos registrados.", "search": "Buscar garantía, empleado o fecha...", "id": "ReemplazoId", "lookups": {"garantias": "GarantiaId", "empleados": "EmpleadoId"}, "columns": [["ReemplazoId", "ID", "id"], ["GarantiaId", "Garantía", "lookup:garantias"], ["EmpleadoId", "Empleado", "lookup:empleados"], ["FechaReemplazo", "Fecha de reemplazo", "date"], ["Cantidad", "Cantidad", "number"], ["Observaciones", "Observaciones", "truncate"]], "fields": [["GarantiaId", "Garantía aprobada", "select:garantias", true], ["EmpleadoId", "Empleado responsable", "select:empleados", true], ["FechaReemplazo", "Fecha de reemplazo", "datetime", true], ["Cantidad", "Cantidad", "int", true], ["Observaciones", "Observaciones", "textarea", false, 1000]]};
-const filas=document.getElementById('filas'),buscar=document.getElementById('buscar'),aviso=document.getElementById('aviso'),conteo=document.getElementById('conteo');
-let registros=[],cargado=false,espera;
-const colecciones={};
-for(const k of Object.keys(CFG.lookups))colecciones[k]=[];
-function relacionado(tipo,id){let coleccion=colecciones[tipo]||[];return coleccion.find(x=>idDe(x,IDS[tipo])===Number(id))||null;}
-function mostrarCampo(reg,col){const [campoId,etiqueta,tipo]=col,bruto=campo(reg,campoId);
-  if(tipo==='id')return `<span class="codigo">#${esc(bruto)}</span>`;
-  if(tipo==='code')return `<span class="codigo">${esc(bruto||'—')}</span>`;
-  if(tipo==='date')return esc(fecha(bruto));
-  if(tipo==='money')return `<span class="principal">${esc(dinero(bruto))}</span>`;
-  if(tipo==='number')return esc(bruto||bruto===0?bruto:'—');
-  if(tipo==='days')return esc((bruto||bruto===0)? `${bruto} días`:'—');
-  if(tipo==='truncate')return `<span title="${esc(bruto)}">${esc(String(bruto||'—').slice(0,100))}</span>`;
-  if(tipo==='status'){const texto=nombreRelacionado('estados',relacionado('estados',bruto))||'—';const ok=texto.toLowerCase()==='activo';return `<span class="chip ${ok?'ok':'sin'}">${esc(texto)}</span>`;}
-  if(tipo.startsWith('lookup:')){let entidad=tipo.slice(7);let obj=relacionado(entidad,bruto);
-     return `<span class="${entidad==='productos'?'principal':''}">${esc(obj?nombreRelacionado(entidad,obj):bruto?`#${bruto}`:'—')}</span>`;}
-  return esc(bruto||'—');
+function pintar(){
+ const posibles=pendientes();$('conteoPendientes').textContent=String(posibles.length);
+ $('filasPendientes').innerHTML=posibles.length?posibles.map(g=>{
+   const id=numero(g,'GarantiaId'),est=estado(g);
+   return `<tr><td class="codigo">#${id}</td><td>#${esc(campo(g,'DetalleVentaId'))}</td><td>${esc(campo(g,'CantidadReclamada'))}</td><td>${esc(fecha(campo(g,'FechaSolicitud')))}</td><td><span class="chip ${est==='APROBADA'?'ok':'sin'}">${esc(est)}</span></td><td><button type="button" class="entregar" data-garantia="${id}" ${enviando?'disabled':''}>Entregar</button></td></tr>`;
+ }).join(''):'<tr><td class="vacio" colspan="6"><strong>No hay garantías listas para entrega.</strong></td></tr>';
+ const q=$('buscar').value.toLocaleLowerCase('es').trim();
+ const visibles=datos.reemplazos.filter(r=>[
+  campo(r,'ReemplazoId'),campo(r,'GarantiaId'),nombreEmpleado(numero(r,'EmpleadoId')),
+  campo(r,'FechaReemplazo'),campo(r,'Cantidad'),campo(r,'Observaciones')
+ ].join(' ').toLocaleLowerCase('es').includes(q));
+ $('conteo').textContent=String(visibles.length);
+ $('filas').innerHTML=visibles.length?visibles.map(r=>`<tr><td class="codigo">#${esc(campo(r,'ReemplazoId'))}</td><td>#${esc(campo(r,'GarantiaId'))}</td><td>${esc(nombreEmpleado(numero(r,'EmpleadoId')))}</td><td>${esc(fecha(campo(r,'FechaReemplazo')))}</td><td>${esc(campo(r,'Cantidad'))}</td><td>${esc(campo(r,'Observaciones')||'—')}</td></tr>`).join(''):'<tr><td colspan="6" class="vacio"><strong>No hay reemplazos registrados.</strong></td></tr>';
 }
-function vacio(t){filas.innerHTML=`<tr><td class="vacio" colspan="${CFG.columns.length}">${iconBox}<strong>${esc(t)}</strong></td></tr>`;}
-function pintar(){if(!cargado)return;const q=buscar.value.trim().toLocaleLowerCase('es');const visibles=registros.filter(reg=>{
-    const s=CFG.columns.map(c=>{const raw=campo(reg,c[0]);if(c[2].startsWith('lookup:')){const t=c[2].slice(7);return `${raw} ${nombreRelacionado(t,relacionado(t,raw))}`;}return String(raw);}).join(' ');
-    return s.toLocaleLowerCase('es').includes(q);
-  });conteo.textContent=String(visibles.length);
-  if(!visibles.length){vacio(q?'No se encontraron resultados.':`No hay ${CFG.title.toLowerCase()} registrados.`);return;}
-  filas.innerHTML=visibles.map(r=>`<tr>${CFG.columns.map(col=>`<td>${mostrarCampo(r,col)}</td>`).join('')}</tr>`).join('');
+function solicitarListas(){
+ cargados={garantias:false,reemplazos:false,empleados:false};
+ emitir({type:'garantias:selectAll'});
+ emitir({type:'reemplazos-garantia:selectAll'});
+ emitir({type:'empleados:selectAll'});
 }
-function recibir(evento){const m=leer(evento);if(!m||!m.type)return;
-  if(m.type===`${CFG.slug}:list`){registros=Array.isArray(m.data)?m.data:[];cargado=true;clearTimeout(espera);aviso.textContent='';pintar();}
-  else if(m.type.endsWith(':list')){const tipo=m.type.slice(0,-5);if(tipo in colecciones){colecciones[tipo]=Array.isArray(m.data)?m.data:[];pintar();}}
-  else if(m.type==='estados' && 'estados' in colecciones){colecciones.estados=Array.isArray(m.data)?m.data:[];pintar();}
-  else if(m.type==='error'){clearTimeout(espera);aviso.textContent=String(m.message||'No fue posible cargar los datos.');if(!cargado)vacio('No se pudo cargar el listado.');}
+function recibir(evento){
+ const m=decodificar(evento);if(!m||typeof m.type!=='string')return;
+ if(m.type==='garantias:list'){datos.garantias=Array.isArray(m.data)?m.data:[];cargados.garantias=true;pintar();}
+ else if(m.type==='reemplazos-garantia:list'){datos.reemplazos=Array.isArray(m.data)?m.data:[];cargados.reemplazos=true;pintar();}
+ else if(m.type==='empleados:list'){datos.empleados=Array.isArray(m.data)?m.data:[];cargados.empleados=true;pintar();}
+ else if(m.type==='reemplazos-garantia:resultadoEntrega'){
+   clearTimeout(timer);enviando=false;$('btnConfirmar').disabled=false;
+   const d=m.data||{};const est=String(campo(d,'EstadoGarantia'));
+   const msg=String(campo(d,'Mensaje')||(est==='REEMPLAZADA'?'Reemplazo registrado correctamente.':'La garantía continúa pendiente.'));
+   aviso(msg,est==='REEMPLAZADA');pintar();solicitarListas();
+ }
+ else if(m.type==='reemplazos-garantia:entregaError'){
+   clearTimeout(timer);enviando=false;$('btnConfirmar').disabled=false;
+   aviso(String(m.message||'No se pudo entregar el reemplazo.'));pintar();solicitarListas();
+ }
+ else if(m.type==='error'){aviso(String(m.message||'Error al cargar información.'));}
 }
 window.addEventListener('message',recibir);
 if(window.chrome?.webview?.addEventListener&&window.parent===window)window.chrome.webview.addEventListener('message',recibir);
-function cargar(){cargado=false;aviso.textContent='';conteo.textContent='0';filas.innerHTML=`<tr><td class="vacio" colspan="${CFG.columns.length}"><strong>Cargando ${CFG.title.toLowerCase()}...</strong></td></tr>`;
-  const ok=emitir({type:`${CFG.slug}:selectAll`});
-  for(const dep of Object.keys(CFG.lookups)){emitir({type:dep==='estados'?'obtenerEstados':`${dep}:selectAll`});}
-  clearTimeout(espera);espera=setTimeout(()=>{if(!cargado){vacio('No se recibió respuesta del sistema.');aviso.textContent='Comprueba la conexión con MainForm.cs.';}},12000);
-  if(!ok){clearTimeout(espera);vacio('Abre el listado desde AutoParts.');aviso.textContent='Este listado necesita WebView2 para consultar SQL Server.';}
-}
-document.getElementById('btnNuevo').addEventListener('click',()=>emitir({type:`${CFG.slug}:abrirNuevo`}));
-document.getElementById('btnActualizar').addEventListener('click',cargar);
-buscar.addEventListener('input',pintar);
-cargar();
-
-</script></body></html>
+$('btnActualizar').addEventListener('click',()=>{aviso('');solicitarListas();});
+$('buscar').addEventListener('input',pintar);
+$('filasPendientes').addEventListener('click',e=>{
+ const boton=e.target.closest('button[data-garantia]');if(!boton||enviando)return;
+ const id=Number(boton.dataset.garantia);
+ const g=pendientes().find(x=>numero(x,'GarantiaId')===id);
+ if(!g)return;
+ garantiaSeleccionada=id;
+ $('detalleDialogo').textContent=`Garantía #${id} · Cantidad reclamada: ${numero(g,'CantidadReclamada')}. SQL Server verificará nuevamente la aprobación y las existencias antes de confirmar la entrega.`;
+ $('observaciones').value='';$('confirmacion').showModal();
+});
+$('btnCancelar').addEventListener('click',()=>$('confirmacion').close());
+$('formEntrega').addEventListener('submit',e=>{
+ e.preventDefault();if(enviando||!garantiaSeleccionada)return;
+ const id=garantiaSeleccionada;
+ if(!emitir({type:'reemplazos-garantia:entregar',data:{GarantiaId:id,Observaciones:$('observaciones').value.trim()||null}})){
+  aviso('Abre este módulo desde AutoParts.');return;
+ }
+ enviando=true;$('btnConfirmar').disabled=true;$('confirmacion').close();aviso('Procesando entrega...');pintar();
+ clearTimeout(timer);timer=setTimeout(()=>{
+   if(enviando){enviando=false;$('btnConfirmar').disabled=false;aviso('No se recibió confirmación. Actualiza la lista antes de volver a intentar para evitar registros duplicados.');pintar();}
+ },15000);
+});
+solicitarListas();
+</script>
+</body>
+</html>

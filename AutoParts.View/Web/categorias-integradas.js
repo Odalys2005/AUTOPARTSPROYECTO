@@ -1,6 +1,6 @@
 // VERSIÓN CORREGIDA: Productos + 21 módulos; reemplaza TODO el JS viejo.
 // Prueba en DevTools: window.AUTOPARTS_INTEGRADOS_VERSION
-window.AUTOPARTS_INTEGRADOS_VERSION = '21-modulos-productos-corregido-20261024';
+window.AUTOPARTS_INTEGRADOS_VERSION = '21-modulos-garantias-integradas-20261031';
 console.info('AutoParts módulos integrados cargados:', window.AUTOPARTS_INTEGRADOS_VERSION);
 
 // ============================================================
@@ -204,6 +204,13 @@ window.addEventListener('message', evento => {
         return;
     }
 
+    // COMPRAS: reenviar la compra completa sin pasar por guardarIntegrado.
+    // La transaccion y el stock se gestionan en SQL Server mediante CompraBL.
+    if (modulo === 'compras' && mensaje.type === 'compras:registrarCompleta') {
+        enviarACSharp(mensaje);
+        return;
+    }
+
     // PASO 5: reenviar el carrito completo sin usar guardarIntegrado.
     if (modulo === 'ventas' && mensaje.type === 'ventas:registrarCompleta') {
         enviarACSharp(mensaje);
@@ -216,7 +223,37 @@ window.addEventListener('message', evento => {
         return;
     }
 
+    // GARANTÍAS: operaciones especiales, validadas por MainForm y SQL.
+    // No utilizar la inserción genérica para solicitudes ni entregas.
+    const operacionesGarantia = {
+        'garantias:registrarSolicitud': 'garantias',
+        'garantias:evaluar': 'garantias',
+        'reemplazos-garantia:entregar': 'reemplazos-garantia'
+    };
+    if (Object.prototype.hasOwnProperty.call(operacionesGarantia, mensaje.type)) {
+        if (operacionesGarantia[mensaje.type] === modulo) {
+            enviarACSharp(mensaje);
+        }
+        return;
+    }
+
+    // CRUD Categorías: reenviar actualización y desactivación al MainForm.
+    if (modulo === 'categorias' && (
+        mensaje.type === 'categorias:actualizarIntegrado' ||
+        mensaje.type === 'categorias:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
     if (mensaje.type === 'guardar') {
+        if (modulo === 'garantias' || modulo === 'reemplazos-garantia') {
+            marco.contentWindow?.postMessage({
+                type: 'error',
+                message: 'Utiliza la operación específica de solicitud, evaluación o entrega de garantía.'
+            }, '*');
+            return;
+        }
         if (!configuracion.soloLectura) {
             enviarACSharp({
                 type: `${modulo}:guardarIntegrado`,
@@ -267,6 +304,16 @@ if (window.chrome?.webview?.addEventListener) {
         const modulo = marco.dataset.modulo;
         if (!slugsModulosIntegrados.has(modulo)) return;
 
+        // COMPRAS: devolver confirmacion o error al formulario de compra.
+        // No navegar al listado automáticamente: el HTML muestra total y advertencias.
+        if (modulo === 'compras' && (
+            mensaje.type === 'compras:registrada' ||
+            mensaje.type === 'compras:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
         // PASO 5: entregar al POS la confirmación con ID y total de la venta.
         if (modulo === 'ventas' && mensaje.type === 'ventas:registrada') {
             marco.contentWindow?.postMessage(mensaje, '*');
@@ -277,6 +324,35 @@ if (window.chrome?.webview?.addEventListener) {
         if (modulo === 'ventas' && (
             mensaje.type === 'ventas:ticketImpreso' ||
             mensaje.type === 'ventas:ticketError'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        // Respuestas de las operaciones de garantía y entrega.
+        // Mantener el iframe actual para mostrar al usuario el resultado,
+        // incluso cuando queda PENDIENTE_REEMPLAZO.
+        const respuestasGarantias = new Set([
+            'garantias:solicitudRegistrada',
+            'garantias:solicitudError',
+            'garantias:evaluada',
+            'garantias:evaluacionError'
+        ]);
+        const respuestasReemplazos = new Set([
+            'reemplazos-garantia:resultadoEntrega',
+            'reemplazos-garantia:entregaError'
+        ]);
+        if ((modulo === 'garantias' && respuestasGarantias.has(mensaje.type)) ||
+            (modulo === 'reemplazos-garantia' && respuestasReemplazos.has(mensaje.type))) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        // Respuestas del CRUD de Categorías; mantener el listado visible.
+        if (modulo === 'categorias' && (
+            mensaje.type === 'categorias:actualizada' ||
+            mensaje.type === 'categorias:desactivada' ||
+            mensaje.type === 'categorias:error'
         )) {
             marco.contentWindow?.postMessage(mensaje, '*');
             return;
