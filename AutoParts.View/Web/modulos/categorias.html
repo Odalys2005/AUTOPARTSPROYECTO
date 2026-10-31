@@ -275,6 +275,27 @@
 					th, td { padding: 14px 13px; }
 					.panel-inferior { padding: 16px; }
 					}
+
+      .acciones-categoria { display:flex; gap:8px; flex-wrap:wrap; }
+      .accion-editar,.accion-desactivar { border:1px solid #6c414a; background:#24191e; color:#f5f5f7; border-radius:8px; padding:9px 13px; font-size:12px; font-weight:700; }
+      .accion-editar:hover { background:#3d232b; border-color:#ff4b57; }
+      .accion-desactivar { color:#ffa0a5; }
+      .accion-desactivar:hover { background:#4c1c28; }
+      .accion-desactivar:disabled { opacity:.4; cursor:not-allowed; }
+      .modal-categoria[hidden] { display:none; }
+      .modal-categoria { position:fixed; inset:0; display:grid; place-items:center; z-index:100; background:rgba(0,0,0,.78); padding:18px; }
+      .modal-contenido { background:linear-gradient(140deg,#191519,#0c0d10); border:1px solid #753743; border-radius:15px; padding:26px; width:min(480px,100%); box-shadow:0 20px 60px #000a; }
+      .modal-contenido h2 { margin:0 0 24px; font-size:21px; }
+      .modal-contenido label { display:block; color:#e8e8ec; font-size:13px; font-weight:650; margin:15px 0 8px; }
+      .modal-contenido input,.modal-contenido select { width:100%; min-height:46px; border:1px solid #58434b; border-radius:9px; padding:10px 12px; background:#111216; color:white; font:inherit; outline:none; }
+      .modal-contenido input:focus,.modal-contenido select:focus { border-color:#ff4251; }
+      .modal-acciones { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; padding-top:22px; }
+      .btn-cancelar { padding:11px 17px; color:white; background:#262329; border:1px solid #5b5057; border-radius:9px; }
+      .btn-guardar-edicion { padding:11px 17px; color:#210a0c; font-weight:750; background:linear-gradient(110deg,#ff4050,#ffbd32); border:0; border-radius:9px; }
+      .btn-guardar-edicion:disabled { opacity:.5; cursor:not-allowed; }
+      .mensaje-categoria { min-height:20px; color:#ffc075; font-size:12px; padding:10px 25px; }
+      .mensaje-categoria:empty { display:none; }
+
 				</style>
 			</head>
 	<body>
@@ -319,18 +340,20 @@
 					</div>
 				</div>
 
-				<div class="tabla-contenedor">
+				<div id="mensajeCategoria" class="mensaje-categoria" role="status" aria-live="polite"></div>
+                <div class="tabla-contenedor">
 					<table>
 						<thead>
 							<tr>
 								<th>ID</th>
 								<th>Nombre</th>
 								<th>Estado</th>
+                                <th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody id="categoriaRows">
 							<tr>
-								<td colspan="3">
+								<td colspan="4">
 									<div class="vacio">Cargando categorías...</div>
 								</td>
 							</tr>
@@ -350,157 +373,173 @@
 			</section>
 		</main>
 
+        <div id="modalEditarCategoria" class="modal-categoria" hidden>
+          <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="tituloEditarCategoria">
+            <h2 id="tituloEditarCategoria">Editar categoría</h2>
+            <form id="formEditarCategoria">
+              <input type="hidden" id="editarCategoriaId">
+              <label for="editarNombre">Nombre</label>
+              <input id="editarNombre" type="text" maxlength="100" required>
+              <label for="editarEstado">Estado</label>
+              <select id="editarEstado" required>
+                <option value="1">Activo</option>
+                <option value="2">Inactivo</option>
+              </select>
+              <div class="modal-acciones">
+                <button type="button" id="cancelarEdicion" class="btn-cancelar">Cancelar</button>
+                <button type="submit" id="guardarEdicion" class="btn-guardar-edicion">Guardar cambios</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
 		<script>
-			let categorias = [];
+'use strict';
+let categorias = [];
+let operacionEnCurso = false;
+let esperandoConsulta = false;
+const $ = id => document.getElementById(id);
 
-			function escapar(valor) {
-			return String(valor ?? "").replace(/[&<>"']/g, c => ({
-			"&": "&amp;",
-			"<": "&lt;",
-			">": "&gt;",
-			'"': "&quot;",
-			"'": "&#39;"
-			}[c]));
-			}
-
-			function obtener(objeto, ...nombres) {
-			for (const nombre of nombres) {
-			if (objeto?.[nombre] !== undefined && objeto[nombre] !== null) {
-			return objeto[nombre];
-			}
-			}
-			return "";
-			}
-
-
-			function enviarACSharp(mensaje) {
-			if (window.parent !== window) {
-			window.parent.postMessage(mensaje, "*");
-			return true;
-			}
-
-			if (window.chrome?.webview?.postMessage) {
-			window.chrome.webview.postMessage(mensaje);
-			return true;
-			}
-
-			mostrarMensaje("No hay conexión con Windows Forms.");
-			return false;
-			}
-
-
-			function mostrarMensaje(texto) {
-			document.getElementById("categoriaRows").innerHTML = `
-			<tr>
-				<td colspan="3">
-					<div class="vacio">
-						<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-							<rect x="3" y="3" width="7" height="7" rx="1"/>
-							<rect x="14" y="3" width="7" height="7" rx="1"/>
-							<rect x="3" y="14" width="7" height="7" rx="1"/>
-							<rect x="14" y="14" width="7" height="7" rx="1"/>
-						</svg>
-						<strong>${escapar(texto)}</strong>
-						<p>Los registros se mostrarán aquí cuando estén disponibles.</p>
-					</div>
-				</td>
-			</tr>`;
-			}
-
-			function pintarCategorias() {
-			const texto = document.getElementById("buscarCategoria").value.trim().toLocaleLowerCase("es");
-
-			const filtradas = categorias.filter(c => {
-			const id = obtener(c, "CategoriaId", "categoriaId");
-			const nombre = obtener(c, "Nombre", "nombre");
-			return [id, nombre].some(valor =>
-			String(valor).toLocaleLowerCase("es").includes(texto)
-			);
-			});
-
-			document.getElementById("totalCategorias").textContent = String(filtradas.length);
-
-			if (filtradas.length === 0) {
-			mostrarMensaje(texto ? "No se encontraron coincidencias." : "No hay categorías registradas.");
-			return;
-			}
-
-			document.getElementById("categoriaRows").innerHTML = filtradas.map(c => {
-			const id = obtener(c, "CategoriaId", "categoriaId");
-			const nombre = obtener(c, "Nombre", "nombre");
-			const estadoNombre = obtener(c, "EstadoNombre", "estadoNombre");
-			const estadoId = obtener(c, "EstadoId", "estadoId");
-
-			const estadoTexto = String(
-			estadoNombre || (
-			Number(estadoId) === 1 ? "Activo" :
-			Number(estadoId) === 2 ? "Inactivo" : estadoId
-			)
-			);
-
-			const claseEstado =
-			estadoTexto.toLowerCase() === "activo" ? "activo" :
-			estadoTexto.toLowerCase() === "inactivo" ? "inactivo" : "otro";
-
-			return `
-			<tr>
-				<td class="codigo">#${escapar(id)}</td>
-				<td class="nombre">${escapar(nombre)}</td>
-				<td>
-					<span class="estado ${claseEstado}">
-						${escapar(estadoTexto)}
-					</span>
-				</td>
-			</tr>`;
-			}).join("");
-			}
-
-			function recibirMensajeCategorias(evento) {
-			let mensaje = evento.data;
-
-			if (typeof mensaje === "string") {
-			try {
-			mensaje = JSON.parse(mensaje);
-			} catch {
-			return;
-			}
-			}
-
-			if (!mensaje || typeof mensaje !== "object") return;
-
-			if (mensaje.type === "categorias:list") {
-			categorias = Array.isArray(mensaje.data) ? mensaje.data : [];
-			pintarCategorias();
-			}
-
-			if (mensaje.type === "error") {
-			document.getElementById("totalCategorias").textContent = "0";
-			mostrarMensaje(mensaje.message || "No se pudieron cargar las categorías.");
-			}
-			}
-
-			if (window.chrome?.webview?.addEventListener) {
-			window.chrome.webview.addEventListener("message", recibirMensajeCategorias);
-			}
-
-			window.addEventListener("message", recibirMensajeCategorias);
-
-			document.getElementById("btnNuevaCategoria").addEventListener("click", () => {
-			enviarACSharp({ type: "categorias:abrirNuevo" });
-			});
-
-			document.getElementById("btnActualizar").addEventListener("click", () => {
-			solicitarCategorias();
-			});
-
-			document.getElementById("buscarCategoria").addEventListener("input", pintarCategorias);
-
-			function solicitarCategorias() {
-			mostrarMensaje("Cargando categorías...");
-			enviarACSharp({ type: "categorias:selectAll" });
-			}
-
-			solicitarCategorias();
-		</script>
+function escapar(valor) {
+    return String(valor ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function obtener(obj, ...claves) {
+    for (const c of claves) if (obj && obj[c] !== undefined && obj[c] !== null) return obj[c];
+    return '';
+}
+function aviso(texto) { $('mensajeCategoria').textContent = texto || ''; }
+function enviarACSharp(mensaje) {
+    if (window.parent !== window) {
+        window.parent.postMessage(mensaje, '*');
+        return true;
+    }
+    if (window.chrome?.webview?.postMessage) {
+        window.chrome.webview.postMessage(mensaje);
+        return true;
+    }
+    aviso('No hay conexión con Windows Forms.');
+    return false;
+}
+function mostrarMensaje(texto) {
+    $('categoriaRows').innerHTML = `<tr><td colspan="4"><div class="vacio"><strong>${escapar(texto)}</strong></div></td></tr>`;
+}
+function estadoDe(c) { return Number(obtener(c, 'EstadoId','estadoId')); }
+function pintarCategorias() {
+    const busqueda = $('buscarCategoria').value.trim().toLocaleLowerCase('es');
+    const filtradas = categorias.filter(c => [obtener(c,'CategoriaId','categoriaId'), obtener(c,'Nombre','nombre'), estadoDe(c) === 1 ? 'Activo' : 'Inactivo']
+        .some(v => String(v).toLocaleLowerCase('es').includes(busqueda)));
+    $('totalCategorias').textContent = String(filtradas.length);
+    if (!filtradas.length) {
+        mostrarMensaje(busqueda ? 'No se encontraron coincidencias.' : 'No hay categorías registradas.');
+        return;
+    }
+    $('categoriaRows').innerHTML = filtradas.map(c => {
+        const id = Number(obtener(c,'CategoriaId','categoriaId'));
+        const nombre = obtener(c,'Nombre','nombre');
+        const estado = estadoDe(c);
+        const textoEstado = estado === 1 ? 'Activo' : estado === 2 ? 'Inactivo' : 'Desconocido';
+        const clase = estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'otro';
+        return `<tr>
+          <td class="codigo">#${escapar(id)}</td>
+          <td class="nombre">${escapar(nombre)}</td>
+          <td><span class="estado ${clase}">${textoEstado}</span></td>
+          <td><div class="acciones-categoria">
+            <button type="button" class="accion-editar" data-accion="editar" data-id="${id}">Editar</button>
+            <button type="button" class="accion-desactivar" data-accion="desactivar" data-id="${id}" ${estado === 2 ? 'disabled' : ''}>Desactivar</button>
+          </div></td>
+        </tr>`;
+    }).join('');
+}
+function buscarPorId(id) {
+    return categorias.find(c => Number(obtener(c,'CategoriaId','categoriaId')) === id);
+}
+function abrirEditor(id) {
+    if (operacionEnCurso) return;
+    const c = buscarPorId(id);
+    if (!c) return aviso('No se encontró la categoría seleccionada.');
+    $('editarCategoriaId').value = String(id);
+    $('editarNombre').value = String(obtener(c,'Nombre','nombre'));
+    $('editarEstado').value = String(estadoDe(c));
+    $('modalEditarCategoria').hidden = false;
+    $('editarNombre').focus();
+}
+function cerrarEditor() { if (!operacionEnCurso) $('modalEditarCategoria').hidden = true; }
+function desactivarCategoria(id) {
+    if (operacionEnCurso) return;
+    const c = buscarPorId(id);
+    if (!c || estadoDe(c) !== 1) return;
+    if (!window.confirm(`¿Desactivar la categoría "${obtener(c,'Nombre','nombre')}"? No se eliminará de la base de datos.`)) return;
+    if (enviarACSharp({type:'categorias:desactivarIntegrado',data:{CategoriaId:id}})) {
+        operacionEnCurso = true;
+        aviso('Desactivando categoría...');
+    }
+}
+$('categoriaRows').addEventListener('click', e => {
+    const boton = e.target.closest('button[data-accion]');
+    if (!boton) return;
+    const id = Number(boton.dataset.id);
+    if (!Number.isSafeInteger(id) || id <= 0) return;
+    if (boton.dataset.accion === 'editar') abrirEditor(id);
+    if (boton.dataset.accion === 'desactivar') desactivarCategoria(id);
+});
+$('formEditarCategoria').addEventListener('submit', e => {
+    e.preventDefault();
+    if (operacionEnCurso) return;
+    const id = Number($('editarCategoriaId').value);
+    const nombre = $('editarNombre').value.trim();
+    const estado = Number($('editarEstado').value);
+    if (!Number.isSafeInteger(id) || id <= 0) return aviso('Categoría inválida.');
+    if (!nombre || nombre.length > 100) return aviso('Ingresa un nombre de hasta 100 caracteres.');
+    if (![1,2].includes(estado)) return aviso('Selecciona un estado válido.');
+    if (enviarACSharp({type:'categorias:actualizarIntegrado',data:{CategoriaId:id,Nombre:nombre,EstadoId:estado}})) {
+        operacionEnCurso = true;
+        $('guardarEdicion').disabled = true;
+        aviso('Actualizando categoría...');
+    }
+});
+$('cancelarEdicion').addEventListener('click', cerrarEditor);
+$('modalEditarCategoria').addEventListener('click', e => {
+    if (e.target === $('modalEditarCategoria')) cerrarEditor();
+});
+function recibirMensajeCategorias(evento) {
+    let mensaje = evento.data;
+    if (typeof mensaje === 'string') {
+        try { mensaje = JSON.parse(mensaje); } catch { return; }
+    }
+    if (!mensaje || typeof mensaje !== 'object') return;
+    if (mensaje.type === 'categorias:list') {
+        categorias = Array.isArray(mensaje.data) ? mensaje.data : [];
+        esperandoConsulta = false;
+        pintarCategorias();
+    } else if (mensaje.type === 'categorias:actualizada' || mensaje.type === 'categorias:desactivada') {
+        operacionEnCurso = false;
+        $('guardarEdicion').disabled = false;
+        $('modalEditarCategoria').hidden = true;
+        aviso(mensaje.type === 'categorias:actualizada' ? 'Categoría actualizada correctamente.' : 'Categoría desactivada correctamente.');
+        solicitarCategorias(false);
+    } else if (mensaje.type === 'error' || mensaje.type === 'categorias:error') {
+        operacionEnCurso = false;
+        $('guardarEdicion').disabled = false;
+        aviso(mensaje.message || 'No fue posible completar la operación.');
+        if (esperandoConsulta) {
+            esperandoConsulta = false;
+            if (!categorias.length) mostrarMensaje('No se pudo cargar el listado.');
+        }
+    }
+}
+window.addEventListener('message', recibirMensajeCategorias);
+if (window.parent === window && window.chrome?.webview?.addEventListener) {
+    window.chrome.webview.addEventListener('message', recibirMensajeCategorias);
+}
+$('btnNuevaCategoria').addEventListener('click', () => enviarACSharp({type:'categorias:abrirNuevo'}));
+$('btnActualizar').addEventListener('click', () => solicitarCategorias(true));
+$('buscarCategoria').addEventListener('input', pintarCategorias);
+function solicitarCategorias(mostrarCarga = true) {
+    esperandoConsulta = true;
+    if (mostrarCarga) { aviso(''); mostrarMensaje('Cargando categorías...'); }
+    enviarACSharp({type:'categorias:selectAll'});
+}
+solicitarCategorias();
+</script>
 	</body>
 </html>

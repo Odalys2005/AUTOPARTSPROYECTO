@@ -593,6 +593,8 @@ namespace AutoParts.View
                     case "categorias:selectAll":
                     case "obtenerEstados":
                     case "categorias:guardarIntegrado":
+                    case "categorias:actualizarIntegrado":
+                    case "categorias:desactivarIntegrado":
                         ProcesarCategoriaIntegrada(tipo, raiz);
                         break;
 
@@ -1283,6 +1285,72 @@ namespace AutoParts.View
                         }
 
                         break;
+
+                    // UPDATE - editar nombre y estado de una categoria existente.
+                    case "categorias:actualizarIntegrado":
+                        {
+                            if (!raiz.TryGetProperty("data", out JsonElement datosEdicion) ||
+                                datosEdicion.ValueKind != JsonValueKind.Object)
+                                throw new ArgumentException("No se recibieron los datos de la categoría.");
+
+                            if (!datosEdicion.TryGetProperty("CategoriaId", out JsonElement idEdicion) ||
+                                !idEdicion.TryGetInt32(out int categoriaIdEdicion) || categoriaIdEdicion <= 0)
+                                throw new ArgumentException("Selecciona una categoría válida para editar.");
+
+                            if (!datosEdicion.TryGetProperty("Nombre", out JsonElement nombreEdicionJson) ||
+                                nombreEdicionJson.ValueKind != JsonValueKind.String)
+                                throw new ArgumentException("Ingresa un nombre válido para la categoría.");
+
+                            string nombreEdicion = (nombreEdicionJson.GetString() ?? "").Trim();
+
+                            if (!datosEdicion.TryGetProperty("EstadoId", out JsonElement estadoEdicionJson) ||
+                                !estadoEdicionJson.TryGetInt32(out int estadoIdEdicion))
+                                throw new ArgumentException("Selecciona un estado válido para la categoría.");
+
+                            Categoria categoriaEditada = new Categoria
+                            {
+                                CategoriaId = categoriaIdEdicion,
+                                Nombre = nombreEdicion,
+                                EstadoId = estadoIdEdicion
+                            };
+
+                            // La BL valida nombre, longitud e identificadores.
+                            int filasEditadas = _categoriaBL.Update(categoriaEditada);
+                            if (filasEditadas <= 0)
+                                throw new InvalidOperationException("No se confirmó la actualización de la categoría.");
+
+                            EnviarAlDashboard(new
+                            {
+                                type = "categorias:actualizada",
+                                data = new { categoriaEditada.CategoriaId, categoriaEditada.Nombre, categoriaEditada.EstadoId }
+                            });
+                            break;
+                        }
+
+                    // DELETE lógico - conserva la fila y cambia EstadoId a 2.
+                    case "categorias:desactivarIntegrado":
+                        {
+                            if (!raiz.TryGetProperty("data", out JsonElement datosBaja) ||
+                                datosBaja.ValueKind != JsonValueKind.Object ||
+                                !datosBaja.TryGetProperty("CategoriaId", out JsonElement idBaja) ||
+                                !idBaja.TryGetInt32(out int categoriaIdBaja) || categoriaIdBaja <= 0)
+                                throw new ArgumentException("Selecciona una categoría válida para desactivar.");
+
+                            int filasDesactivadas = _categoriaBL.Delete(new Categoria
+                            {
+                                CategoriaId = categoriaIdBaja
+                            });
+
+                            if (filasDesactivadas <= 0)
+                                throw new InvalidOperationException("No se confirmó la desactivación de la categoría.");
+
+                            EnviarAlDashboard(new
+                            {
+                                type = "categorias:desactivada",
+                                data = new { CategoriaId = categoriaIdBaja, EstadoId = 2 }
+                            });
+                            break;
+                        }
                 }
             }
             catch (Exception ex)

@@ -15,36 +15,90 @@ namespace AutoParts.BusinessLogic
             _repository = repository;
         }
 
+        // ==========================================
+        // SELECT ALL - CONSULTAR CATEGORIAS
+        // ==========================================
         public List<Categoria> SelectAll()
         {
-            List<Categoria> result = null;
-
             try
             {
-                result = _repository.SelectAll();
+                return _repository.SelectAll();
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception(ex.Message);
+                throw;
             }
-
-            return result;
         }
 
+        // ==========================================
+        // INSERT - REGISTRAR CATEGORIA
+        // ==========================================
         public int Insert(Categoria entity)
         {
-            int result;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
-            try
-            {
-                result = _repository.Insert(entity);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            if (string.IsNullOrWhiteSpace(entity.Nombre))
+                throw new ArgumentException(
+                    "El nombre de la categoría es obligatorio.");
 
-            return result;
+            entity.Nombre = entity.Nombre.Trim();
+
+            if (entity.Nombre.Length > 100)
+                throw new ArgumentException(
+                    "El nombre no puede superar los 100 caracteres.");
+
+            if (entity.EstadoId != 1 && entity.EstadoId != 2)
+                throw new ArgumentException(
+                    "Selecciona un estado válido.");
+
+            return _repository.Insert(entity);
+        }
+
+        // ==========================================
+        // UPDATE - ACTUALIZAR CATEGORIA
+        // ==========================================
+        public int Update(Categoria entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.CategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una categoría válida.");
+
+            if (string.IsNullOrWhiteSpace(entity.Nombre))
+                throw new ArgumentException(
+                    "El nombre de la categoría es obligatorio.");
+
+            entity.Nombre = entity.Nombre.Trim();
+
+            if (entity.Nombre.Length > 100)
+                throw new ArgumentException(
+                    "El nombre no puede superar los 100 caracteres.");
+
+            if (entity.EstadoId != 1 && entity.EstadoId != 2)
+                throw new ArgumentException(
+                    "Selecciona un estado válido.");
+
+            return _repository.Update(entity);
+        }
+
+        // ==========================================
+        // DELETE - DESACTIVACION LOGICA
+        // ==========================================
+        // No elimina físicamente la categoría.
+        // Cambia su EstadoId a 2 (Inactivo).
+        public int Delete(Categoria entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.CategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una categoría válida.");
+
+            return _repository.Delete(entity);
         }
     }
 }

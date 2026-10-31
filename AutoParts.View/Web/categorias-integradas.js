@@ -237,6 +237,15 @@ window.addEventListener('message', evento => {
         return;
     }
 
+    // CRUD Categorías: reenviar actualización y desactivación al MainForm.
+    if (modulo === 'categorias' && (
+        mensaje.type === 'categorias:actualizarIntegrado' ||
+        mensaje.type === 'categorias:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
     if (mensaje.type === 'guardar') {
         if (modulo === 'garantias' || modulo === 'reemplazos-garantia') {
             marco.contentWindow?.postMessage({
@@ -335,6 +344,16 @@ if (window.chrome?.webview?.addEventListener) {
         ]);
         if ((modulo === 'garantias' && respuestasGarantias.has(mensaje.type)) ||
             (modulo === 'reemplazos-garantia' && respuestasReemplazos.has(mensaje.type))) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        // Respuestas del CRUD de Categorías; mantener el listado visible.
+        if (modulo === 'categorias' && (
+            mensaje.type === 'categorias:actualizada' ||
+            mensaje.type === 'categorias:desactivada' ||
+            mensaje.type === 'categorias:error'
+        )) {
             marco.contentWindow?.postMessage(mensaje, '*');
             return;
         }

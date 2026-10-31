@@ -16,22 +16,26 @@ namespace AutoParts.DataAccess
             _connectionFactory = connectionFactory;
         }
 
+        // ==========================================
+        // SELECT ALL - CONSULTAR CATEGORIAS
+        // ==========================================
         public List<Categoria> SelectAll()
         {
-            List<Categoria> result = null;
+            List<Categoria> result = new List<Categoria>();
 
-            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
             {
-                using (SqlCommand cmd = new SqlCommand("spCategoriaSelectAll", conn))
+                using (SqlCommand cmd =
+                    new SqlCommand("spCategoriaSelectAll", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     conn.Open();
 
-                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    using (SqlDataReader dr =
+                        cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
-                        result = new List<Categoria>();
-
                         while (dr.Read())
                         {
                             Categoria entity = new Categoria();
@@ -49,28 +53,106 @@ namespace AutoParts.DataAccess
             return result;
         }
 
-
+        // ==========================================
+        // INSERT - REGISTRAR CATEGORIA
+        // ==========================================
         public int Insert(Categoria entity)
         {
-            int result = 0;
-
-            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
             {
-                using (SqlCommand cmd = new SqlCommand("spCategoriaInsert", conn))
+                using (SqlCommand cmd =
+                    new SqlCommand("spCategoriaInsert", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
-                    cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
 
                     conn.Open();
 
-                    result = cmd.ExecuteNonQuery();
+                    // El procedimiento confirma el éxito
+                    // si termina sin lanzar una excepción.
+                    cmd.ExecuteNonQuery();
+
+                    return 1;
                 }
             }
-
-            return result;
         }
 
+        // ==========================================
+        // UPDATE - ACTUALIZAR CATEGORIA
+        // ==========================================
+        public int Update(Categoria entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spCategoriaUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@CategoriaId", SqlDbType.Int)
+                        .Value = entity.CategoriaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    cmd.ExecuteNonQuery();
+
+                    return 1;
+                }
+            }
+        }
+
+        // ==========================================
+        // DELETE - DESACTIVACION LOGICA
+        // ==========================================
+        // No elimina la categoria de la base de datos.
+        // Cambia EstadoId a 2 (Inactivo).
+        public int Delete(Categoria entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spCategoriaDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@CategoriaId", SqlDbType.Int)
+                        .Value = entity.CategoriaId;
+
+                    conn.Open();
+
+                    // El procedimiento devuelve una fila
+                    // con la categoria y su estado final.
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "La categoría no quedó inactiva.");
+                    }
+
+                    return 1;
+                }
+            }
+        }
     }
 }
