@@ -204,6 +204,13 @@ window.addEventListener('message', evento => {
         return;
     }
 
+    // COMPRAS: reenviar la compra completa sin pasar por guardarIntegrado.
+    // La transaccion y el stock se gestionan en SQL Server mediante CompraBL.
+    if (modulo === 'compras' && mensaje.type === 'compras:registrarCompleta') {
+        enviarACSharp(mensaje);
+        return;
+    }
+
     // PASO 5: reenviar el carrito completo sin usar guardarIntegrado.
     if (modulo === 'ventas' && mensaje.type === 'ventas:registrarCompleta') {
         enviarACSharp(mensaje);
@@ -266,6 +273,16 @@ if (window.chrome?.webview?.addEventListener) {
 
         const modulo = marco.dataset.modulo;
         if (!slugsModulosIntegrados.has(modulo)) return;
+
+        // COMPRAS: devolver confirmacion o error al formulario de compra.
+        // No navegar al listado automáticamente: el HTML muestra total y advertencias.
+        if (modulo === 'compras' && (
+            mensaje.type === 'compras:registrada' ||
+            mensaje.type === 'compras:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
 
         // PASO 5: entregar al POS la confirmación con ID y total de la venta.
         if (modulo === 'ventas' && mensaje.type === 'ventas:registrada') {

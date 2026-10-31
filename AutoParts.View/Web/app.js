@@ -785,3 +785,103 @@ document.addEventListener('keydown', evento => {
     }
 
 });
+
+/* ============================================================
+   AUTOPARTS - DASHBOARD CON DATOS REALES DE SQL SERVER
+   Ventas recientes y productos con stock bajo
+   ============================================================ */
+
+function solicitarResumenDashboard() {
+    if (window.chrome?.webview?.postMessage) {
+        window.chrome.webview.postMessage({
+            type: "dashboard:solicitarResumen"
+        });
+    }
+}
+
+// Recibir los datos enviados desde MainForm.cs
+if (window.chrome?.webview?.addEventListener) {
+
+    window.chrome.webview.addEventListener("message", function (evento) {
+
+        const mensaje = evento.data;
+
+        if (!mensaje || typeof mensaje !== "object") {
+            return;
+        }
+
+        if (mensaje.type === "dashboard:resumen") {
+
+            const datos = mensaje.data || {};
+
+            // MainForm.cs envía Ventas y StockBajo
+            const ventasRecibidas =
+                datos.Ventas ?? datos.ventas ?? [];
+
+            const stockRecibido =
+                datos.StockBajo ?? datos.stockBajo ?? [];
+
+            // Actualizar los arreglos que utiliza el Dashboard
+            sales.splice(
+                0,
+                sales.length,
+                ...(Array.isArray(ventasRecibidas)
+                    ? ventasRecibidas
+                    : [])
+            );
+
+            stock.splice(
+                0,
+                stock.length,
+                ...(Array.isArray(stockRecibido)
+                    ? stockRecibido
+                    : [])
+            );
+
+            // Actualizar las tablas HTML
+            cargarTablasDashboard();
+
+            console.log(
+                "AutoParts Dashboard:",
+                sales.length,
+                "ventas y",
+                stock.length,
+                "productos con stock bajo."
+            );
+        }
+
+        if (mensaje.type === "dashboard:error") {
+            console.error(
+                "Error del Dashboard:",
+                mensaje.message
+            );
+
+            if (typeof toast === "function") {
+                toast(
+                    mensaje.message ||
+                    "No se pudieron cargar los datos del Dashboard."
+                );
+            }
+        }
+
+        // Después de cargar la sesión, solicitar datos reales.
+        if (mensaje.type === "auth:sesion") {
+            solicitarResumenDashboard();
+        }
+
+    });
+
+    // Actualizar al regresar a Inicio desde el menú.
+    document.querySelectorAll(
+        '[data-section="Dashboard"]'
+    ).forEach(function (enlace) {
+
+        enlace.addEventListener("click", function () {
+            solicitarResumenDashboard();
+        });
+
+    });
+
+    // También solicitar los datos al iniciar el Dashboard.
+    solicitarResumenDashboard();
+}

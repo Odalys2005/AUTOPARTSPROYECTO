@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AutoParts.Entity;
 using AutoParts.Entity.Productos;
+using AutoParts.DataAccess;
 
 namespace AutoParts.View
 {
@@ -442,6 +443,81 @@ namespace AutoParts.View
 
                         break;
 
+                    // DASHBOARD: resumen de ventas e inventario en modo solo lectura.
+                    case "dashboard:solicitarResumen":
+                        try
+                        {
+                            var resumen = await Task.Run(() => ObtenerResumenDashboard());
+                            EnviarAlDashboard(new
+                            {
+                                type = "dashboard:resumen",
+                                data = resumen
+                            });
+                        }
+                        catch (Exception)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "dashboard:error",
+                                message = "No se pudieron cargar las ventas recientes o el inventario. Revisa la conexión con SQL Server."
+                            });
+                        }
+                        break;
+
+                    // COMPRAS: registra cabecera, detalles y aumento de stock una sola vez.
+                    // La transaccion atomica se ejecuta en dbo.spCompraRegistrarCompleta.
+                    case "compras:registrarCompleta":
+                        try
+                        {
+                            if (!raiz.TryGetProperty("data", out JsonElement datosCompra) ||
+                                datosCompra.ValueKind != JsonValueKind.Object)
+                                throw new ArgumentException("No se recibieron datos validos de la compra.");
+
+                            if (!datosCompra.TryGetProperty("Compra", out JsonElement cabeceraCompra) ||
+                                cabeceraCompra.ValueKind != JsonValueKind.Object)
+                                throw new ArgumentException("Falta la cabecera de la compra.");
+                            if (!datosCompra.TryGetProperty("Detalles", out JsonElement lineasCompra) ||
+                                lineasCompra.ValueKind != JsonValueKind.Array)
+                                throw new ArgumentException("Faltan los productos de la compra.");
+
+                            var opcionesCompra = new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            };
+                            Compra compraNueva = cabeceraCompra.Deserialize<Compra>(opcionesCompra)
+                                ?? throw new ArgumentException("La cabecera de compra no es valida.");
+                            List<Detalle_Compra> detallesNuevos =
+                                lineasCompra.Deserialize<List<Detalle_Compra>>(opcionesCompra)
+                                ?? throw new ArgumentException("Los detalles de compra no son validos.");
+
+                            // No confiar en totales enviados por el HTML. CompraBL y SQL
+                            // validan y recalculan todos los importes desde las lineas.
+                            CompraRegistroResultado resultadoCompra =
+                                _compraBL.RegistrarCompleta(compraNueva, detallesNuevos);
+                            EnviarAlDashboard(new
+                            {
+                                type = "compras:registrada",
+                                data = new
+                                {
+                                    resultadoCompra.CompraId,
+                                    resultadoCompra.NumeroComprobante,
+                                    resultadoCompra.TotalCompra,
+                                    resultadoCompra.AdvertenciasStockMaximo
+                                }
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            // Un error SQL se revierte en el procedimiento; no
+                            // efectuar aqui otra insercion ni actualizar stock.
+                            EnviarAlDashboard(new
+                            {
+                                type = "compras:error",
+                                message = "Compra no registrada: " + ex.Message
+                            });
+                        }
+                        break;
+
                     // PASO 4: Confirmación de ventas completas (factura, detalles y stock).
                     case "ventas:registrarCompleta":
                         try
@@ -579,6 +655,62 @@ namespace AutoParts.View
                     MessageBoxIcon.Error
                 );
             }
+        }
+
+        // Datos reales para las dos tablas del Dashboard.
+        // Esta consulta no registra movimientos ni modifica existencias.
+        private object ObtenerResumenDashboard()
+        {
+            var ventas = _ventaBL.SelectAll()
+                .OrderByDescending(v => v.FechaVenta)
+                .ThenByDescending(v => v.VentaId)
+                .Take(10)
+                .ToList();
+
+            var idsClientes = ventas.Select(v => v.ClienteId).ToHashSet();
+            var clientes = _clienteBL.SelectAll()
+                .Where(c => idsClientes.Contains(c.ClienteId))
+                .ToDictionary(c => c.ClienteId);
+
+            // app.js espera [factura, cliente, fecha, total, estado].
+            var filasVentas = ventas.Select(v => new object[]
+            {
+                v.NumeroFactura ?? ("Venta #" + v.VentaId),
+                clientes.TryGetValue(v.ClienteId, out var cliente)
+                    ? (cliente.Nombre + " " + cliente.Apellido).Trim()
+                    : "Cliente #" + v.ClienteId,
+                v.FechaVenta.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture),
+                v.Total,
+                "Registrada"
+            }).ToArray();
+
+            var bajos = _inventarioBL.SelectAll()
+                .Where(i => i.StockActual <= i.StockMinimo)
+                .OrderBy(i => i.StockActual)
+                .ThenBy(i => i.ProductoId)
+                .ToList();
+
+            var idsProductos = bajos.Select(i => i.ProductoId).ToHashSet();
+            var productos = _productoBL.SelectAll()
+                .Where(p => idsProductos.Contains(p.ProductoId))
+                .ToDictionary(p => p.ProductoId);
+
+            // app.js espera [simbolo, nombre, detalle, sku, actual, minimo].
+            var filasStock = bajos.Select(i =>
+            {
+                productos.TryGetValue(i.ProductoId, out var producto);
+                return new object[]
+                {
+                    "!",
+                    producto?.Nombre ?? ("Producto #" + i.ProductoId),
+                    i.StockActual == 0 ? "Agotado" : "Existencias bajas",
+                    producto?.CodigoOEM ?? ("#" + i.ProductoId),
+                    i.StockActual,
+                    i.StockMinimo
+                };
+            }).ToArray();
+
+            return new { Ventas = filasVentas, StockBajo = filasStock };
         }
 
         // ==========================================================
@@ -1708,13 +1840,9 @@ namespace AutoParts.View
                                 data = usuarios
                             });
                         }
-                        else
+                        else if (accion == "guardarIntegrado")
                         {
-                            EnviarAlDashboard(new
-                            {
-                                type = "error",
-                                message = "El registro de usuarios requiere validación de permisos y hash seguro de contraseña."
-                            });
+                            RegistrarUsuarioIntegrado(raiz);
                         }
                         break;
 
@@ -1735,6 +1863,86 @@ namespace AutoParts.View
                     message = ex.Message
                 });
             }
+        }
+
+        // Registro de usuarios desde el Dashboard. Las contraseñas solo se usan
+        // en memoria para crear el hash dentro de UsuarioBL.Insert().
+        private void RegistrarUsuarioIntegrado(JsonElement raiz)
+        {
+            if (_sesionActual == null || !PermisosSistema.EsAdministrador(_sesionActual))
+                throw new UnauthorizedAccessException("Solo un administrador puede crear usuarios.");
+
+            if (!raiz.TryGetProperty("data", out JsonElement datos) ||
+                datos.ValueKind != JsonValueKind.Object)
+                throw new ArgumentException("No se recibieron los datos del usuario.");
+
+            int LeerId(string nombre)
+            {
+                if (!datos.TryGetProperty(nombre, out JsonElement elemento) ||
+                    elemento.ValueKind != JsonValueKind.Number ||
+                    !elemento.TryGetInt32(out int valor) || valor <= 0)
+                    throw new ArgumentException("Selecciona un valor válido para " + nombre + ".");
+                return valor;
+            }
+
+            int empleadoId = LeerId("EmpleadoId");
+            int rolId = LeerId("RolId");
+            int estadoId = LeerId("EstadoId");
+            string nombreUsuario = (ObtenerTextoCliente(datos, "NombreUsuario") ?? "").Trim();
+
+            // No registrar ni mostrar jamás la contraseña recibida en errores o logs.
+            if (!datos.TryGetProperty("Contrasena", out JsonElement campoClave) ||
+                campoClave.ValueKind != JsonValueKind.String)
+                throw new ArgumentException("Ingresa una contraseña válida.");
+            string contrasena = campoClave.GetString() ?? "";
+
+            if (nombreUsuario.Length < 3 || nombreUsuario.Length > 50 ||
+                !System.Text.RegularExpressions.Regex.IsMatch(
+                    nombreUsuario, @"\A[A-Za-z0-9._-]+\z"))
+                throw new ArgumentException("El usuario debe tener de 3 a 50 caracteres: letras, números, punto, guion o guion bajo.");
+
+            if (contrasena.Length < 8 || contrasena.Length > 72 ||
+                string.IsNullOrWhiteSpace(contrasena))
+                throw new ArgumentException("La contraseña debe tener de 8 a 72 caracteres.");
+
+            if (!_empleadoBL.SelectAll().Any(e => e.EmpleadoId == empleadoId))
+                throw new ArgumentException("El empleado seleccionado no existe.");
+            if (!_rolBL.SelectAll().Any(r => r.RolId == rolId))
+                throw new ArgumentException("El rol seleccionado no existe.");
+            if (!_estadoBL.SelectAll().Any(e => e.EstadoId == estadoId))
+                throw new ArgumentException("El estado seleccionado no existe.");
+
+            // Comprobación amigable; las restricciones UNIQUE de SQL Server
+            // siguen siendo la protección definitiva ante registros simultáneos.
+            var existentes = _usuarioBL.SelectAll();
+            if (existentes.Any(u => u.EmpleadoId == empleadoId))
+                throw new ArgumentException("Este empleado ya tiene una cuenta.");
+            if (existentes.Any(u => string.Equals(u.NombreUsuario, nombreUsuario,
+                    StringComparison.OrdinalIgnoreCase)))
+                throw new ArgumentException("Ese nombre de usuario ya está registrado.");
+
+            // UsuarioBL.Insert genera PasswordHelper.CrearHash; no hashear aquí.
+            var nuevo = new Usuario
+            {
+                EmpleadoId = empleadoId,
+                RolId = rolId,
+                EstadoId = estadoId,
+                NombreUsuario = nombreUsuario,
+                Contrasena = contrasena
+            };
+
+            try
+            {
+                int filas = _usuarioBL.Insert(nuevo);
+                if (filas <= 0)
+                    throw new InvalidOperationException("SQL Server no confirmó el registro del usuario.");
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+            {
+                throw new ArgumentException("El usuario o empleado ya tiene una cuenta registrada.");
+            }
+
+            EnviarAlDashboard(new { type = "usuarios:guardado" });
         }
 
         // Comportamiento compartido para listados y registros básicos.
