@@ -72,5 +72,48 @@ namespace AutoParts.DataAccess
             return result;
         }
 
+        public int Update(Categoria entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spCategoriaUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@CategoriaId", entity.CategoriaId);
+                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        //Cambia de estado, no es que se elimine
+        public int Delete(Categoria entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spCategoriaDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@CategoriaId", entity.CategoriaId);
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+            return result;
+        }
+
+
     }
 }

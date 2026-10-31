@@ -38,5 +38,21 @@ namespace AutoParts.BusinessLogic
                 throw;
             }
         }
+
+        public int Update(Cliente entity)
+        {
+            int result;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return result;
+        }
     }
 }

@@ -82,5 +82,37 @@ namespace AutoParts.DataAccess
 
             return result;
         }
+
+        public int Update(Cliente entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spClienteUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@ClienteId", entity.ClienteId);
+                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
+                    cmd.Parameters.AddWithValue("@Apellido", entity.Apellido);
+                    cmd.Parameters.AddWithValue("@DUI", entity.DUI);
+                    cmd.Parameters.AddWithValue("@NIT",
+                        (object?)entity.NIT ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Telefono",
+                        (object?)entity.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Correo",
+                        (object?)entity.Correo ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Direccion",
+                        (object?)entity.Direccion ?? DBNull.Value);
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
     }
 }

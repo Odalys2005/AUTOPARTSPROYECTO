@@ -1,5 +1,4 @@
-﻿
-using AutoParts.DataAccess;
+﻿using AutoParts.DataAccess;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -38,6 +37,38 @@ namespace AutoParts.BusinessLogic
             try
             {
                 result = _repository.Insert(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return result;
+        }
+
+        public int Update(Categoria entity)
+        {
+            int result;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return result;
+        }
+
+        public int Delete(Categoria entity)
+        {
+            int result;
+
+            try
+            {
+                result = _repository.Delete(entity);
             }
             catch (Exception ex)
             {
