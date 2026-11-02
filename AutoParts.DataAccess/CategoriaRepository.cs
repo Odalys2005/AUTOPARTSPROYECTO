@@ -16,9 +16,6 @@ namespace AutoParts.DataAccess
             _connectionFactory = connectionFactory;
         }
 
-        // ==========================================
-        // SELECT ALL - CONSULTAR CATEGORIAS
-        // ==========================================
         public List<Categoria> SelectAll()
         {
             List<Categoria> result = new List<Categoria>();
@@ -53,9 +50,6 @@ namespace AutoParts.DataAccess
             return result;
         }
 
-        // ==========================================
-        // INSERT - REGISTRAR CATEGORIA
-        // ==========================================
         public int Insert(Categoria entity)
         {
             using (SqlConnection conn =
@@ -73,9 +67,6 @@ namespace AutoParts.DataAccess
                         .Value = entity.EstadoId;
 
                     conn.Open();
-
-                    // El procedimiento confirma el éxito
-                    // si termina sin lanzar una excepción.
                     cmd.ExecuteNonQuery();
 
                     return 1;
@@ -83,9 +74,6 @@ namespace AutoParts.DataAccess
             }
         }
 
-        // ==========================================
-        // UPDATE - ACTUALIZAR CATEGORIA
-        // ==========================================
         public int Update(Categoria entity)
         {
             using (SqlConnection conn =
@@ -114,11 +102,6 @@ namespace AutoParts.DataAccess
             }
         }
 
-        // ==========================================
-        // DELETE - DESACTIVACION LOGICA
-        // ==========================================
-        // No elimina la categoria de la base de datos.
-        // Cambia EstadoId a 2 (Inactivo).
         public int Delete(Categoria entity)
         {
             using (SqlConnection conn =
@@ -134,8 +117,6 @@ namespace AutoParts.DataAccess
 
                     conn.Open();
 
-                    // El procedimiento devuelve una fila
-                    // con la categoria y su estado final.
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         if (!dr.Read())
@@ -148,50 +129,10 @@ namespace AutoParts.DataAccess
                         if (estadoId != 2)
                             throw new InvalidOperationException(
                                 "La categoría no quedó inactiva.");
+                        return estadoId;
                     }
-
-        public int Update(Categoria entity)
-        {
-            int result = 0;
-
-            using (SqlConnection conn = _connectionFactory.CreateConnection())
-            {
-                using (SqlCommand cmd = new SqlCommand("spCategoriaUpdate", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    cmd.Parameters.AddWithValue("@CategoriaId", entity.CategoriaId);
-                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
                 }
             }
-
-            return result;
         }
-
-        //Cambia de estado, no es que se elimine
-        public int Delete(Categoria entity)
-        {
-            int result = 0;
-
-            using (SqlConnection conn = _connectionFactory.CreateConnection())
-            {
-                using (SqlCommand cmd = new SqlCommand("spCategoriaDelete", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@CategoriaId", entity.CategoriaId);
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
-            }
-            return result;
-        }
-
-
     }
 }

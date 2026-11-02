@@ -100,6 +100,7 @@ namespace AutoParts.BusinessLogic
             return _repository.Delete(entity);
         }
 
+        /*
         public int Update(Categoria entity)
         {
             int result;
@@ -131,5 +132,6 @@ namespace AutoParts.BusinessLogic
 
             return result;
         }
+        */
     }
 }
