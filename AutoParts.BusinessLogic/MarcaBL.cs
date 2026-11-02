@@ -24,5 +24,35 @@ namespace AutoParts.BusinessLogic
         {
             return _repository.Insert(entity);
         }
+
+        public int Update(Marca entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Marca entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.MarcaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una Marca válida.");
+
+            return _repository.Delete(entity);
+        }
+
+
     }
 }
