@@ -114,5 +114,90 @@ namespace AutoParts.DataAccess
                 return cmd.ExecuteNonQuery();
             }
         }
+
+        public int Update(Producto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spProductoUpdate", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+
+                cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                    .Value = entity.ProductoId;
+
+                cmd.Parameters.Add("@SubcategoriaId", SqlDbType.Int)
+                    .Value = entity.SubcategoriaId;
+
+                cmd.Parameters.Add("@CodigoOEM", SqlDbType.VarChar, 50)
+                    .Value = entity.CodigoOEM;
+
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                    .Value = entity.Nombre;
+
+                cmd.Parameters.Add("@Descripcion", SqlDbType.VarChar, 500)
+                    .Value = entity.Descripcion;
+
+                SqlParameter precioVenta = cmd.Parameters.Add(
+                    "@PrecioVenta", SqlDbType.Decimal);
+
+                precioVenta.Precision = 18;
+                precioVenta.Scale = 2;
+                precioVenta.Value = entity.PrecioVenta;
+
+                cmd.Parameters.Add("@DiasGarantia", SqlDbType.Int)
+                    .Value = entity.DiasGarantia;
+
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                    .Value = entity.EstadoId;
+
+                cmd.Parameters.Add("@Imagen", SqlDbType.NVarChar, 500)
+                    .Value = string.IsNullOrWhiteSpace(entity.Imagen)
+                        ? DBNull.Value
+                        : entity.Imagen;
+
+                // SQL Server genera CodigoBarras automáticamente.
+
+                conn.Open();
+
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
+        public int Delete(Producto entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spProductoDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                        .Value = entity.ProductoId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Producto no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
     }
 }

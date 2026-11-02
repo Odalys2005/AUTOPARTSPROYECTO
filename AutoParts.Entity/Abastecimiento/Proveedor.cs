@@ -12,11 +12,12 @@ namespace AutoParts.Entity
         public string Telefono { get; set; }
         public string Correo { get; set; }
         public string Contacto { get; set; }
+        public int EstadoId { get; set; }
         public Proveedor()
         {
                 
         }
-        public Proveedor(int proveedorId, string nombreEmpresa, string nIT, string telefono, string correo, string contacto)
+        public Proveedor(int proveedorId, string nombreEmpresa, string nIT, string telefono, string correo, string contacto, int estadoId)
         {
             ProveedorId = proveedorId;
             NombreEmpresa = nombreEmpresa;
@@ -24,6 +25,7 @@ namespace AutoParts.Entity
             Telefono = telefono;
             Correo = correo;
             Contacto = contacto;
+            EstadoId = estadoId;
         }
     }
 }

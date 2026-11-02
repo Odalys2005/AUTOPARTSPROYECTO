@@ -74,5 +74,69 @@ namespace AutoParts.DataAccess
 
             return result;
         }
+
+        public int Update(Subcategoria entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spSubcategoriaUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@SubcategoriaId", SqlDbType.Int)
+                        .Value = entity.SubcategoriaId;
+
+
+                    cmd.Parameters.Add("@CategoriaId", SqlDbType.Int)
+                        .Value = entity.CategoriaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 120)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Subcategoria entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spSubCategoriaDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@SubCategoriaId", SqlDbType.Int)
+                        .Value = entity.SubcategoriaId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "La SubCategoria no quedó inactiva.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
     }
 }

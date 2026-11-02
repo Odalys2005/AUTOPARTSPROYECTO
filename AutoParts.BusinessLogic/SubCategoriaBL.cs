@@ -1,5 +1,6 @@
 ﻿
 using AutoParts.DataAccess;
+using AutoParts.Entity;
 using AutoParts.Entity.Productos;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,34 @@ namespace AutoParts.BusinessLogic
             }
 
             return result;
+        }
+
+        public int Update(Subcategoria entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Subcategoria entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.SubcategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una SubCategoria válida.");
+
+            return _repository.Delete(entity);
         }
     }
 }

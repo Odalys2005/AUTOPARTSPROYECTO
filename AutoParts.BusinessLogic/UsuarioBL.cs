@@ -1,8 +1,10 @@
 ﻿
 using AutoParts.DataAccess;
 using AutoParts.Entity;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace AutoParts.BusinessLogic
 {
@@ -45,7 +47,46 @@ namespace AutoParts.BusinessLogic
 
             return _repository.Insert(nuevo);
         }
+        /////
+        public int Update(Usuario entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
+            if (entity.UsuarioId <= 0)
+                throw new ArgumentException("El ID de usuario no es válido.");
+
+            if (string.IsNullOrWhiteSpace(entity.NombreUsuario))
+                throw new ArgumentException("Debe ingresar un nombre de usuario.");
+
+            // Si viene una contraseña nueva se genera el hash, si no, se conserva según tu lógica de negocio
+            string contrasenaHash = string.IsNullOrWhiteSpace(entity.Contrasena)
+                ? entity.Contrasena
+                : PasswordHelper.CrearHash(entity.Contrasena);
+
+            Usuario usuarioModificado = new Usuario(
+                entity.UsuarioId,
+                entity.EmpleadoId,
+                entity.RolId,
+                entity.NombreUsuario.Trim(),
+                contrasenaHash,
+                entity.EstadoId
+            );
+
+            return _repository.Update(usuarioModificado);
+        }
+
+        public int Delete(Usuario entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.UsuarioId <= 0)
+                throw new ArgumentException("El ID de usuario no es válido.");
+
+            return _repository.Delete(entity);
+        }
+        ///
         public SesionUsuario? IniciarSesion(
             string nombreUsuario,
             string contrasena)

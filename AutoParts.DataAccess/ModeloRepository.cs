@@ -74,5 +74,69 @@ namespace AutoParts.DataAccess
 
             return result;
         }
+
+        public int Update(Modelo entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spModeloUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
+                        .Value = entity.ModeloId;
+
+                    cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
+                        .Value = entity.MarcaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Modelo entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spModeloDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
+                        .Value = entity.ModeloId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Modelo no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
     }
 }

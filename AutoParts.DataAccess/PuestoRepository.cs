@@ -83,5 +83,77 @@ namespace AutoParts.DataAccess
 
             return result;
         }
+
+        public int Update(Puesto entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spPuestoUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue(
+                        "@Puesto",
+                        entity.PuestoId
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Nombre",
+                        entity.Nombre
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Descripcion",
+                        (object?)entity.Descripcion ?? DBNull.Value
+                    );
+
+                    cmd.Parameters.Add(
+                        "@EstadoId",
+                        SqlDbType.Int
+                    ).Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Puesto entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spPuestoDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@PuestoId", SqlDbType.Int)
+                        .Value = entity.PuestoId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Puesto no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
     }
 }

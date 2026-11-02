@@ -90,5 +90,82 @@ namespace AutoParts.DataAccess
 
             return result;
         }
+
+        public int Update(Empleado entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spEmpleadoUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@PuestoId", SqlDbType.Int)
+                        .Value = entity.PuestoId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@Apellido", SqlDbType.VarChar, 100)
+                        .Value = entity.Apellido;
+
+                    cmd.Parameters.Add("@DUI", SqlDbType.VarChar, 10)
+                        .Value = entity.DUI;
+
+                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
+                        .Value = entity.Telefono;
+
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
+                        .Value = entity.Correo;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Empleado entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spEmpleadoDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Empleado no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
     }
 }

@@ -46,5 +46,33 @@ namespace AutoParts.BusinessLogic
 
             return result;
         }
+
+        public int Update(Proveedor entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Proveedor entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.ProveedorId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un Proveedor válido.");
+
+            return _repository.Delete(entity);
+        }
     }
 }

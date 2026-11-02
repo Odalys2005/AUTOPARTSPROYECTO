@@ -4,6 +4,7 @@ namespace AutoParts.Entity
     {
         public int RolId { get; set; }
         public string Nombre { get; set; }
+        public int EstadoId { get; set; }
 
         public Rol()
         {

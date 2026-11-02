@@ -84,9 +84,79 @@ namespace AutoParts.DataAccess
 
             return result;
         }
-    
-    
-public Usuario? SelectByNombreUsuario(string nombreUsuario)
+
+        public int Update(Usuario entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spUsuarioUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@UsuarioId", SqlDbType.Int)
+                        .Value = entity.UsuarioId;
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                        .Value = entity.RolId;
+
+                    cmd.Parameters.Add("@NombreUsuario", SqlDbType.VarChar, 50)
+                        .Value = entity.NombreUsuario;
+
+                    cmd.Parameters.Add("@Contraseña", SqlDbType.VarChar, 255)
+                        .Value = entity.Contrasena;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = (object?)entity.EstadoId ?? DBNull.Value;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+
+        public int Delete(Usuario entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spUsuarioDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@UsuarioId", SqlDbType.Int)
+                        .Value = entity.UsuarioId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Usuario no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+
+
+        public Usuario? SelectByNombreUsuario(string nombreUsuario)
         {
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             using (SqlCommand cmd = new SqlCommand(

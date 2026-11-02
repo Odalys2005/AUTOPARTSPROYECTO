@@ -36,6 +36,8 @@ namespace AutoParts.DataAccess
 
                             entity.RolId = dr.GetInt32(0);
                             entity.Nombre = dr.GetString(1);
+                            entity.EstadoId = dr.GetInt32(2);
+
 
                             result.Add(entity);
                         }
@@ -59,6 +61,9 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
                         .Value = entity.Nombre;
 
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.VarChar, 100)
+                        .Value = entity.EstadoId;
+
                     conn.Open();
 
                     result = cmd.ExecuteNonQuery();
@@ -66,6 +71,67 @@ namespace AutoParts.DataAccess
             }
 
             return result;
+        }
+
+        public int Update(Rol entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spRolUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                        .Value = entity.RolId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Rol entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spRolDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                        .Value = entity.RolId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Rol no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
         }
     }
 }

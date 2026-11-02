@@ -41,6 +41,7 @@ namespace AutoParts.BusinessLogic
             return result;
         }
 
+
         public int Delete(Marca entity)
         {
             if (entity == null)
