@@ -527,9 +527,9 @@ function recibirMensajeCategorias(evento) {
         }
     }
 }
-window.addEventListener('message', recibirMensajeCategorias);
-if (window.parent === window && window.chrome?.webview?.addEventListener) {
-    window.chrome.webview.addEventListener('message', recibirMensajeCategorias);
+        window.addEventListener("message", recibirMensajeSubcategorias);
+
+        document.getElementById("btnNuevaSubcategoria").addEventListener("click", () => {
 }
 $('btnNuevaCategoria').addEventListener('click', () => enviarACSharp({type:'categorias:abrirNuevo'}));
 $('btnActualizar').addEventListener('click', () => solicitarCategorias(true));
