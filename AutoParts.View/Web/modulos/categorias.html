@@ -39,14 +39,6 @@
 					letter-spacing: 3px;
 					margin-bottom: 12px;
 					}
-					.etiqueta::before {
-					content: "";
-					width: 22px;
-					height: 3px;
-					border-radius: 10px;
-					background: #ff3844;
-					box-shadow: 0 0 12px #ff243a;
-					}
 					h1 {
 					margin: 0;
 					font-size: clamp(28px, 3vw, 39px);
@@ -107,8 +99,8 @@
 					.herramientas {
 					display: flex;
 					align-items: center;
-					flex-wrap: wrap;
-					gap: 11px;
+					flex-wrap: nowrap;
+					gap: 9px;
 					}
 					.buscador {
 					display: flex;
@@ -117,6 +109,8 @@
 					border: 1px solid #51454c;
 					border-radius: 9px;
 					width: min(340px, 100%);
+					min-width: 0;
+					flex: 1 1 240px;
 					height: 44px;
 					padding: 0 13px;
 					}
@@ -139,16 +133,17 @@
 					}
 					.buscador input::placeholder { color: #898992; }
 					.btn-actualizar {
+					width: 44px;
 					height: 44px;
-					padding: 0 14px;
-					display: flex;
+					padding: 0;
+					display: inline-flex;
 					align-items: center;
-					gap: 8px;
+					justify-content: center;
+					flex: 0 0 44px;
 					color: #e8e8eb;
 					background: #211a1f;
 					border: 1px solid #60444d;
 					border-radius: 9px;
-					font-size: 12px;
 					transition: .2s;
 					}
 					.btn-actualizar:hover {
@@ -270,33 +265,65 @@
 					.herramientas { width: 100%; }
 					.buscador {
 					flex: 1;
-					min-width: 190px;
+					min-width: 0;
 					}
 					th, td { padding: 14px 13px; }
 					.panel-inferior { padding: 16px; }
 					}
+				
+.acciones-categoria{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.boton-categoria{border:1px solid #65444c;background:#241a20;border-radius:8px;padding:8px 12px;color:#f4f4f5;font-size:12px;font-weight:700}
+.boton-categoria:hover{border-color:#ffbd35;background:#35212a}
+.boton-categoria.desactivar{border-color:#91434c;color:#ff9ca2}
+.boton-categoria:disabled{opacity:.4;cursor:not-allowed}
+.mensaje-categoria{padding:12px 25px;color:#ffbd69;font-size:12px;min-height:38px}
+.modal-categoria[hidden]{display:none!important}
+.modal-categoria{position:fixed;inset:0;z-index:50;background:#000b;display:grid;place-items:center;padding:18px}
+.modal-panel-categoria{width:min(100%,480px);background:linear-gradient(145deg,#21161b,#111115);border:1px solid #81424a;border-radius:16px;padding:26px;box-shadow:0 25px 80px #000a}
+.modal-panel-categoria h2{margin:0 0 18px;color:#fff}
+.modal-panel-categoria label{display:block;font-size:13px;margin-bottom:8px}
+.modal-panel-categoria input{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none}
+.modal-acciones-categoria{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+.modal-acciones-categoria button{border-radius:9px;padding:11px 17px;font-weight:700}
+.modal-guardar-categoria{background:linear-gradient(105deg,#e42739,#ffbd2b);border:0;color:#140b0d}
 
-      .acciones-categoria { display:flex; gap:8px; flex-wrap:wrap; }
-      .accion-editar,.accion-desactivar { border:1px solid #6c414a; background:#24191e; color:#f5f5f7; border-radius:8px; padding:9px 13px; font-size:12px; font-weight:700; }
-      .accion-editar:hover { background:#3d232b; border-color:#ff4b57; }
-      .accion-desactivar { color:#ffa0a5; }
-      .accion-desactivar:hover { background:#4c1c28; }
-      .accion-desactivar:disabled { opacity:.4; cursor:not-allowed; }
-      .modal-categoria[hidden] { display:none; }
-      .modal-categoria { position:fixed; inset:0; display:grid; place-items:center; z-index:100; background:rgba(0,0,0,.78); padding:18px; }
-      .modal-contenido { background:linear-gradient(140deg,#191519,#0c0d10); border:1px solid #753743; border-radius:15px; padding:26px; width:min(480px,100%); box-shadow:0 20px 60px #000a; }
-      .modal-contenido h2 { margin:0 0 24px; font-size:21px; }
-      .modal-contenido label { display:block; color:#e8e8ec; font-size:13px; font-weight:650; margin:15px 0 8px; }
-      .modal-contenido input,.modal-contenido select { width:100%; min-height:46px; border:1px solid #58434b; border-radius:9px; padding:10px 12px; background:#111216; color:white; font:inherit; outline:none; }
-      .modal-contenido input:focus,.modal-contenido select:focus { border-color:#ff4251; }
-      .modal-acciones { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; padding-top:22px; }
-      .btn-cancelar { padding:11px 17px; color:white; background:#262329; border:1px solid #5b5057; border-radius:9px; }
-      .btn-guardar-edicion { padding:11px 17px; color:#210a0c; font-weight:750; background:linear-gradient(110deg,#ff4050,#ffbd32); border:0; border-radius:9px; }
-      .btn-guardar-edicion:disabled { opacity:.5; cursor:not-allowed; }
-      .mensaje-categoria { min-height:20px; color:#ffc075; font-size:12px; padding:10px 25px; }
-      .mensaje-categoria:empty { display:none; }
+.boton-categoria.habilitar{border-color:#247e54;color:#91f2bb;background:#11291e}
+.boton-categoria.habilitar:hover{border-color:#5fd39a;background:#173b29}
+.modal-descripcion-categoria{color:#c1b8bf;font-size:13px;line-height:1.7;margin:0}
+.modal-nombre-categoria{color:#ffbd35;font-weight:800}
+.modal-confirmar-categoria{background:#9e2533;border:1px solid #f15d69;color:#fff}
+.modal-confirmar-categoria.habilitar{background:#155a3b;border-color:#48c78b;color:#e3ffef}
 
-				</style>
+.modal-resultado-categoria{text-align:center;width:min(100%,430px)}
+.icono-resultado-categoria{width:65px;height:65px;border-radius:50%;display:grid;place-items:center;margin:0 auto 17px;border:1px solid #318d61;background:#113925;color:#8cf0af;font-size:33px;font-weight:800}
+.modal-resultado-categoria h2{margin:0 0 10px}
+.modal-resultado-categoria p{color:#c6c3c9;font-size:14px;line-height:1.6;margin:0 0 23px}
+.modal-resultado-categoria .modal-acciones-categoria{justify-content:center}
+.modal-resultado-categoria .modal-guardar-categoria{min-width:120px;cursor:pointer}
+
+.modal-detalles-categoria{width:min(100%,460px)}
+.modal-detalles-categoria h2{margin-bottom:24px}
+.detalle-fila-categoria{padding:15px 0;border-bottom:1px solid #3d2b33}
+.detalle-fila-categoria:first-of-type{padding-top:0}
+.detalle-etiqueta-categoria{display:block;color:#a8a3ac;font-size:12px;margin-bottom:8px}
+.detalle-valor-categoria{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.modal-detalles-categoria .modal-acciones-categoria{margin-top:24px}
+.modal-detalles-categoria .modal-guardar-categoria{min-width:110px;cursor:pointer}
+.boton-categoria.ver{border-color:#675277;color:#e4c8ff}
+.boton-categoria.ver:hover{background:#30213b;border-color:#ab75d1}
+.acciones-categoria{gap:9px;flex-wrap:nowrap}
+.acciones-categoria .boton-categoria{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:10px;transition:background .2s,border-color .2s,transform .2s}
+.acciones-categoria .boton-categoria svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.acciones-categoria .boton-categoria:hover:not(:disabled){transform:translateY(-2px)}
+.acciones-categoria .boton-categoria.ver{color:#62b9ff;border-color:#285f91;background:#0e2234}
+.acciones-categoria .boton-categoria.ver:hover{color:#94d2ff;background:#18374f;border-color:#419cdb}
+.acciones-categoria .boton-categoria.editar{color:#75e4a4;border-color:#276546;background:#10291d}
+.acciones-categoria .boton-categoria.editar:hover{color:#a2f5c1;background:#173d2a;border-color:#43b878}
+.acciones-categoria .boton-categoria.desactivar{color:#ff818d;border-color:#81333e;background:#31151d}
+.acciones-categoria .boton-categoria.desactivar:hover{color:#ffb0b9;background:#4c1d27;border-color:#ef5366}
+.acciones-categoria .boton-categoria.habilitar{color:#74e8ad;border-color:#297d55;background:#102d20}
+.acciones-categoria .boton-categoria.habilitar:hover{color:#adffd0;background:#19432e;border-color:#4ac587}
+</style>
 			</head>
 	<body>
 		<main class="contenedor">
@@ -306,9 +333,8 @@
 					<h1>
 						Gestión de <span>Categorías</span>
 					</h1>
-					<p class="subtitulo">Organiza y administra las categorías de repuestos de tu negocio.</p>
 				</div>
-				<button class="btn-nueva" type="button" id="btnNuevaCategoria">
+				<button class="btn-nueva" type="button" id="btnNuevoCategoria">
 					<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
 						<path d="M12 5v14M5 12h14"/>
 					</svg>
@@ -320,7 +346,6 @@
 				<div class="panel-superior">
 					<div class="panel-titulo">
 						<h2>Listado de categorías</h2>
-						<p>Consulta las categorías registradas en el sistema.</p>
 					</div>
 					<div class="herramientas">
 						<div class="buscador">
@@ -330,24 +355,23 @@
 							</svg>
 							<input id="buscarCategoria" type="search" autocomplete="off" placeholder="Buscar categorías..." aria-label="Buscar categorías">
                     </div>
-						<button class="btn-actualizar" type="button" id="btnActualizar">
+						<button class="btn-actualizar" type="button" id="btnActualizar" title="Actualizar categorías" aria-label="Actualizar categorías">
 							<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 								<path d="M20 11a8 8 0 1 0-2 6"/>
 								<path d="M20 4v7h-7"/>
 							</svg>
-							Actualizar
 						</button>
 					</div>
 				</div>
 
-				<div id="mensajeCategoria" class="mensaje-categoria" role="status" aria-live="polite"></div>
+				<div id="avisoCategoria" class="mensaje-categoria" role="status" aria-live="polite"></div>
                 <div class="tabla-contenedor">
 					<table>
 						<thead>
 							<tr>
 								<th>ID</th>
 								<th>Nombre</th>
-								<th>Estado</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
 							</tr>
 						</thead>
@@ -374,172 +398,299 @@
 		</main>
 
         <div id="modalEditarCategoria" class="modal-categoria" hidden>
-          <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="tituloEditarCategoria">
-            <h2 id="tituloEditarCategoria">Editar categoría</h2>
-            <form id="formEditarCategoria">
-              <input type="hidden" id="editarCategoriaId">
-              <label for="editarNombre">Nombre</label>
-              <input id="editarNombre" type="text" maxlength="100" required>
-              <label for="editarEstado">Estado</label>
-              <select id="editarEstado" required>
-                <option value="1">Activo</option>
-                <option value="2">Inactivo</option>
-              </select>
-              <div class="modal-acciones">
-                <button type="button" id="cancelarEdicion" class="btn-cancelar">Cancelar</button>
-                <button type="submit" id="guardarEdicion" class="btn-guardar-edicion">Guardar cambios</button>
-              </div>
-            </form>
-          </div>
+<div class="modal-panel-categoria" role="dialog" aria-modal="true" aria-labelledby="tituloEditarCategoria">
+<h2 id="tituloEditarCategoria">Editar categoría</h2>
+<form id="formEditarCategoria">
+<label for="nombreEditarCategoria">Nombre de la categoría</label>
+<input id="nombreEditarCategoria" type="text" maxlength="100" required autocomplete="off">
+<div class="modal-acciones-categoria">
+<button type="button" class="boton-categoria" id="cancelarEditarCategoria">Cancelar</button>
+<button type="submit" class="modal-guardar-categoria" id="guardarEditarCategoria">Guardar cambios</button>
+</div></form></div></div>
+        <div id="modalConfirmarCategoria" class="modal-categoria" hidden>
+            <div class="modal-panel-categoria" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmarCategoria" aria-describedby="descripcionConfirmarCategoria">
+                <h2 id="tituloConfirmarCategoria">Confirmar cambio</h2>
+                <p id="descripcionConfirmarCategoria" class="modal-descripcion-categoria"></p>
+                <div class="modal-acciones-categoria">
+                    <button type="button" class="boton-categoria" id="cancelarCambioCategoria">Cancelar</button>
+                    <button type="button" class="modal-confirmar-categoria" id="confirmarCambioCategoria">Confirmar</button>
+                </div>
+            </div>
         </div>
+<div id="modalVerCategoria" class="modal-categoria" hidden>
+    <div class="modal-panel-categoria modal-detalles-categoria" role="dialog" aria-modal="true" aria-labelledby="tituloVerCategoria">
+        <h2 id="tituloVerCategoria">Detalles de la categoría</h2>
+        <div class="detalle-fila-categoria">
+            <span class="detalle-etiqueta-categoria">Nombre de la categoría</span>
+            <div class="detalle-valor-categoria" id="verNombreCategoria"></div>
+        </div>
+        <div class="detalle-fila-categoria">
+            <span class="detalle-etiqueta-categoria">Estado</span>
+            <span id="verEstadoCategoria" class="estado"></span>
+        </div>
+        <div class="modal-acciones-categoria">
+            <button type="button" class="modal-guardar-categoria" id="cerrarVerCategoria">Cerrar</button>
+        </div>
+    </div>
+</div>
+<div id="modalResultadoCategoria" class="modal-categoria" hidden>
+    <div class="modal-panel-categoria modal-resultado-categoria" role="dialog" aria-modal="true" aria-labelledby="tituloResultadoCategoria" aria-describedby="textoResultadoCategoria">
+        <div class="icono-resultado-categoria" aria-hidden="true">✓</div>
+        <h2 id="tituloResultadoCategoria">Operación realizada</h2>
+        <p id="textoResultadoCategoria"></p>
+        <div class="modal-acciones-categoria">
+            <button type="button" class="modal-guardar-categoria" id="aceptarResultadoCategoria">Aceptar</button>
+        </div>
+    </div>
+</div>
+<script>
+            'use strict';
+            let categorias = [];
+            let categoriaEditandoId = 0;
+            let categoriaCambioId = 0;
+            let ultimaAccionCategoria = '';
+            let operacionPendiente = false;
+            const $ = id => document.getElementById(id);
 
-		<script>
-'use strict';
-let categorias = [];
-let operacionEnCurso = false;
-let esperandoConsulta = false;
-const $ = id => document.getElementById(id);
+            function escapar(valor) {
+                return String(valor ?? '').replace(/[&<>"']/g, caracter => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[caracter]));
+            }
 
-function escapar(valor) {
-    return String(valor ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function obtener(obj, ...claves) {
-    for (const c of claves) if (obj && obj[c] !== undefined && obj[c] !== null) return obj[c];
-    return '';
-}
-function aviso(texto) { $('mensajeCategoria').textContent = texto || ''; }
-function enviarACSharp(mensaje) {
-    if (window.parent !== window) {
-        window.parent.postMessage(mensaje, '*');
-        return true;
-    }
-    if (window.chrome?.webview?.postMessage) {
-        window.chrome.webview.postMessage(mensaje);
-        return true;
-    }
-    aviso('No hay conexión con Windows Forms.');
-    return false;
-}
-function mostrarMensaje(texto) {
-    $('categoriaRows').innerHTML = `<tr><td colspan="4"><div class="vacio"><strong>${escapar(texto)}</strong></div></td></tr>`;
-}
-function estadoDe(c) { return Number(obtener(c, 'EstadoId','estadoId')); }
-function pintarCategorias() {
-    const busqueda = $('buscarCategoria').value.trim().toLocaleLowerCase('es');
-    const filtradas = categorias.filter(c => [obtener(c,'CategoriaId','categoriaId'), obtener(c,'Nombre','nombre'), estadoDe(c) === 1 ? 'Activo' : 'Inactivo']
-        .some(v => String(v).toLocaleLowerCase('es').includes(busqueda)));
-    $('totalCategorias').textContent = String(filtradas.length);
-    if (!filtradas.length) {
-        mostrarMensaje(busqueda ? 'No se encontraron coincidencias.' : 'No hay categorías registradas.');
-        return;
-    }
-    $('categoriaRows').innerHTML = filtradas.map(c => {
-        const id = Number(obtener(c,'CategoriaId','categoriaId'));
-        const nombre = obtener(c,'Nombre','nombre');
-        const estado = estadoDe(c);
-        const textoEstado = estado === 1 ? 'Activo' : estado === 2 ? 'Inactivo' : 'Desconocido';
-        const clase = estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'otro';
-        return `<tr>
-          <td class="codigo">#${escapar(id)}</td>
-          <td class="nombre">${escapar(nombre)}</td>
-          <td><span class="estado ${clase}">${textoEstado}</span></td>
-          <td><div class="acciones-categoria">
-            <button type="button" class="accion-editar" data-accion="editar" data-id="${id}">Editar</button>
-            <button type="button" class="accion-desactivar" data-accion="desactivar" data-id="${id}" ${estado === 2 ? 'disabled' : ''}>Desactivar</button>
-          </div></td>
-        </tr>`;
-    }).join('');
-}
-function buscarPorId(id) {
-    return categorias.find(c => Number(obtener(c,'CategoriaId','categoriaId')) === id);
-}
-function abrirEditor(id) {
-    if (operacionEnCurso) return;
-    const c = buscarPorId(id);
-    if (!c) return aviso('No se encontró la categoría seleccionada.');
-    $('editarCategoriaId').value = String(id);
-    $('editarNombre').value = String(obtener(c,'Nombre','nombre'));
-    $('editarEstado').value = String(estadoDe(c));
-    $('modalEditarCategoria').hidden = false;
-    $('editarNombre').focus();
-}
-function cerrarEditor() { if (!operacionEnCurso) $('modalEditarCategoria').hidden = true; }
-function desactivarCategoria(id) {
-    if (operacionEnCurso) return;
-    const c = buscarPorId(id);
-    if (!c || estadoDe(c) !== 1) return;
-    if (!window.confirm(`¿Desactivar la categoría "${obtener(c,'Nombre','nombre')}"? No se eliminará de la base de datos.`)) return;
-    if (enviarACSharp({type:'categorias:desactivarIntegrado',data:{CategoriaId:id}})) {
-        operacionEnCurso = true;
-        aviso('Desactivando categoría...');
-    }
-}
-$('categoriaRows').addEventListener('click', e => {
-    const boton = e.target.closest('button[data-accion]');
-    if (!boton) return;
-    const id = Number(boton.dataset.id);
-    if (!Number.isSafeInteger(id) || id <= 0) return;
-    if (boton.dataset.accion === 'editar') abrirEditor(id);
-    if (boton.dataset.accion === 'desactivar') desactivarCategoria(id);
-});
-$('formEditarCategoria').addEventListener('submit', e => {
-    e.preventDefault();
-    if (operacionEnCurso) return;
-    const id = Number($('editarCategoriaId').value);
-    const nombre = $('editarNombre').value.trim();
-    const estado = Number($('editarEstado').value);
-    if (!Number.isSafeInteger(id) || id <= 0) return aviso('Categoría inválida.');
-    if (!nombre || nombre.length > 100) return aviso('Ingresa un nombre de hasta 100 caracteres.');
-    if (![1,2].includes(estado)) return aviso('Selecciona un estado válido.');
-    if (enviarACSharp({type:'categorias:actualizarIntegrado',data:{CategoriaId:id,Nombre:nombre,EstadoId:estado}})) {
-        operacionEnCurso = true;
-        $('guardarEdicion').disabled = true;
-        aviso('Actualizando categoría...');
-    }
-});
-$('cancelarEdicion').addEventListener('click', cerrarEditor);
-$('modalEditarCategoria').addEventListener('click', e => {
-    if (e.target === $('modalEditarCategoria')) cerrarEditor();
-});
-function recibirMensajeCategorias(evento) {
-    let mensaje = evento.data;
-    if (typeof mensaje === 'string') {
-        try { mensaje = JSON.parse(mensaje); } catch { return; }
-    }
-    if (!mensaje || typeof mensaje !== 'object') return;
-    if (mensaje.type === 'categorias:list') {
-        categorias = Array.isArray(mensaje.data) ? mensaje.data : [];
-        esperandoConsulta = false;
-        pintarCategorias();
-    } else if (mensaje.type === 'categorias:actualizada' || mensaje.type === 'categorias:desactivada') {
-        operacionEnCurso = false;
-        $('guardarEdicion').disabled = false;
-        $('modalEditarCategoria').hidden = true;
-        aviso(mensaje.type === 'categorias:actualizada' ? 'Categoría actualizada correctamente.' : 'Categoría desactivada correctamente.');
-        solicitarCategorias(false);
-    } else if (mensaje.type === 'error' || mensaje.type === 'categorias:error') {
-        operacionEnCurso = false;
-        $('guardarEdicion').disabled = false;
-        aviso(mensaje.message || 'No fue posible completar la operación.');
-        if (esperandoConsulta) {
-            esperandoConsulta = false;
-            if (!categorias.length) mostrarMensaje('No se pudo cargar el listado.');
-        }
-    }
-}
-        window.addEventListener("message", recibirMensajeSubcategorias);
+            function obtener(objeto, ...nombres) {
+                for (const nombre of nombres) {
+                    if (objeto && objeto[nombre] !== undefined && objeto[nombre] !== null)
+                        return objeto[nombre];
+                }
+                return '';
+            }
 
-        document.getElementById("btnNuevaSubcategoria").addEventListener("click", () => {
-}
-$('btnNuevaCategoria').addEventListener('click', () => enviarACSharp({type:'categorias:abrirNuevo'}));
-$('btnActualizar').addEventListener('click', () => solicitarCategorias(true));
-$('buscarCategoria').addEventListener('input', pintarCategorias);
-function solicitarCategorias(mostrarCarga = true) {
-    esperandoConsulta = true;
-    if (mostrarCarga) { aviso(''); mostrarMensaje('Cargando categorías...'); }
-    enviarACSharp({type:'categorias:selectAll'});
-}
-solicitarCategorias();
-</script>
+            function enviarACSharp(mensaje) {
+                if (window.parent !== window) {
+                    window.parent.postMessage(mensaje, '*');
+                    return true;
+                }
+                if (window.chrome?.webview?.postMessage) {
+                    window.chrome.webview.postMessage(mensaje);
+                    return true;
+                }
+                aviso('Esta pantalla requiere el Dashboard de AutoParts o WebView2.');
+                return false;
+            }
+
+            function aviso(texto) {
+                $('avisoCategoria').textContent = texto || '';
+            }
+
+            function mostrarResultadoCategoria(titulo, texto) {
+                $('tituloResultadoCategoria').textContent = titulo;
+                $('textoResultadoCategoria').textContent = texto;
+                $('modalResultadoCategoria').hidden = false;
+                $('aceptarResultadoCategoria').focus();
+            }
+
+            function cerrarResultadoCategoria() {
+                $('modalResultadoCategoria').hidden = true;
+            }
+
+            function mostrarMensaje(texto) {
+                $('categoriaRows').innerHTML = '<tr><td colspan="4"><div class="vacio"><strong>' +
+                    escapar(texto) + '</strong></div></td></tr>';
+            }
+
+            function pintarCategorias() {
+                const texto = $('buscarCategoria').value.trim().toLocaleLowerCase('es');
+                const filtrados = categorias.filter(categoria => {
+                    const id = obtener(categoria, 'CategoriaId', 'categoriaId');
+                    const nombre = obtener(categoria, 'Nombre', 'nombre');
+                    const estado = Number(obtener(categoria, 'EstadoId', 'estadoId'));
+                    return [id, nombre, estado === 1 ? 'activo' : 'inactivo']
+                        .some(valor => String(valor).toLocaleLowerCase('es').includes(texto));
+                });
+                $('totalCategorias').textContent = String(filtrados.length);
+                if (!filtrados.length) {
+                    mostrarMensaje(texto ? 'No se encontraron coincidencias.' : 'No hay categorías registradas.');
+                    return;
+                }
+                $('categoriaRows').innerHTML = filtrados.map(categoria => {
+                    const id = Number(obtener(categoria, 'CategoriaId', 'categoriaId'));
+                    const nombre = obtener(categoria, 'Nombre', 'nombre');
+                    const estado = Number(obtener(categoria, 'EstadoId', 'estadoId'));
+                    const activo = estado === 1;
+                    return `<tr>
+                        <td class="codigo">#${escapar(id)}</td>
+                        <td class="nombre">${escapar(nombre)}</td>
+                        <td><span class="estado ${activo ? 'activo' : 'inactivo'}">${activo ? 'Activo' : 'Inactivo'}</span></td>
+                        <td><div class="acciones-categoria">
+                            <button type="button" class="boton-categoria ver" data-ver="${id}" title="Ver detalles" aria-label="Ver detalles de ${escapar(nombre)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                            <button type="button" class="boton-categoria editar" data-editar="${id}" title="Editar categoría" aria-label="Editar ${escapar(nombre)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></svg></button>
+                            <button type="button" class="boton-categoria ${activo ? 'desactivar' : 'habilitar'}" data-cambiar-estado="${id}" title="${activo ? 'Eliminar (desactivar)' : 'Habilitar'}" aria-label="${activo ? 'Eliminar' : 'Habilitar'} ${escapar(nombre)}">${activo ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6"/><path d="M10 10v7M14 10v7"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>'}</button>
+                        </div></td>
+                    </tr>`;
+                }).join('');
+            }
+
+            function solicitarCategorias() {
+                aviso('');
+                mostrarMensaje('Cargando categorías...');
+                enviarACSharp({ type: 'categorias:selectAll' });
+            }
+
+            function abrirVerCategoria(id) {
+                const categoria = categorias.find(x => Number(obtener(x, 'CategoriaId', 'categoriaId')) === id);
+                if (!categoria || operacionPendiente) return;
+                const estado = Number(obtener(categoria, 'EstadoId', 'estadoId'));
+                $('verNombreCategoria').textContent = String(obtener(categoria, 'Nombre', 'nombre'));
+                const etiqueta = $('verEstadoCategoria');
+                etiqueta.textContent = estado === 1 ? 'Activo' : estado === 2 ? 'Inactivo' : 'Desconocido';
+                etiqueta.className = 'estado ' + (estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'otro');
+                $('modalVerCategoria').hidden = false;
+                $('cerrarVerCategoria').focus();
+            }
+
+            function cerrarVerCategoria() {
+                $('modalVerCategoria').hidden = true;
+            }
+
+            function abrirEditor(id) {
+                const categoria = categorias.find(x => Number(obtener(x, 'CategoriaId', 'categoriaId')) === id);
+                if (!categoria || operacionPendiente) return;
+                categoriaEditandoId = id;
+                $('nombreEditarCategoria').value = String(obtener(categoria, 'Nombre', 'nombre'));
+                $('modalEditarCategoria').hidden = false;
+                $('nombreEditarCategoria').focus();
+            }
+
+            function cerrarEditor() {
+                $('modalEditarCategoria').hidden = true;
+                categoriaEditandoId = 0;
+            }
+
+            function abrirConfirmacionCategoria(id) {
+                const categoria = categorias.find(x => Number(obtener(x, 'CategoriaId', 'categoriaId')) === id);
+                if (!categoria || operacionPendiente) return;
+                const activo = Number(obtener(categoria, 'EstadoId', 'estadoId')) === 1;
+                categoriaCambioId = id;
+                const accion = activo ? 'desactivar' : 'habilitar';
+                $('tituloConfirmarCategoria').textContent = activo ? '¿Desactivar categoría?' : '¿Habilitar categoría?';
+                $('descripcionConfirmarCategoria').textContent = activo
+                    ? `¿Seguro que deseas desactivar la categoría "${obtener(categoria, 'Nombre', 'nombre')}"?`
+                    : `¿Seguro que deseas habilitar la categoría "${obtener(categoria, 'Nombre', 'nombre')}"?`;
+                $('confirmarCambioCategoria').textContent = activo ? 'Sí, desactivar' : 'Sí, habilitar';
+                $('confirmarCambioCategoria').classList.toggle('habilitar', !activo);
+                $('modalConfirmarCategoria').hidden = false;
+                $('cancelarCambioCategoria').focus();
+            }
+
+            function cerrarConfirmacionCategoria() {
+                if (operacionPendiente) return;
+                $('modalConfirmarCategoria').hidden = true;
+                categoriaCambioId = 0;
+            }
+
+            function cambiarEstadoCategoria() {
+                if (operacionPendiente || categoriaCambioId <= 0) return;
+                const categoria = categorias.find(x => Number(obtener(x, 'CategoriaId', 'categoriaId')) === categoriaCambioId);
+                if (!categoria) return;
+                const activo = Number(obtener(categoria, 'EstadoId', 'estadoId')) === 1;
+                const id = categoriaCambioId;
+                $('modalConfirmarCategoria').hidden = true;
+                categoriaCambioId = 0;
+                operacionPendiente = true;
+                ultimaAccionCategoria = activo ? 'desactivar' : 'habilitar';
+                aviso(activo ? 'Desactivando categoría...' : 'Habilitando categoría...');
+                if (!enviarACSharp({ type: 'categorias:desactivarIntegrado', data: { CategoriaId: id } })) {
+                    operacionPendiente = false;
+                }
+            }
+
+            function recibirRespuesta(evento) {
+                if (evento.source && window.parent !== window && evento.source !== window.parent) return;
+                let mensaje = evento.data;
+                if (typeof mensaje === 'string') {
+                    try { mensaje = JSON.parse(mensaje); } catch { return; }
+                }
+                if (!mensaje || typeof mensaje !== 'object') return;
+                if (mensaje.type === 'categorias:list') {
+                    categorias = Array.isArray(mensaje.data) ? mensaje.data : [];
+                    pintarCategorias();
+                    return;
+                }
+                if (mensaje.type === 'categorias:actualizada' || mensaje.type === 'categorias:desactivada') {
+                    const accion = mensaje.type === 'categorias:actualizada' ? 'actualizar' : ultimaAccionCategoria;
+                    operacionPendiente = false;
+                    ultimaAccionCategoria = '';
+                    $('guardarEditarCategoria').disabled = false;
+                    cerrarEditor();
+                    if (mensaje.data) {
+                        const id = Number(obtener(mensaje.data, 'CategoriaId', 'categoriaId'));
+                        const categoria = categorias.find(c => Number(obtener(c, 'CategoriaId', 'categoriaId')) === id);
+                        if (categoria) {
+                            categoria.EstadoId = Number(obtener(mensaje.data, 'EstadoId', 'estadoId'));
+                            if (mensaje.type === 'categorias:actualizada')
+                                categoria.Nombre = String(obtener(mensaje.data, 'Nombre', 'nombre'));
+                            pintarCategorias();
+                        }
+                    }
+                    enviarACSharp({ type: 'categorias:selectAll' });
+                    const titulo = accion === 'actualizar' ? 'Categoría actualizada' :
+                        accion === 'habilitar' ? 'Categoría habilitada' : 'Categoría desactivada';
+                    const texto = accion === 'actualizar' ? 'La categoría se actualizó correctamente.' :
+                        accion === 'habilitar' ? 'La categoría se habilitó correctamente.' :
+                        'La categoría se desactivó correctamente.';
+                    mostrarResultadoCategoria(titulo, texto);
+                    return;
+                }
+                if (mensaje.type === 'categorias:error' || mensaje.type === 'error') {
+                    operacionPendiente = false;
+                    $('guardarEditarCategoria').disabled = false;
+                    aviso(mensaje.message || 'No se pudo completar la operación.');
+                }
+            }
+
+            $('categoriaRows').addEventListener('click', evento => {
+                const ver = evento.target.closest('[data-ver]');
+                const editar = evento.target.closest('[data-editar]');
+                const cambiar = evento.target.closest('[data-cambiar-estado]');
+                if (ver) abrirVerCategoria(Number(ver.dataset.ver));
+                if (editar) abrirEditor(Number(editar.dataset.editar));
+                if (cambiar) abrirConfirmacionCategoria(Number(cambiar.dataset.cambiarEstado));
+            });
+            $('formEditarCategoria').addEventListener('submit', evento => {
+                evento.preventDefault();
+                if (operacionPendiente || categoriaEditandoId <= 0) return;
+                const nombre = $('nombreEditarCategoria').value.trim();
+                if (!nombre || nombre.length > 100) {
+                    aviso('Ingresa un nombre de 1 a 100 caracteres.');
+                    return;
+                }
+                const original = categorias.find(x => Number(obtener(x, 'CategoriaId', 'categoriaId')) === categoriaEditandoId);
+                if (!original) { aviso('No se encontró la categoría.'); return; }
+                operacionPendiente = true;
+                ultimaAccionCategoria = 'actualizar';
+                $('guardarEditarCategoria').disabled = true;
+                aviso('Guardando cambios...');
+                if (!enviarACSharp({
+                    type: 'categorias:actualizarIntegrado',
+                    data: { CategoriaId: categoriaEditandoId, Nombre: nombre, EstadoId: Number(obtener(original, 'EstadoId', 'estadoId')) }
+                })) {
+                    operacionPendiente = false;
+                    $('guardarEditarCategoria').disabled = false;
+                }
+            });
+            $('cerrarVerCategoria').addEventListener('click', cerrarVerCategoria);
+            $('cancelarEditarCategoria').addEventListener('click', cerrarEditor);
+            $('aceptarResultadoCategoria').addEventListener('click', cerrarResultadoCategoria);
+            $('cancelarCambioCategoria').addEventListener('click', cerrarConfirmacionCategoria);
+            $('confirmarCambioCategoria').addEventListener('click', cambiarEstadoCategoria);
+            $('btnNuevoCategoria').addEventListener('click', () => enviarACSharp({ type: 'categorias:abrirNuevo' }));
+            $('btnActualizar').addEventListener('click', solicitarCategorias);
+            $('buscarCategoria').addEventListener('input', pintarCategorias);
+            window.addEventListener('message', recibirRespuesta);
+            if (window.chrome?.webview?.addEventListener)
+                window.chrome.webview.addEventListener('message', recibirRespuesta);
+            solicitarCategorias();
+        </script>
 	</body>
 </html>

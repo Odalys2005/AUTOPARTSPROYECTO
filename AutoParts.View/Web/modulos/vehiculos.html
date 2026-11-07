@@ -5,6 +5,7 @@
 			<meta name="viewport" content="width=device-width,initial-scale=1.0">
 				<title>AutoParts | Vehículos</title>
 				<style>
+
 					:root { color-scheme: dark; }
 					* { box-sizing: border-box; }
 					body {
@@ -12,73 +13,356 @@
 					min-height: 100vh;
 					color: #f5f5f7;
 					font-family: 'Segoe UI', Arial, sans-serif;
-					background: radial-gradient(ellipse at 95% 0%, rgba(136, 16, 25, .18), transparent 38%), #090a0d;
+					background: radial-gradient(ellipse at 95% 0%, rgba(136, 16, 25, 0.18), transparent 38%), #090a0d;
 					}
 					button, input { font: inherit; }
 					button { cursor: pointer; }
-					.contenedor { max-width: 1500px; margin: auto; padding: 35px; }
-					.encabezado { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
-					.etiqueta { display: flex; align-items: center; gap: 9px; color: #ffbd37; font-size: 11px; font-weight: 700; letter-spacing: 3px; margin-bottom: 12px; }
-					.etiqueta::before { content: ""; width: 22px; height: 3px; border-radius: 10px; background: #ff3844; box-shadow: 0 0 12px #ff243a; }
-					h1 { margin: 0; font-size: clamp(28px, 3vw, 39px); font-weight: 800; letter-spacing: -1px; }
+					.contenedor {
+					max-width: 1500px;
+					margin: auto;
+					padding: 35px;
+					}
+					.encabezado {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					flex-wrap: wrap;
+					gap: 20px;
+					margin-bottom: 30px;
+					}
+					.etiqueta {
+					display: flex;
+					align-items: center;
+					gap: 9px;
+					color: #ffbd37;
+					font-size: 11px;
+					font-weight: 700;
+					letter-spacing: 3px;
+					margin-bottom: 12px;
+					}
+					h1 {
+					margin: 0;
+					font-size: clamp(28px, 3vw, 39px);
+					font-weight: 800;
+					letter-spacing: -1px;
+					}
 					h1 span { color: #ffbd2e; }
-					.subtitulo { color: #a9aab3; font-size: 13px; margin-top: 9px; line-height: 1.6; }
-					.btn-nueva { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 20px; border: 1px solid #ff6053; border-radius: 10px; background: linear-gradient(110deg, #b10b1f, #e52a37, #ffac28); color: #fff; font-size: 13px; font-weight: 750; box-shadow: 0 0 18px rgba(233, 31, 48, .27), inset 0 1px 1px #ffffff30; transition: transform .2s, filter .2s; }
-					.btn-nueva:hover { transform: translateY(-2px); filter: brightness(1.12); }
-					.panel { border: 1px solid #4d3038; border-radius: 15px; background: linear-gradient(140deg, #171519, #0d0e11 65%, #140f12); box-shadow: 0 12px 35px #0005, inset 0 0 18px #0004; overflow: hidden; }
-					.panel-superior { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 23px 25px; border-bottom: 1px solid #34292e; }
-					.panel-titulo h2 { font-size: 18px; margin: 0 0 7px; }
-					.panel-titulo p { font-size: 12px; color: #9798a1; margin: 0; }
-					.herramientas { display: flex; align-items: center; flex-wrap: wrap; gap: 11px; }
-					.buscador { display: flex; align-items: center; background: #111216; border: 1px solid #51454c; border-radius: 9px; width: min(340px, 100%); height: 44px; padding: 0 13px; }
-					.buscador:focus-within { border-color: #ff414e; box-shadow: 0 0 12px #ff334020; }
-					.buscador svg { flex-shrink: 0; color: #a7a7b0; }
-					.buscador input { border: none; background: transparent; color: white; outline: none; width: 100%; padding: 0 10px; font-size: 12px; }
+					.subtitulo {
+					color: #a9aab3;
+					font-size: 13px;
+					margin-top: 9px;
+					line-height: 1.6;
+					}
+					.btn-nueva {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					gap: 10px;
+					padding: 14px 20px;
+					border: 1px solid #ff6053;
+					border-radius: 10px;
+					background: linear-gradient(110deg, #b10b1f, #e52a37, #ffac28);
+					color: #fff;
+					font-size: 13px;
+					font-weight: 750;
+					box-shadow: 0 0 18px rgba(233, 31, 48, 0.27), inset 0 1px 1px #ffffff30;
+					transition: transform .2s, filter .2s;
+					}
+					.btn-nueva:hover {
+					transform: translateY(-2px);
+					filter: brightness(1.12);
+					}
+					.panel {
+					border: 1px solid #4d3038;
+					border-radius: 15px;
+					background: linear-gradient(140deg, #171519, #0d0e11 65%, #140f12);
+					box-shadow: 0 12px 35px #0005, inset 0 0 18px #0004;
+					overflow: hidden;
+					}
+					.panel-superior {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					flex-wrap: wrap;
+					gap: 16px;
+					padding: 23px 25px;
+					border-bottom: 1px solid #34292e;
+					}
+					.panel-titulo h2 {
+					font-size: 18px;
+					margin: 0 0 7px;
+					}
+					.panel-titulo p {
+					font-size: 12px;
+					color: #9798a1;
+					margin: 0;
+					}
+					.herramientas {
+					display: flex;
+					align-items: center;
+					flex-wrap: nowrap;
+					gap: 9px;
+					}
+					.buscador {
+					display: flex;
+					align-items: center;
+					background: #111216;
+					border: 1px solid #51454c;
+					border-radius: 9px;
+					width: min(340px, 100%);
+					min-width: 0;
+					flex: 1 1 240px;
+					height: 44px;
+					padding: 0 13px;
+					}
+					.buscador:focus-within {
+					border-color: #ff414e;
+					box-shadow: 0 0 12px #ff334020;
+					}
+					.buscador svg {
+					flex-shrink: 0;
+					color: #a7a7b0;
+					}
+					.buscador input {
+					border: none;
+					background: transparent;
+					color: white;
+					outline: none;
+					width: 100%;
+					padding: 0 10px;
+					font-size: 12px;
+					}
 					.buscador input::placeholder { color: #898992; }
-					.btn-actualizar { height: 44px; padding: 0 14px; display: flex; align-items: center; gap: 8px; color: #e8e8eb; background: #211a1f; border: 1px solid #60444d; border-radius: 9px; font-size: 12px; transition: .2s; }
-					.btn-actualizar:hover { background: #3a2027; border-color: #ed4247; }
-					.tabla-contenedor { overflow-x: auto; min-height: 240px; }
-					table { border-collapse: collapse; width: 100%; font-size: 13px; }
+					.btn-actualizar {
+					width: 44px;
+					height: 44px;
+					padding: 0;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					flex: 0 0 44px;
+					color: #e8e8eb;
+					background: #211a1f;
+					border: 1px solid #60444d;
+					border-radius: 9px;
+					transition: .2s;
+					}
+					.btn-actualizar:hover {
+					background: #3a2027;
+					border-color: #ed4247;
+					}
+					.tabla-contenedor {
+					overflow-x: auto;
+					min-height: 240px;
+					}
+					table {
+					border-collapse: collapse;
+					width: 100%;
+					font-size: 13px;
+					}
 					thead { background: #1b1b21; }
-					th { padding: 16px 23px; color: #babac4; font-size: 11px; font-weight: 700; letter-spacing: .5px; text-align: left; white-space: nowrap; border-bottom: 1px solid #373035; }
-					td { padding: 16px 23px; border-bottom: 1px solid #2c2a30; color: #e4e4e9; }
+					th {
+					padding: 16px 23px;
+					color: #babac4;
+					font-size: 11px;
+					font-weight: 700;
+					letter-spacing: .5px;
+					text-align: left;
+					white-space: nowrap;
+					border-bottom: 1px solid #373035;
+					}
+					td {
+					padding: 16px 23px;
+					border-bottom: 1px solid #2c2a30;
+					color: #e4e4e9;
+					}
 					tbody tr { transition: background .15s; }
 					tbody tr:hover { background: #25181e; }
-					.codigo { color: #ffbe42; font-weight: 700; }
-					.nombre { color: #fff; font-weight: 650; }
-					.estado { display: inline-flex; align-items: center; gap: 8px; border-radius: 30px; padding: 6px 12px; font-size: 11px; font-weight: 700; }
-					.estado::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-					.estado.activo { background: #103d29; border: 1px solid #17643e; color: #78ecaa; }
-					.estado.inactivo { background: #40272a; border: 1px solid #704147; color: #ff8e94; }
-					.estado.otro { background: #403514; border: 1px solid #746027; color: #ffd274; }
-					.vacio { text-align: center; padding: 65px 20px; color: #9ea0ab; }
-					.vacio svg { color: #ffb92e; margin-bottom: 12px; opacity: .8; }
-					.vacio strong { display: block; color: #e6e6eb; margin-bottom: 7px; }
-					.vacio p { font-size: 12px; margin: 0; }
-					.panel-inferior { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 16px 25px; border-top: 1px solid #34292e; font-size: 12px; color: #9999a3; }
+					.codigo {
+					color: #ffbe42;
+					font-weight: 700;
+					}
+					.nombre {
+					color: #fff;
+					font-weight: 650;
+					}
+					.estado {
+					display: inline-flex;
+					align-items: center;
+					gap: 8px;
+					border-radius: 30px;
+					padding: 6px 12px;
+					font-size: 11px;
+					font-weight: 700;
+					}
+					.estado::before {
+					content: "";
+					width: 6px;
+					height: 6px;
+					border-radius: 50%;
+					background: currentColor;
+					}
+					.estado.activo {
+					background: #103d29;
+					border: 1px solid #17643e;
+					color: #78ecaa;
+					}
+					.estado.inactivo {
+					background: #40272a;
+					border: 1px solid #704147;
+					color: #ff8e94;
+					}
+					.estado.otro {
+					background: #403514;
+					border: 1px solid #746027;
+					color: #ffd274;
+					}
+					.vacio {
+					text-align: center;
+					padding: 65px 20px;
+					color: #9ea0ab;
+					}
+					.vacio svg {
+					color: #ffb92e;
+					margin-bottom: 12px;
+					opacity: .8;
+					}
+					.vacio strong {
+					display: block;
+					color: #e6e6eb;
+					margin-bottom: 7px;
+					}
+					.vacio p {
+					font-size: 12px;
+					margin: 0;
+					}
+					.panel-inferior {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					flex-wrap: wrap;
+					gap: 10px;
+					padding: 16px 25px;
+					border-top: 1px solid #34292e;
+					font-size: 12px;
+					color: #9999a3;
+					}
 					.total strong { color: #ffbd31; }
-					.indicador { display: flex; align-items: center; gap: 8px; }
-					.punto { width: 7px; height: 7px; background: #ffbd35; border-radius: 50%; box-shadow: 0 0 10px #ffbd35; }
+					.indicador {
+					display: flex;
+					align-items: center;
+					gap: 8px;
+					}
+					.punto {
+					width: 7px;
+					height: 7px;
+					background: #ffbd35;
+					border-radius: 50%;
+					box-shadow: 0 0 10px #ffbd35;
+					}
 					@media (max-width: 850px) {
 					.contenedor { padding: 20px; }
 					.panel-superior { padding: 18px; }
 					.herramientas { width: 100%; }
-					.buscador { flex: 1; min-width: 190px; }
+					.buscador {
+					flex: 1;
+					min-width: 0;
+					}
 					th, td { padding: 14px 13px; }
 					.panel-inferior { padding: 16px; }
 					}
 
-					.marca-nombre { font-weight:600; color:#e8e8ec; }
-					.modelo-nombre { font-weight:700; color:white; }
-					.mensaje-error { padding:8px 25px 0; font-size:12px; color:#ffae64; min-height:24px; }
-					.sugerencia { color:#9fa0aa; font-size:11px; margin-top:5px; }
+					.acciones-rol{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+					.boton-rol{border:1px solid #65444c;background:#241a20;border-radius:8px;padding:8px 12px;color:#f4f4f5;font-size:12px;font-weight:700}
+					.boton-rol:hover{border-color:#ffbd35;background:#35212a}
+					.boton-rol.desactivar{border-color:#91434c;color:#ff9ca2}
+					.boton-rol:disabled{opacity:.4;cursor:not-allowed}
+					.mensaje-rol{padding:12px 25px;color:#ffbd69;font-size:12px;min-height:38px}
+					.modal-rol[hidden]{display:none!important}
+					.modal-rol{position:fixed;inset:0;z-index:50;background:#000b;display:grid;place-items:center;padding:18px}
+					.modal-panel-rol{width:min(100%,480px);background:linear-gradient(145deg,#21161b,#111115);border:1px solid #81424a;border-radius:16px;padding:26px;box-shadow:0 25px 80px #000a}
+					.modal-panel-rol h2{margin:0 0 18px;color:#fff}
+					.modal-panel-rol label{display:block;font-size:13px;margin-bottom:8px}
+					.modal-panel-rol input{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none}
+					.modal-acciones-rol{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+					.modal-acciones-rol button{border-radius:9px;padding:11px 17px;font-weight:700}
+					.modal-guardar-rol{background:linear-gradient(105deg,#e42739,#ffbd2b);border:0;color:#140b0d}
 
-					.dato-secundario { color:#bfc0c9; font-weight:600; }
-					.fila-modelo { color:#fff; font-weight:700; }
-					.motor-chip { display:inline-block; border:1px solid #5d4450; background:#201b21; color:#ffe0aa; border-radius:8px; padding:6px 10px; font-size:12px; }
-					.numerico { white-space:nowrap; font-variant-numeric:tabular-nums; }
-					.tabla-contenedor { overflow-x:auto; }
-					table { min-width:850px; }
+					.boton-rol.habilitar{border-color:#247e54;color:#91f2bb;background:#11291e}
+					.boton-rol.habilitar:hover{border-color:#5fd39a;background:#173b29}
+					.modal-descripcion-rol{color:#c1b8bf;font-size:13px;line-height:1.7;margin:0}
+					.modal-nombre-rol{color:#ffbd35;font-weight:800}
+					.modal-confirmar-rol{background:#9e2533;border:1px solid #f15d69;color:#fff}
+					.modal-confirmar-rol.habilitar{background:#155a3b;border-color:#48c78b;color:#e3ffef}
+
+					.modal-resultado-rol{text-align:center;width:min(100%,430px)}
+					.icono-resultado-rol{width:65px;height:65px;border-radius:50%;display:grid;place-items:center;margin:0 auto 17px;border:1px solid #318d61;background:#113925;color:#8cf0af;font-size:33px;font-weight:800}
+					.modal-resultado-rol h2{margin:0 0 10px}
+					.modal-resultado-rol p{color:#c6c3c9;font-size:14px;line-height:1.6;margin:0 0 23px}
+					.modal-resultado-rol .modal-acciones-rol{justify-content:center}
+					.modal-resultado-rol .modal-guardar-rol{min-width:120px;cursor:pointer}
+
+					.modal-detalles-rol{width:min(100%,460px)}
+					.modal-detalles-rol h2{margin-bottom:24px}
+					.detalle-fila-rol{padding:15px 0;border-bottom:1px solid #3d2b33}
+					.detalle-fila-rol:first-of-type{padding-top:0}
+					.detalle-etiqueta-rol{display:block;color:#a8a3ac;font-size:12px;margin-bottom:8px}
+					.detalle-valor-rol{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
+					.modal-detalles-rol .modal-acciones-rol{margin-top:24px}
+					.modal-detalles-rol .modal-guardar-rol{min-width:110px;cursor:pointer}
+					.boton-rol.ver{border-color:#675277;color:#e4c8ff}
+					.boton-rol.ver:hover{background:#30213b;border-color:#ab75d1}
+					.acciones-rol{gap:9px;flex-wrap:nowrap}
+					.acciones-rol .boton-rol{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:10px;transition:background .2s,border-color .2s,transform .2s}
+					.acciones-rol .boton-rol svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+					.acciones-rol .boton-rol:hover:not(:disabled){transform:translateY(-2px)}
+					.acciones-rol .boton-rol.ver{color:#62b9ff;border-color:#285f91;background:#0e2234}
+					.acciones-rol .boton-rol.ver:hover{color:#94d2ff;background:#18374f;border-color:#419cdb}
+					.acciones-rol .boton-rol.editar{color:#75e4a4;border-color:#276546;background:#10291d}
+					.acciones-rol .boton-rol.editar:hover{color:#a2f5c1;background:#173d2a;border-color:#43b878}
+					.acciones-rol .boton-rol.desactivar{color:#ff818d;border-color:#81333e;background:#31151d}
+					.acciones-rol .boton-rol.desactivar:hover{color:#ffb0b9;background:#4c1d27;border-color:#ef5366}
+					.acciones-rol .boton-rol.habilitar{color:#74e8ad;border-color:#297d55;background:#102d20}
+					.acciones-rol .boton-rol.habilitar:hover{color:#adffd0;background:#19432e;border-color:#4ac587}
+
+
+					.modal-rol:not(.visible){display:none!important}
+					.modal-rol.visible{display:grid}
+					.modal-panel-rol{max-height:90vh;overflow-y:auto}
+					.modal-cabecera{display:flex;align-items:center;justify-content:space-between;gap:12px}
+					.modal-cabecera h2{margin:0 0 18px}
+					.modal-cabecera .boton-rol{font-size:20px;line-height:1;width:34px;height:34px;padding:0}
+					.campo{margin-bottom:17px}
+					.campo label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#e7e3e7}
+					.modal-panel-rol select,.modal-panel-rol input{width:100%;min-height:44px;padding:12px 13px;background:#101115;border:1px solid #6b444d;color:#fff;border-radius:9px;outline:none;font:inherit}
+					.modal-panel-rol select:focus,.modal-panel-rol input:focus{border-color:#ff3d46}
+					.dos-columnas{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+					.datos{display:grid;grid-template-columns:130px 1fr;gap:14px;font-size:14px;margin:0 0 15px}
+					.datos dt{color:#a8a3ac;padding:8px 0}
+					.datos dd{margin:0;color:#fff;font-weight:700;padding:8px 0;overflow-wrap:anywhere}
+					.modal-descripcion-rol{margin:0;color:#c1b8bf;font-size:13px;line-height:1.7}
+					.mensaje-rol:empty{min-height:0;padding:0}
+					.mensaje-rol:not(:empty){padding:12px 0}
+					.modal-guardar-rol{border-radius:9px;padding:11px 17px;font-weight:700;cursor:pointer}
+					.modal-confirmar-rol{border-radius:9px;padding:11px 17px;font-weight:700;cursor:pointer}
+					.modal-panel-rol button:disabled{opacity:.5;cursor:not-allowed}
+					.icono-resultado-rol svg{width:31px;height:31px}
+					.icono-resultado-rol.error{background:#4b2229;color:#ff858e;border-color:#a44350}
+					.motor-chip{display:inline-block;border:1px solid #5d4450;background:#201b21;color:#ffe0aa;border-radius:8px;padding:6px 10px;font-size:12px}
+					.numerico{white-space:nowrap;font-variant-numeric:tabular-nums}
+					.tabla-contenedor table{min-width:1040px}
+					.acciones-rol .boton-rol{width:38px;height:38px}
+					.acciones-rol .boton-rol svg{width:19px;height:19px}
+					@media(max-width:500px){.dos-columnas{grid-template-columns:1fr}.datos{grid-template-columns:105px 1fr}}
+
+					.modal-detalles-rol{width:min(100%,460px);max-height:90vh;overflow-y:auto}
+					.modal-detalles-rol h2{margin-bottom:24px}
+					.detalle-fila-rol{padding:15px 0;border-bottom:1px solid #3d2b33}
+					.detalle-fila-rol:first-of-type{padding-top:0}
+					.detalle-etiqueta-rol{display:block;color:#a8a3ac;font-size:12px;margin-bottom:8px}
+					.detalle-valor-rol{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
+					.modal-detalles-rol .modal-acciones-rol{margin-top:24px}
+					.modal-detalles-rol .modal-guardar-rol{min-width:110px;cursor:pointer}
 				</style>
 			</head>
 	<body>
@@ -89,20 +373,17 @@
 					<h1>
 						Gestión de <span>Vehículos</span>
 					</h1>
-					<p class="subtitulo">Administra los vehículos registrados, su marca, modelo, año y características del motor.</p>
 				</div>
 				<button type="button" class="btn-nueva" id="btnNuevoVehiculo">
 					<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
 						<path d="M12 5v14M5 12h14"/>
-					</svg>
-					Nuevo vehículo
+					</svg>Nuevo vehículo
 				</button>
 			</header>
 			<section class="panel">
 				<div class="panel-superior">
 					<div class="panel-titulo">
 						<h2>Listado de vehículos</h2>
-						<p>Consulta los vehículos vinculados con sus modelos.</p>
 					</div>
 					<div class="herramientas">
 						<div class="buscador">
@@ -110,17 +391,17 @@
 								<circle cx="11" cy="11" r="7"/>
 								<path d="m16 16 5 5"/>
 							</svg>
-							<input type="search" id="buscarVehiculo" placeholder="Buscar marca, modelo, año o motor..." aria-label="Buscar vehículos" autocomplete="off">
-                </div>
-						<button type="button" class="btn-actualizar" id="btnActualizar">
-							<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<input type="search" id="buscarVehiculo" placeholder="Buscar vehículo, marca, modelo o motor..." aria-label="Buscar vehículos" autocomplete="off">
+						</div>
+						<button type="button" class="btn-actualizar" id="btnActualizar" aria-label="Actualizar" title="Actualizar">
+							<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 								<path d="M20 11a8 8 0 1 0-2 6"/>
 								<path d="M20 4v7h-7"/>
-							</svg>Actualizar
+							</svg>
 						</button>
 					</div>
 				</div>
-				<div id="aviso" class="mensaje-error" aria-live="polite"></div>
+				<div id="aviso" class="mensaje-rol" role="alert" aria-live="polite"></div>
 				<div class="tabla-contenedor">
 					<table>
 						<thead>
@@ -132,13 +413,12 @@
 								<th>Cilindrada</th>
 								<th>Tipo de motor</th>
 								<th>Estado</th>
+								<th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody id="vehiculoRows">
 							<tr>
-								<td colspan="7">
-									<div class="vacio">Cargando vehículos...</div>
-								</td>
+								<td colspan="8" class="vacio">Cargando vehículos...</td>
 							</tr>
 						</tbody>
 					</table>
@@ -153,154 +433,192 @@
 				</footer>
 			</section>
 		</main>
+		<div class="modal-rol" id="modalVerVehiculo" role="dialog" aria-modal="true" aria-labelledby="tituloVer">
+			<div class="modal-panel-rol modal-detalles-rol">
+				<h2 id="tituloVer">Detalles del vehículo</h2>
+				<div class="detalle-fila-rol">
+					<span class="detalle-etiqueta-rol">Marca</span>
+					<div class="detalle-valor-rol" id="verMarcaVehiculo"></div>
+				</div>
+				<div class="detalle-fila-rol">
+					<span class="detalle-etiqueta-rol">Modelo</span>
+					<div class="detalle-valor-rol" id="verModeloVehiculo"></div>
+				</div>
+				<div class="detalle-fila-rol">
+					<span class="detalle-etiqueta-rol">Año</span>
+					<div class="detalle-valor-rol" id="verAnioVehiculo"></div>
+				</div>
+				<div class="detalle-fila-rol">
+					<span class="detalle-etiqueta-rol">Cilindrada</span>
+					<div class="detalle-valor-rol" id="verCilindradaVehiculo"></div>
+				</div>
+				<div class="detalle-fila-rol">
+					<span class="detalle-etiqueta-rol">Tipo de motor</span>
+					<div class="detalle-valor-rol" id="verMotorVehiculo"></div>
+				</div>
+				<div class="detalle-fila-rol">
+					<span class="detalle-etiqueta-rol">Estado</span>
+					<span class="estado" id="verEstadoVehiculo"></span>
+				</div>
+				<div class="modal-acciones-rol">
+					<button type="button" class="modal-guardar-rol" id="cerrarVerVehiculo">Cerrar</button>
+				</div>
+			</div>
+		</div>
+		<div class="modal-rol" id="modalEditarVehiculo" role="dialog" aria-modal="true" aria-labelledby="tituloEditar">
+			<div class="modal-panel-rol">
+				<div class="modal-cabecera">
+					<h2 id="tituloEditar">Editar vehículo</h2>
+					<button class="boton-rol" type="button" data-cerrar="" aria-label="Cerrar">×</button>
+				</div>
+				<form id="formEditar" novalidate="">
+					<div class="campo">
+						<label for="editarMarca">Marca</label>
+						<select id="editarMarca" required=""></select>
+					</div>
+					<div class="campo">
+						<label for="editarModelo">Modelo</label>
+						<select id="editarModelo" required=""></select>
+					</div>
+					<div class="dos-columnas">
+						<div class="campo">
+							<label for="editarAnio">Año</label>
+							<input id="editarAnio" type="number" min="1886" max="32767" step="1" required="">
+						</div>
+						<div class="campo">
+							<label for="editarCilindrada">Cilindrada</label>
+							<input id="editarCilindrada" type="number" min="0.01" max="999.99" step="0.01" required="">
+						</div>
+					</div>
+					<div class="campo">
+						<label for="editarTipoMotor">Tipo de motor</label>
+						<input id="editarTipoMotor" type="text" maxlength="100" required="">
+					</div>
+					<div id="errorEditar" class="mensaje-rol" role="alert"></div>
+					<div class="modal-acciones-rol">
+						<button type="button" class="boton-rol" data-cerrar="">Cancelar</button>
+						<button type="submit" id="btnGuardarEdicion" class="modal-guardar-rol">Guardar cambios</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="modal-rol" id="modalConfirmarVehiculo" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmar">
+			<div class="modal-panel-rol">
+				<div class="modal-cabecera">
+					<h2 id="tituloConfirmar">Confirmar</h2>
+					<button type="button" class="boton-rol" data-cerrar="" aria-label="Cerrar">×</button>
+				</div>
+				<p class="modal-descripcion-rol" id="textoConfirmar"></p>
+				<div id="errorConfirmar" class="mensaje-rol" role="alert"></div>
+				<div class="modal-acciones-rol">
+					<button type="button" class="boton-rol" data-cerrar="">Cancelar</button>
+					<button type="button" id="btnConfirmarCambio" class="modal-confirmar-rol">Desactivar</button>
+				</div>
+			</div>
+		</div>
+		<div class="modal-rol" id="modalResultadoVehiculo" role="dialog" aria-modal="true" aria-labelledby="tituloResultado">
+			<div class="modal-panel-rol modal-resultado-rol">
+				<div class="icono-resultado-rol" id="iconoResultado">
+					<svg width="31" height="31" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m5 12 5 5L20 7"/>
+					</svg>
+				</div>
+				<h2 id="tituloResultado">Operación completada</h2>
+				<p class="modal-descripcion-rol" id="textoResultado"></p>
+				<div class="modal-acciones-rol">
+					<button type="button" id="btnAceptarResultado" class="modal-guardar-rol">Aceptar</button>
+				</div>
+			</div>
+		</div>
 		<script>
 			"use strict";
-			const filas = document.getElementById('vehiculoRows');
-			const aviso = document.getElementById('aviso');
-			const filtro = document.getElementById('buscarVehiculo');
-			let vehiculos = [], modelos = [], marcas = [], estados = [];
-			let vehiculosCargados = false, modelosCargados = false, marcasCargadas = false, estadosCargados = false;
-			let temporizadorCarga;
-
-			function obtener(o, ...llaves) {
-			for (const k of llaves) if (o != null && o[k] !== undefined && o[k] !== null) return o[k];
-			return '';
-			}
-			function escapar(valor) {
-			return String(valor ?? '').replace(/[&<>"']/g, c => ({
-			'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
-			}[c]));
-			}
-			function enviar(mensaje) {
-			if (window.parent !== window) { window.parent.postMessage(mensaje, '*'); return true; }
-			if (window.chrome?.webview?.postMessage) { window.chrome.webview.postMessage(mensaje); return true; }
-			aviso.textContent = 'Abre este módulo dentro de AutoParts (WebView2).';
-			return false;
-			}
-			function nombreEstado(v) {
-			const directo = obtener(v, 'EstadoNombre', 'estadoNombre');
-			if (directo) return String(directo);
-			const id = Number(obtener(v, 'EstadoId', 'estadoId'));
-			const e = estados.find(x => Number(obtener(x,'EstadoId','estadoId')) === id);
-			return String(obtener(e, 'Nombre', 'nombre') || (id ? `Estado #${id}` : 'Sin estado'));
-			}
-			function modeloAsociado(v) {
-			const id = Number(obtener(v, 'ModeloId', 'modeloId'));
-			return modelos.find(x => Number(obtener(x, 'ModeloId','modeloId')) === id);
-			}
-			function nombreModelo(v) {
-			const directo = obtener(v,'ModeloNombre','modeloNombre');
-			if (directo) return String(directo);
-			const id = Number(obtener(v,'ModeloId','modeloId'));
-			const m = modeloAsociado(v);
-			return String(obtener(m,'Nombre','nombre') || (id ? `Modelo #${id}` : 'Sin modelo'));
-			}
-			function nombreMarca(v) {
-			const directo = obtener(v,'MarcaNombre','marcaNombre');
-			if (directo) return String(directo);
-			const modelo = modeloAsociado(v);
-			const id = Number(obtener(modelo,'MarcaId','marcaId'));
-			const marca = marcas.find(m => Number(obtener(m,'MarcaId','marcaId')) === id);
-			return String(obtener(marca,'Nombre','nombre') || (id ? `Marca #${id}` : 'Sin marca'));
-			}
-			function mostrarVacio(texto) {
-			filas.innerHTML = `<tr>
-				<td colspan="7">
+			const filas=document.getElementById('vehiculoRows');
+			const aviso=document.getElementById('aviso');
+			const filtro=document.getElementById('buscarVehiculo');
+			const iconos={ver:`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+				<circle cx="12" cy="12" r="3"/>
+			</svg>`,editar:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/>
+			</svg>`,desactivar:`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6M10 10v6m4-6v6"/>
+			</svg>`,habilitar:`<svg viewBox="0 0 24 24" aria-hidden="true">
+				<circle cx="12" cy="12" r="9"/>
+				<path d="m8 12 3 3 5-6"/>
+			</svg>`};
+			let vehiculos=[],modelos=[],marcas=[],estados=[],vehiculosCargados=false,seleccionado=null,operacionPendiente=null,temporizadorCarga;
+			function obtener(obj,...claves){for(const k of claves)if(obj!=null&&obj[k]!==undefined&&obj[k]!==null)return obj[k];return '';}
+			function entero(obj,nombre){return Number(obtener(obj,nombre,nombre[0].toLowerCase()+nombre.slice(1)));}
+			function escapar(valor){return String(valor??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+			function enviar(mensaje){if(window.parent!==window){window.parent.postMessage(mensaje,'*');return true;}if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(mensaje);return true;}aviso.textContent='Abre el módulo desde AutoParts.';return false;}
+			function asociarModelo(v){return modelos.find(x=>entero(x,'ModeloId')===entero(v,'ModeloId'));}
+			function nombreModelo(v){const m=asociarModelo(v);return String(obtener(m,'Nombre','nombre')||`Modelo #${entero(v,'ModeloId')}`);}
+			function nombreMarca(v){const modelo=asociarModelo(v),id=entero(modelo,'MarcaId');const marca=marcas.find(m=>entero(m,'MarcaId')===id);return String(obtener(marca,'Nombre','nombre')||(id?`Marca #${id}`:'Sin marca'));}
+			function nombreEstado(v){const id=entero(v,'EstadoId');const e=estados.find(x=>entero(x,'EstadoId')===id);return String(obtener(e,'Nombre','nombre')||(id===1?'Activo':id===2?'Inactivo':`Estado #${id}`));}
+			function buscarVehiculo(id){return vehiculos.find(v=>entero(v,'VehiculoId')===id);}
+			function mostrarVacio(texto){filas.innerHTML=`<tr>
+				<td colspan="8">
 					<div class="vacio">
-						<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M5 16 7 9h10l2 7M4 16h16M7 16v3m10-3v3M8 12h.01M16 12h.01"/>
-						</svg>
 						<strong>${escapar(texto)}</strong>
-						<p>Los vehículos registrados se mostrarán aquí.</p>
 					</div>
 				</td>
-			</tr>`;
-			}
-			function pintar() {
-			if (!vehiculosCargados) return;
-			const buscar = filtro.value.trim().toLocaleLowerCase('es');
-			const visibles = vehiculos.filter(v => [
-			obtener(v,'VehiculoId','vehiculoId'),
-			nombreMarca(v), nombreModelo(v), obtener(v,'Anio','anio'),
-			obtener(v,'Cilindrada','cilindrada'), obtener(v,'TipoMotor','tipoMotor'), nombreEstado(v)
-			].some(x => String(x).toLocaleLowerCase('es').includes(buscar)));
-
-			document.getElementById('totalVehiculos').textContent = String(visibles.length);
-
-			if (!visibles.length) {
-			mostrarVacio(buscar ? 'No se encontraron coincidencias.' : 'No hay vehículos registrados.');
-			return;
-			}
-			filas.innerHTML = visibles.map(v => {
-			const estado = nombreEstado(v);
-			const clase = estado.toLocaleLowerCase('es') === 'activo' ? 'activo'
-			: estado.toLocaleLowerCase('es') === 'inactivo' ? 'inactivo' : 'otro';
-			const cilindrada = Number(obtener(v,'Cilindrada','cilindrada'));
-			return `<tr>
-				<td class="codigo">#${escapar(obtener(v,'VehiculoId','vehiculoId'))}</td>
-				<td class="dato-secundario">${escapar(nombreMarca(v))}</td>
-				<td class="fila-modelo">${escapar(nombreModelo(v))}</td>
+			</tr>`;}
+			function pintar(){if(!vehiculosCargados)return;const buscar=filtro.value.trim().toLocaleLowerCase('es');const visibles=vehiculos.filter(v=>[entero(v,'VehiculoId'),nombreMarca(v),nombreModelo(v),obtener(v,'Anio','anio'),obtener(v,'Cilindrada','cilindrada'),obtener(v,'TipoMotor','tipoMotor'),nombreEstado(v)].some(x=>String(x).toLocaleLowerCase('es').includes(buscar)));document.getElementById('totalVehiculos').textContent=String(visibles.length);if(!visibles.length){mostrarVacio(buscar?'No se encontraron coincidencias.':'No hay vehículos registrados.');return;}filas.innerHTML=visibles.map(v=>{const id=entero(v,'VehiculoId'),estado=entero(v,'EstadoId'),clase=estado===1?'activo':estado===2?'inactivo':'otro',cil=Number(obtener(v,'Cilindrada','cilindrada')),botonCambio=estado===1?`<button class="boton-rol desactivar" type="button" data-accion="cambiar" data-id="${id}" title="Desactivar" aria-label="Desactivar">${iconos.desactivar}</button>`:estado===2?`<button class="boton-rol habilitar" type="button" data-accion="cambiar" data-id="${id}" title="Habilitar" aria-label="Habilitar">${iconos.habilitar}</button>`:'';return `<tr>
+				<td class="codigo">#${id}</td>
+				<td>${escapar(nombreMarca(v))}</td>
+				<td class="nombre">${escapar(nombreModelo(v))}</td>
 				<td class="numerico">${escapar(obtener(v,'Anio','anio'))}</td>
-				<td class="numerico">${Number.isFinite(cilindrada) ? escapar(cilindrada.toFixed(2)) : '—'}</td>
+				<td class="numerico">${Number.isFinite(cil)?cil.toFixed(2):'—'}</td>
 				<td>
 					<span class="motor-chip">${escapar(obtener(v,'TipoMotor','tipoMotor'))}</span>
 				</td>
 				<td>
-					<span class="estado ${clase}">${escapar(estado)}</span>
+					<span class="estado ${clase}">${escapar(nombreEstado(v))}</span>
 				</td>
-			</tr>`;
-			}).join('');
+				<td>
+					<div class="acciones-rol">
+						<button class="boton-rol ver" type="button" data-accion="ver" data-id="${id}" title="Ver" aria-label="Ver">${iconos.ver}</button><button class="boton-rol editar" type="button" data-accion="editar" data-id="${id}" title="Editar" aria-label="Editar">${iconos.editar}</button>${botonCambio}
+					</div>
+				</td>
+			</tr>`;}).join('');}
+			function abrirModal(id){document.getElementById(id).classList.add('visible');}
+			function cerrarModales(){document.querySelectorAll('.modal-rol').forEach(m=>m.classList.remove('visible'));}
+			function resultado(texto,esError=false){cerrarModales();document.getElementById('tituloResultado').textContent=esError?'No se pudo completar':'Operación completada';document.getElementById('textoResultado').textContent=texto;document.getElementById('iconoResultado').classList.toggle('error',esError);abrirModal('modalResultadoVehiculo');}
+			function verVehiculo(v){
+			document.getElementById('verMarcaVehiculo').textContent=nombreMarca(v);
+			document.getElementById('verModeloVehiculo').textContent=nombreModelo(v);
+			document.getElementById('verAnioVehiculo').textContent=String(obtener(v,'Anio','anio'));
+			document.getElementById('verCilindradaVehiculo').textContent=String(obtener(v,'Cilindrada','cilindrada'));
+			document.getElementById('verMotorVehiculo').textContent=String(obtener(v,'TipoMotor','tipoMotor'));
+			const estado=entero(v,'EstadoId');
+			const etiqueta=document.getElementById('verEstadoVehiculo');
+			etiqueta.textContent=estado===1?'Activo':estado===2?'Inactivo':nombreEstado(v);
+			etiqueta.className='estado '+(estado===1?'activo':estado===2?'inactivo':'otro');
+			abrirModal('modalVerVehiculo');
+			document.getElementById('cerrarVerVehiculo').focus();
 			}
-			function recibir(evento) {
-			let respuesta = evento.data;
-			if (typeof respuesta === 'string') { try { respuesta = JSON.parse(respuesta); } catch { return; } }
-			if (!respuesta || typeof respuesta !== 'object') return;
-			if (respuesta.type === 'vehiculos:list') {
-			vehiculos = Array.isArray(respuesta.data) ? respuesta.data : [];
-			vehiculosCargados = true;
-			clearTimeout(temporizadorCarga);
-			aviso.textContent = '';
-			pintar();
-			} else if (respuesta.type === 'modelos:list') {
-			modelos = Array.isArray(respuesta.data) ? respuesta.data : [];
-			modelosCargados = true;
-			pintar();
-			} else if (respuesta.type === 'marcas:list') {
-			marcas = Array.isArray(respuesta.data) ? respuesta.data : [];
-			marcasCargadas = true;
-			pintar();
-			} else if (respuesta.type === 'estados') {
-			estados = Array.isArray(respuesta.data) ? respuesta.data : [];
-			estadosCargados = true;
-			pintar();
-			} else if (respuesta.type === 'error') {
-			clearTimeout(temporizadorCarga);
-			aviso.textContent = respuesta.message || 'No se pudieron cargar los vehículos.';
-			if (!vehiculosCargados) mostrarVacio('Error al consultar vehículos.');
-			}
-			}
-			window.addEventListener('message', recibir);
-			if (window.chrome?.webview?.addEventListener) window.chrome.webview.addEventListener('message', recibir);
-			function solicitar() {
-			vehiculosCargados = false;
-			aviso.textContent = '';
-			mostrarVacio('Cargando vehículos...');
-			clearTimeout(temporizadorCarga);
-			temporizadorCarga = setTimeout(() => {
-			if (!vehiculosCargados) {
-			aviso.textContent = 'No se recibió respuesta de AutoParts. Revisa MainForm.cs y la conexión con SQL Server.';
-			mostrarVacio('No se obtuvo respuesta de la consulta.');
-			}
-			}, 10000);
-			enviar({ type:'vehiculos:selectAll' });
-			enviar({ type:'modelos:selectAll' });
-			enviar({ type:'marcas:selectAll' });
-			enviar({ type:'obtenerEstados' });
-			}
-			document.getElementById('btnNuevoVehiculo').addEventListener('click', () => enviar({type:'vehiculos:abrirNuevo'}));
-			document.getElementById('btnActualizar').addEventListener('click', solicitar);
-			filtro.addEventListener('input', pintar);
-			solicitar();
-		</script>
+			function llenarMarcas(marcaActual){const control=document.getElementById('editarMarca');const disponibles=marcas.filter(m=>entero(m,'EstadoId')===1||entero(m,'MarcaId')===marcaActual);control.innerHTML='<option value="">Selecciona una marca</option>'+disponibles.map(m=>`<option value="${entero(m,'MarcaId')}">${escapar(obtener(m,'Nombre','nombre'))}</option>`).join('');control.value=String(marcaActual||'');}
+			function llenarModelos(modeloActual){const marcaId=Number(document.getElementById('editarMarca').value),control=document.getElementById('editarModelo');const disponibles=modelos.filter(m=>entero(m,'MarcaId')===marcaId&&(entero(m,'EstadoId')===1||entero(m,'ModeloId')===modeloActual));control.innerHTML='<option value="">Selecciona un modelo</option>'+disponibles.map(m=>`<option value="${entero(m,'ModeloId')}">${escapar(obtener(m,'Nombre','nombre'))}</option>`).join('');control.value=disponibles.some(m=>entero(m,'ModeloId')===modeloActual)?String(modeloActual):'';control.disabled=!marcaId;}
+			function editarVehiculo(v){seleccionado=v;document.getElementById('errorEditar').textContent='';const modelo=asociarModelo(v);llenarMarcas(entero(modelo,'MarcaId'));llenarModelos(entero(v,'ModeloId'));document.getElementById('editarAnio').value=obtener(v,'Anio','anio');document.getElementById('editarCilindrada').value=obtener(v,'Cilindrada','cilindrada');document.getElementById('editarTipoMotor').value=obtener(v,'TipoMotor','tipoMotor');abrirModal('modalEditarVehiculo');}
+			function confirmarVehiculo(v){seleccionado=v;const habilitar=entero(v,'EstadoId')===2;document.getElementById('tituloConfirmar').textContent=habilitar?'Habilitar vehículo':'Desactivar vehículo';document.getElementById('textoConfirmar').textContent=`¿Deseas ${habilitar?'habilitar':'desactivar'} el vehículo ${nombreMarca(v)} ${nombreModelo(v)} (${obtener(v,'Anio','anio')})?`;document.getElementById('errorConfirmar').textContent='';const btn=document.getElementById('btnConfirmarCambio');btn.textContent=habilitar?'Habilitar':'Desactivar';btn.className=habilitar?'modal-confirmar-rol habilitar':'modal-confirmar-rol';abrirModal('modalConfirmarVehiculo');}
+			function bloquearAccion(bloquear){document.getElementById('btnGuardarEdicion').disabled=bloquear;document.getElementById('btnConfirmarCambio').disabled=bloquear;}
+			function recibir(evento){let respuesta=evento.data;if(typeof respuesta==='string'){try{respuesta=JSON.parse(respuesta);}catch{return;}}if(!respuesta||typeof respuesta!=='object')return;switch(respuesta.type){case 'vehiculos:list':vehiculos=Array.isArray(respuesta.data)?respuesta.data:[];vehiculosCargados=true;clearTimeout(temporizadorCarga);aviso.textContent='';pintar();break;case 'modelos:list':modelos=Array.isArray(respuesta.data)?respuesta.data:[];pintar();break;case 'marcas:list':marcas=Array.isArray(respuesta.data)?respuesta.data:[];pintar();break;case 'estados':estados=Array.isArray(respuesta.data)?respuesta.data:[];pintar();break;case 'vehiculos:actualizada':case 'vehiculos:desactivada':operacionPendiente=null;bloquearAccion(false);resultado(respuesta.message||(respuesta.type==='vehiculos:actualizada'?'Vehículo actualizado correctamente.':'Estado actualizado correctamente.'));break;case 'vehiculos:error':operacionPendiente=null;bloquearAccion(false);if(document.getElementById('modalEditarVehiculo').classList.contains('visible'))document.getElementById('errorEditar').textContent=respuesta.message||'No se pudo actualizar.';else if(document.getElementById('modalConfirmarVehiculo').classList.contains('visible'))document.getElementById('errorConfirmar').textContent=respuesta.message||'No se pudo cambiar el estado.';else aviso.textContent=respuesta.message||'Ocurrió un error.';break;case 'error':if(operacionPendiente){operacionPendiente=null;bloquearAccion(false);}aviso.textContent=respuesta.message||'No se pudieron cargar los datos.';break;}}
+			function solicitar(){vehiculosCargados=false;aviso.textContent='';mostrarVacio('Cargando vehículos...');clearTimeout(temporizadorCarga);temporizadorCarga=setTimeout(()=>{if(!vehiculosCargados){aviso.textContent='No se recibió respuesta de AutoParts. Revisa la conexión con SQL Server.';mostrarVacio('No se obtuvo respuesta de la consulta.');}},10000);enviar({type:'vehiculos:selectAll'});enviar({type:'modelos:selectAll'});enviar({type:'marcas:selectAll'});enviar({type:'obtenerEstados'});}
+			filas.addEventListener('click',e=>{const b=e.target.closest('[data-accion]');if(!b)return;const v=buscarVehiculo(Number(b.dataset.id));if(!v)return;if(b.dataset.accion==='ver')verVehiculo(v);else if(b.dataset.accion==='editar')editarVehiculo(v);else if(b.dataset.accion==='cambiar')confirmarVehiculo(v);});
+			document.getElementById('cerrarVerVehiculo').addEventListener('click',cerrarModales);
+			document.querySelectorAll('[data-cerrar]').forEach(b=>b.addEventListener('click',cerrarModales));
+			document.querySelectorAll('.modal-rol').forEach(fondo=>fondo.addEventListener('click',e=>{if(e.target===fondo&& !operacionPendiente)cerrarModales();}));
+			document.getElementById('editarMarca').addEventListener('change',()=>llenarModelos(0));
+			document.getElementById('formEditar').addEventListener('submit',e=>{e.preventDefault();if(operacionPendiente||!seleccionado)return;const modeloId=Number(document.getElementById('editarModelo').value),anio=Number(document.getElementById('editarAnio').value),cilindrada=Number(document.getElementById('editarCilindrada').value),tipoMotor=document.getElementById('editarTipoMotor').value.trim();const error=document.getElementById('errorEditar');error.textContent='';if(!Number.isInteger(modeloId)||modeloId<=0||!modelos.some(m=>entero(m,'ModeloId')===modeloId&&entero(m,'EstadoId')===1)){error.textContent='Selecciona un modelo activo.';return;}if(!Number.isInteger(anio)||anio<1886||anio>
+				32767){error.textContent='Ingresa un año válido.';return;}if(!Number.isFinite(cilindrada)||cilindrada<=0||cilindrada>999.99||Math.abs(Math.round(cilindrada*100)-cilindrada*100)>0.000001){error.textContent='Ingresa una cilindrada válida de hasta dos decimales.';return;}if(!tipoMotor||tipoMotor.length>100){error.textContent='Ingresa un tipo de motor de hasta 100 caracteres.';return;}operacionPendiente='editar';bloquearAccion(true);if(!enviar({type:'vehiculos:actualizarIntegrado',data:{VehiculoId:entero(seleccionado,'VehiculoId'),ModeloId:modeloId,Anio:anio,Cilindrada:cilindrada,TipoMotor:tipoMotor}})){operacionPendiente=null;bloquearAccion(false);}});
+				document.getElementById('btnConfirmarCambio').addEventListener('click',()=>{if(operacionPendiente||!seleccionado)return;operacionPendiente='cambiar';bloquearAccion(true);if(!enviar({type:'vehiculos:desactivarIntegrado',data:{VehiculoId:entero(seleccionado,'VehiculoId')}})){operacionPendiente=null;bloquearAccion(false);}});
+				document.getElementById('btnAceptarResultado').addEventListener('click',()=>{cerrarModales();solicitar();});
+				document.getElementById('btnNuevoVehiculo').addEventListener('click',()=>enviar({type:'vehiculos:abrirNuevo'}));
+				document.getElementById('btnActualizar').addEventListener('click',solicitar);
+				filtro.addEventListener('input',pintar);
+				window.addEventListener('message',recibir);
+				if(window.chrome?.webview?.addEventListener)window.chrome.webview.addEventListener('message',recibir);
+				solicitar();
+			</script>
 	</body>
 </html>

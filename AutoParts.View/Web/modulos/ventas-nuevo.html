@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AutoParts | Nueva venta</title><style>
@@ -28,7 +29,6 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
 .guardar{color:#190d0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);box-shadow:0 0 16px #e5233533}
 .guardar:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-2px)}.guardar:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:720px){.contenedor{padding:20px}.panel{padding:20px}.campos{grid-template-columns:1fr;gap:18px}.campo.ancho{grid-column:auto}}
-
 /* Punto de venta: extensión del diseño original */
 .contenedor{max-width:1390px}.panel{margin-bottom:18px}
 .panel .seccion{margin-bottom:20px}.scan-row{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap}
@@ -155,8 +155,8 @@ function escanear(){const c=codigo($('codigoEscaneo').value);if(!c){estado('Esca
  if(!p){estado(`No existe un producto con código ${c}.`,'error');return;}
  agregar(p);$('codigoEscaneo').focus();}
 function buscar(){const q=codigo($('buscarProducto').value);const div=$('resultados');div.replaceChildren();
- if(!q)return;if(!catalogoListo){div.textContent='Esperando catálogo...';return;}
- const encontrados=productos.filter(p=>[campo(p,'Nombre'),campo(p,'CodigoOEM'),campo(p,'CodigoBarras')].some(v=>codigo(v).includes(q))).slice(0,20);
+ if(!q)return;if(!catalogoListo||!stockListo){div.textContent='Esperando catálogo e inventario...';return;}
+ const encontrados=productos.filter(p=>stockDisponible(num(p,'ProductoId'))>0&&[campo(p,'Nombre'),campo(p,'CodigoOEM'),campo(p,'CodigoBarras')].some(v=>codigo(v).includes(q))).slice(0,20);
  if(!encontrados.length){div.textContent='No se encontraron repuestos.';return;}
  for(const p of encontrados){const b=document.createElement('button');b.type='button';b.className='result';const disponible=stockDisponible(num(p,'ProductoId'));
  const titulo=document.createElement('strong');titulo.textContent=String(campo(p,'Nombre')||'Producto');

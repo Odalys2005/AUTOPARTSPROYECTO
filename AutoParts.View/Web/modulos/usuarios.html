@@ -26,7 +26,7 @@ h1{margin:0;font-size:clamp(28px,3vw,38px);letter-spacing:-.8px;font-weight:800}
 .buscador input{width:100%;border:0;outline:0;background:transparent;color:white;font-size:12px}.buscador input::placeholder{color:#898992}
 .btn-actualizar{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0 15px;color:#eee;font-size:12px;transition:.2s}.btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
 .aviso{padding:0 25px;font-size:12px;color:#ffbd69;line-height:1.6}.aviso:empty{display:none}.aviso:not(:empty){padding-top:14px;padding-bottom:12px}
-.tabla-wrap{overflow-x:auto;min-height:240px}table{width:100%;min-width:830px;border-collapse:collapse;font-size:12px}thead{background:#1b1b21}
+.tabla-wrap{overflow-x:auto;min-height:240px}table{width:100%;min-width:1070px;border-collapse:collapse;font-size:12px}thead{background:#1b1b21}
 th{text-align:left;color:#bcbcc6;border-bottom:1px solid #373035;padding:16px 18px;font-size:11px;font-weight:750;letter-spacing:.25px;white-space:nowrap}
 td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-align:middle}tbody tr:hover{background:#25181e}
 .codigo{color:#ffbd35;font-weight:750;font-variant-numeric:tabular-nums}.principal{font-weight:700;color:#fff;font-size:13px}
@@ -39,15 +39,35 @@ td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-alig
 @media(max-width:600px){.encabezado{align-items:flex-start}.panel-cabecera{padding:18px}.herramientas{width:100%}.buscador{flex:1;min-width:190px}.pie{padding:16px 18px}}
 
 .avatar{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #783d46;border-radius:11px;background:#2e151c;color:#ffbd35;flex-shrink:0}.usuario-celda{display:flex;align-items:center;gap:11px}
+
+.acciones-fila{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap}
+.btn-icono{width:36px;height:36px;flex:0 0 36px;display:inline-grid;place-items:center;border-radius:9px;background:#17171d;border:1px solid currentColor;padding:0;transition:background .18s,transform .18s}
+.btn-icono svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-icono:hover{transform:translateY(-2px);background:#29232c}.btn-icono.ver{color:#60baff}.btn-icono.editar{color:#75e6a6}.btn-icono.eliminar{color:#ff8089}.btn-icono.habilitar{color:#75e6a6}
+.btn-actualizar{width:44px;flex:0 0 44px;justify-content:center;padding:0}.herramientas{flex-wrap:nowrap;gap:9px}.buscador{min-width:0;flex:1}
+th:last-child,td:last-child{min-width:155px}td:nth-child(2),td:nth-child(3),td:nth-child(4){white-space:nowrap}.chip.inactivo{color:#ff9299;border:1px solid #743d47;background:#3a2229}
+.modal[hidden]{display:none!important}.modal{position:fixed;inset:0;z-index:60;background:#000c;display:grid;place-items:center;padding:18px}
+.modal-panel{background:linear-gradient(145deg,#21171d,#101115);border:1px solid #75424b;border-radius:16px;box-shadow:0 24px 75px #000a;width:min(100%,540px);padding:26px;max-height:90vh;overflow-y:auto}
+.modal-panel h2{font-size:22px;margin:0 0 23px}.modal-panel label{display:block;color:#dedbe1;font-size:12px;margin:0 0 7px;font-weight:650}
+.modal-panel input,.modal-panel select{width:100%;height:44px;border:1px solid #624750;border-radius:9px;background:#101115;color:white;padding:0 12px;outline:none;font:inherit;font-size:13px}
+.modal-panel input:focus,.modal-panel select:focus{border-color:#e7444e}
+.campos-edicion{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.campo-completo{grid-column:1/-1}
+.detalle{display:grid;grid-template-columns:125px 1fr;gap:10px;border-bottom:1px solid #392a31;padding:12px 0;font-size:13px}.detalle span:first-child{color:#ada5ad}.detalle span:last-child{overflow-wrap:anywhere;color:#f4f2f5;font-weight:650}
+.modal-acciones{display:flex;justify-content:flex-end;gap:11px;margin-top:24px;flex-wrap:wrap}.modal-acciones button{border-radius:9px;border:1px solid #5e5157;background:#252329;color:#eee;padding:11px 17px;font-weight:700;cursor:pointer}
+.modal-acciones .principal{background:linear-gradient(110deg,#c62035,#f0a52b);border:0;color:#fff}.modal-acciones .peligro{background:#9d2334;border-color:#d44f5e;color:#fff}.modal-acciones .habilitar{background:#155a3b;border-color:#47c78b;color:#fff}
+.modal-acciones button:disabled{opacity:.55;cursor:wait}.modal-panel p{line-height:1.7;color:#c5bac1;margin:0}.modal-panel strong{color:#ffc44a}
+.resultado{text-align:center;max-width:420px}.resultado .verificado{display:grid;place-items:center;margin:0 auto 18px;width:60px;height:60px;border-radius:50%;background:#123725;border:1px solid #399b69;color:#8defb2;font-size:31px}.resultado .modal-acciones{justify-content:center}
+.mensaje-modal{color:#ffb17a;font-size:12px;margin-top:12px;min-height:16px}.modal-acciones .principal:disabled{opacity:.5}
+@media(max-width:540px){.campos-edicion{grid-template-columns:1fr}.campo-completo{grid-column:auto}.detalle{grid-template-columns:95px 1fr}.modal-panel{padding:20px}}
 </style>
 </head>
 <body>
 <main class="contenedor">
     <header class="encabezado">
         <div>
-            <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
+        
             <h1>Gestión de <span>Usuarios</span></h1>
-            <p class="subtitulo">Administración de cuentas de acceso al sistema.</p>
+
         </div>
         <button type="button" class="btn-principal" id="btnNuevo">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -56,15 +76,14 @@ td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-alig
     </header>
     <section class="panel">
         <div class="panel-cabecera">
-            <div><h2>Listado de usuarios</h2><p>Cuentas registradas en AutoParts.</p></div>
+            <div><h2>Listado de usuarios</h2></div>
             <div class="herramientas">
                 <label class="buscador" aria-label="Buscar usuario">
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
                     <input type="search" id="buscar" autocomplete="off" placeholder="Buscar usuario, empleado o rol...">
                 </label>
-                <button type="button" id="btnActualizar" class="btn-actualizar">
+                <button type="button" id="btnActualizar" class="btn-actualizar" title="Actualizar" aria-label="Actualizar">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>
-                    Actualizar
                 </button>
             </div>
         </div>
@@ -72,16 +91,26 @@ td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-alig
         <div class="tabla-wrap">
             <table>
                 <thead>
-                    <tr><th>ID</th><th>Usuario</th><th>Empleado</th><th>Rol</th><th>Estado</th></tr>
+                    <tr><th>ID</th><th>Usuario</th><th>Empleado</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
                 </thead>
                 <tbody id="filas">
-                    <tr><td class="vacio" colspan="5"><strong>Cargando usuarios...</strong></td></tr>
+                    <tr><td class="vacio" colspan="6"><strong>Cargando usuarios...</strong></td></tr>
                 </tbody>
             </table>
         </div>
         <div class="pie"><span>Usuarios mostrados: <strong id="conteo">0</strong></span><span>AutoParts · Accesos</span></div>
     </section>
 </main>
+
+<div id="modalVer" class="modal" hidden><section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="tituloVer"><h2 id="tituloVer">Detalles del usuario</h2><div id="detalles"></div><div class="modal-acciones"><button type="button" class="principal" id="cerrarVer">Cerrar</button></div></section></div>
+<div id="modalEditar" class="modal" hidden><section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="tituloEditar"><h2 id="tituloEditar">Editar usuario</h2><form id="formEditar"><div class="campos-edicion">
+<div class="campo-completo"><label for="editarNombre">Nombre de usuario</label><input id="editarNombre" maxlength="50" minlength="3" pattern="[A-Za-z0-9._-]+" autocomplete="off" required></div>
+<div><label for="editarEmpleado">Empleado</label><select id="editarEmpleado" required></select></div>
+<div><label for="editarRol">Rol</label><select id="editarRol" required></select></div>
+<div class="campo-completo"><label for="editarContrasena">Nueva contraseña (opcional)</label><input id="editarContrasena" type="password" minlength="8" maxlength="72" autocomplete="new-password"></div>
+</div><div id="mensajeEditar" class="mensaje-modal" role="status"></div><div class="modal-acciones"><button type="button" id="cancelarEditar">Cancelar</button><button type="submit" class="principal" id="guardarEditar">Guardar cambios</button></div></form></section></div>
+<div id="modalConfirmar" class="modal" hidden><section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmar"><h2 id="tituloConfirmar">Confirmar cambio</h2><p id="textoConfirmar"></p><div id="mensajeConfirmar" class="mensaje-modal" role="status"></div><div class="modal-acciones"><button type="button" id="cancelarConfirmar">Cancelar</button><button type="button" class="peligro" id="aceptarConfirmar">Confirmar</button></div></section></div>
+<div id="modalResultado" class="modal" hidden><section class="modal-panel resultado" role="dialog" aria-modal="true" aria-labelledby="tituloResultado"><div class="verificado" aria-hidden="true">✓</div><h2 id="tituloResultado">Operación realizada</h2><p id="textoResultado"></p><div class="modal-acciones"><button type="button" class="principal" id="cerrarResultado">Aceptar</button></div></section></div>
 <script>
 "use strict";
 const filas = document.getElementById('filas');
@@ -89,7 +118,7 @@ const buscador = document.getElementById('buscar');
 const aviso = document.getElementById('aviso');
 let usuarios = [], empleados = [], roles = [], estados = [];
 let usuariosCargados = false;
-let temporizadorCarga;
+let temporizadorCarga, temporizadorOperacion, operacionPendiente = false, usuarioEditando = 0, usuarioCambiar = 0, accionEstado = "";
 
 function valor(objeto, ...propiedades) {
     for (const propiedad of propiedades) {
@@ -124,7 +153,7 @@ function nombreEstado(usuario) {
     return estado ? String(valor(estado,'Nombre','nombre')) : (estadoId ? `Estado #${estadoId}` : 'Sin estado');
 }
 function pintarMensaje(texto) {
-    filas.innerHTML = `<tr><td class="vacio" colspan="5"><svg width="37" height="37" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3z"/></svg><strong>${escapar(texto)}</strong></td></tr>`;
+    filas.innerHTML = `<tr><td class="vacio" colspan="6"><svg width="37" height="37" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3z"/></svg><strong>${escapar(texto)}</strong></td></tr>`;
 }
 function pintar() {
     if (!usuariosCargados) return;
@@ -140,7 +169,7 @@ function pintar() {
     }
     filas.innerHTML = encontrados.map(u => {
         const estado = nombreEstado(u);
-        const activo = estado.trim().toLocaleLowerCase('es') === 'activo';
+        const activo = id(u, 'EstadoId') === 1;
         const nombre = String(valor(u,'NombreUsuario','nombreUsuario'));
         return `<tr>
             <td class="codigo">#${escapar(id(u,'UsuarioId'))}</td>
@@ -148,6 +177,11 @@ function pintar() {
             <td>${escapar(nombreEmpleado(u))}</td>
             <td>${escapar(nombreRol(u))}</td>
             <td><span class="chip ${activo ? 'ok' : 'sin'}">${escapar(estado)}</span></td>
+            <td><div class="acciones-fila">
+                <button type="button" class="btn-icono ver" data-ver="${id(u,'UsuarioId')}" title="Ver" aria-label="Ver usuario"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button type="button" class="btn-icono editar" data-editar="${id(u,'UsuarioId')}" title="Editar" aria-label="Editar usuario"><svg viewBox="0 0 24 24"><path d="m14 5 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20Z"/></svg></button>
+                <button type="button" class="btn-icono ${activo ? 'eliminar' : 'habilitar'}" data-estado="${id(u,'UsuarioId')}" title="${activo ? 'Eliminar' : 'Habilitar'}" aria-label="${activo ? 'Eliminar' : 'Habilitar'} usuario">${activo ? '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 3h4M6 7l1 14h10l1-14M10 11v6M14 11v6"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>'}</button>
+            </div></td>
         </tr>`;
     }).join('');
 }
@@ -170,6 +204,22 @@ function recibir(evento) {
     } else if (respuesta.type === 'estados') {
         estados = Array.isArray(respuesta.data) ? respuesta.data : [];
         pintar();
+    } else if (respuesta.type === 'usuarios:actualizada' || respuesta.type === 'usuarios:desactivada') {
+        if (!operacionPendiente) return;
+        operacionPendiente = false;
+        clearTimeout(temporizadorOperacion);
+        document.getElementById('guardarEditar').disabled = false;
+        cerrarModales();
+        const esEdicion = respuesta.type === 'usuarios:actualizada';
+        document.getElementById('tituloResultado').textContent = esEdicion ? 'Usuario actualizado' : accionEstado === 'habilitar' ? 'Usuario habilitado' : 'Usuario desactivado';
+        document.getElementById('textoResultado').textContent = String(respuesta.message || (esEdicion ? 'Los cambios se guardaron correctamente.' : 'El estado del usuario se actualizó correctamente.'));
+        document.getElementById('modalResultado').hidden = false;
+        cargar();
+    } else if (respuesta.type === 'usuarios:error') {
+        terminarOperacion();
+        aviso.textContent = String(respuesta.message || 'No se pudo completar la operación.');
+        document.getElementById('mensajeEditar').textContent = aviso.textContent;
+        document.getElementById('mensajeConfirmar').textContent = aviso.textContent;
     } else if (respuesta.type === 'error') {
         clearTimeout(temporizadorCarga);
         aviso.textContent = String(respuesta.message || 'No fue posible cargar los datos.');
@@ -198,6 +248,118 @@ function cargar() {
 document.getElementById('btnNuevo').addEventListener('click', () => enviar({type:'usuarios:abrirNuevo'}));
 document.getElementById('btnActualizar').addEventListener('click', cargar);
 buscador.addEventListener('input', pintar);
+
+function usuarioPorId(usuarioId) { return usuarios.find(u => id(u, 'UsuarioId') === usuarioId); }
+function cerrarModales() {
+    for (const nombre of ['modalVer','modalEditar','modalConfirmar']) document.getElementById(nombre).hidden = true;
+}
+function terminarOperacion() {
+    operacionPendiente = false;
+    clearTimeout(temporizadorOperacion);
+    document.getElementById('guardarEditar').disabled = false;
+    document.getElementById('aceptarConfirmar').disabled = false;
+}
+function comenzarOperacion() {
+    operacionPendiente = true;
+    document.getElementById('guardarEditar').disabled = true;
+    document.getElementById('aceptarConfirmar').disabled = true;
+    clearTimeout(temporizadorOperacion);
+    temporizadorOperacion = setTimeout(() => {
+        if (!operacionPendiente) return;
+        terminarOperacion();
+        aviso.textContent = 'No llegó la confirmación. Comprueba la conexión antes de volver a intentarlo.';
+        document.getElementById('mensajeEditar').textContent = aviso.textContent;
+        document.getElementById('mensajeConfirmar').textContent = aviso.textContent;
+    }, 12000);
+}
+function abrirVer(usuarioId) {
+    if (operacionPendiente) return;
+    const u = usuarioPorId(usuarioId); if (!u) return;
+    const campos = [['Usuario',valor(u,'NombreUsuario','nombreUsuario')],['Empleado',nombreEmpleado(u)],['Rol',nombreRol(u)],['Estado',nombreEstado(u)]];
+    document.getElementById('detalles').innerHTML = campos.map(([titulo,texto]) => `<div class="detalle"><span>${escapar(titulo)}</span><span>${escapar(texto)}</span></div>`).join('');
+    document.getElementById('modalVer').hidden = false;
+}
+function llenarSelect(idSelect, elementos, campoId, actual, nombre, listaUsuarios = false) {
+    const select = document.getElementById(idSelect);
+    select.replaceChildren();
+    const actualNumero = Number(actual);
+    for (const item of elementos) {
+        const numero = id(item,campoId);
+        const activo = id(item,'EstadoId') === 1;
+        if (!activo && numero !== actualNumero) continue;
+        const opcion = document.createElement('option');
+        opcion.value = String(numero);
+        opcion.textContent = (listaUsuarios ? [valor(item,'Nombre','nombre'),valor(item,'Apellido','apellido')].filter(Boolean).join(' ') : String(valor(item,'Nombre','nombre'))) + (activo ? '' : ' (inactivo)');
+        opcion.disabled = !activo;
+        select.appendChild(opcion);
+    }
+    if (![...select.options].some(o => o.value === String(actualNumero))) {
+        const opcion = document.createElement('option');
+        opcion.value = String(actualNumero);
+        opcion.textContent = nombre + ' no disponible';
+        opcion.disabled = true;
+        select.appendChild(opcion);
+    }
+    select.value = String(actualNumero);
+}
+function abrirEditar(usuarioId) {
+    if (operacionPendiente) return;
+    const u = usuarioPorId(usuarioId); if (!u) return;
+    usuarioEditando = usuarioId;
+    document.getElementById('editarNombre').value = String(valor(u,'NombreUsuario','nombreUsuario'));
+    document.getElementById('editarContrasena').value = '';
+    document.getElementById('mensajeEditar').textContent = '';
+    llenarSelect('editarEmpleado',empleados,'EmpleadoId',id(u,'EmpleadoId'),'Empleado',true);
+    llenarSelect('editarRol',roles,'RolId',id(u,'RolId'),'Rol');
+    document.getElementById('modalEditar').hidden = false;
+}
+function abrirCambio(usuarioId) {
+    if (operacionPendiente) return;
+    const u = usuarioPorId(usuarioId); if (!u) return;
+    usuarioCambiar = usuarioId;
+    const activo = id(u,'EstadoId') === 1;
+    accionEstado = activo ? 'desactivar' : 'habilitar';
+    document.getElementById('tituloConfirmar').textContent = activo ? '¿Eliminar usuario?' : '¿Habilitar usuario?';
+    document.getElementById('textoConfirmar').textContent = `¿Deseas ${activo ? 'desactivar' : 'habilitar'} la cuenta «${String(valor(u,'NombreUsuario','nombreUsuario'))}»?`;
+    document.getElementById('mensajeConfirmar').textContent = '';
+    const boton = document.getElementById('aceptarConfirmar');
+    boton.textContent = activo ? 'Sí, desactivar' : 'Sí, habilitar';
+    boton.classList.toggle('peligro',activo);
+    boton.classList.toggle('habilitar',!activo);
+    document.getElementById('modalConfirmar').hidden = false;
+}
+filas.addEventListener('click', evento => {
+    const boton = evento.target.closest('button[data-ver],button[data-editar],button[data-estado]');
+    if (!boton) return;
+    if (boton.dataset.ver) abrirVer(Number(boton.dataset.ver));
+    else if (boton.dataset.editar) abrirEditar(Number(boton.dataset.editar));
+    else abrirCambio(Number(boton.dataset.estado));
+});
+document.getElementById('cerrarVer').addEventListener('click',()=>document.getElementById('modalVer').hidden=true);
+document.getElementById('cancelarEditar').addEventListener('click',()=>{if(!operacionPendiente)document.getElementById('modalEditar').hidden=true;});
+document.getElementById('cancelarConfirmar').addEventListener('click',()=>{if(!operacionPendiente)document.getElementById('modalConfirmar').hidden=true;});
+document.getElementById('cerrarResultado').addEventListener('click',()=>document.getElementById('modalResultado').hidden=true);
+document.getElementById('formEditar').addEventListener('submit', evento => {
+    evento.preventDefault();
+    if (operacionPendiente || !usuarioEditando) return;
+    const u = usuarioPorId(usuarioEditando); if (!u) return;
+    const NombreUsuario = document.getElementById('editarNombre').value.trim();
+    const EmpleadoId = Number(document.getElementById('editarEmpleado').value);
+    const RolId = Number(document.getElementById('editarRol').value);
+    const Contrasena = document.getElementById('editarContrasena').value;
+    if (!NombreUsuario || EmpleadoId <= 0 || RolId <= 0) {document.getElementById('mensajeEditar').textContent='Completa los datos obligatorios.';return;}
+    if (!document.getElementById('formEditar').reportValidity()) return;
+    document.getElementById('mensajeEditar').textContent = 'Guardando cambios...';
+    comenzarOperacion();
+    if (!enviar({type:'usuarios:actualizarIntegrado',data:{UsuarioId:usuarioEditando,NombreUsuario,EmpleadoId,RolId,Contrasena,EstadoId:id(u,'EstadoId')}})) terminarOperacion();
+});
+document.getElementById('aceptarConfirmar').addEventListener('click',()=>{
+    if (operacionPendiente || !usuarioCambiar) return;
+    document.getElementById('mensajeConfirmar').textContent = accionEstado === 'habilitar' ? 'Habilitando cuenta...' : 'Desactivando cuenta...';
+    comenzarOperacion();
+    if (!enviar({type:'usuarios:desactivarIntegrado',data:{UsuarioId:usuarioCambiar}})) terminarOperacion();
+});
+
 cargar();
 </script>
 </body>

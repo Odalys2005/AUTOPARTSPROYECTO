@@ -12,7 +12,8 @@ namespace AutoParts.DataAccess
 
         public ModeloRepository(ConnectionFactory connectionFactory)
         {
-            _connectionFactory = connectionFactory;
+            _connectionFactory = connectionFactory
+                ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         public List<Modelo> SelectAll()
@@ -20,26 +21,29 @@ namespace AutoParts.DataAccess
             List<Modelo> result = new List<Modelo>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spModeloSelectAll", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spModeloSelectAll", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    int columnaModeloId = dr.GetOrdinal("ModeloId");
+                    int columnaMarcaId = dr.GetOrdinal("MarcaId");
+                    int columnaNombre = dr.GetOrdinal("Nombre");
+                    int columnaEstadoId = dr.GetOrdinal("EstadoId");
 
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    while (dr.Read())
                     {
-                        while (dr.Read())
+                        Modelo entity = new Modelo
                         {
-                            Modelo entity = new Modelo();
+                            ModeloId = dr.GetInt32(columnaModeloId),
+                            MarcaId = dr.GetInt32(columnaMarcaId),
+                            Nombre = dr.GetString(columnaNombre),
+                            EstadoId = dr.GetInt32(columnaEstadoId)
+                        };
 
-                            entity.ModeloId = dr.GetInt32(0);
-                            entity.MarcaId = dr.GetInt32(1);
-                            entity.Nombre = dr.GetString(2);
-                            entity.EstadoId = dr.GetInt32(3);
-
-                            result.Add(entity);
-                        }
+                        result.Add(entity);
                     }
                 }
             }
@@ -49,92 +53,75 @@ namespace AutoParts.DataAccess
 
         public int Insert(Modelo entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spModeloInsert", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spModeloInsert", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
-                        .Value = entity.MarcaId;
+                cmd.Parameters.Add("@MarcaId", SqlDbType.Int).Value = entity.MarcaId;
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100).Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
-                        .Value = entity.Nombre;
+                // Un modelo nuevo siempre se registra activo.
+                // El procedimiento conserva este parámetro por compatibilidad.
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int).Value = 1;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                conn.Open();
+                return cmd.ExecuteNonQuery();
             }
-
-            return result;
         }
 
         public int Update(Modelo entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spModeloUpdate", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spModeloUpdate", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
-                        .Value = entity.ModeloId;
+                cmd.Parameters.Add("@ModeloId", SqlDbType.Int).Value = entity.ModeloId;
+                cmd.Parameters.Add("@MarcaId", SqlDbType.Int).Value = entity.MarcaId;
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100).Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
-                        .Value = entity.MarcaId;
-
-                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
-                        .Value = entity.Nombre;
-
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                // No se envía @EstadoId: editar no cambia el estado.
+                conn.Open();
+                return cmd.ExecuteNonQuery();
             }
-
-            return result;
         }
 
         public int Delete(Modelo entity)
         {
-            using (SqlConnection conn =
-                _connectionFactory.CreateConnection())
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.ModeloId <= 0)
+                throw new ArgumentException("Selecciona un modelo válido.", nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spModeloDelete", conn))
             {
-                using (SqlCommand cmd =
-                    new SqlCommand("spModeloDelete", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@ModeloId", SqlDbType.Int).Value = entity.ModeloId;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (!dr.Read())
+                        throw new InvalidOperationException(
+                            "SQL Server no confirmó el cambio de estado del modelo.");
 
-                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
-                        .Value = entity.ModeloId;
+                    int estadoId = dr.GetInt32(dr.GetOrdinal("EstadoId"));
 
-                    conn.Open();
+                    if (estadoId != 1 && estadoId != 2)
+                        throw new InvalidOperationException(
+                            "SQL Server devolvió un estado no válido para el modelo.");
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (!dr.Read())
-                            throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
-
-                        int estadoId = dr.GetInt32(
-                            dr.GetOrdinal("EstadoId"));
-
-                        if (estadoId != 2)
-                            throw new InvalidOperationException(
-                                "El Modelo no quedó inactivo.");
-                        return estadoId;
-                    }
+                    return estadoId;
                 }
             }
         }

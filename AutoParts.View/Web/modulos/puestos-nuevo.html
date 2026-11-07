@@ -5,230 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoParts | Nuevo puesto</title>
     <style>
+        :root { color-scheme: dark; }
         * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: radial-gradient(circle at 100% 0%, #581016 0%, transparent 45%), #0a0a0d;
-            color: white;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-        .contenedor { padding: 29px; }
-        .encabezado {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .subtitulo {
-            color: #ffbd35;
-            font-size: 11px;
-            letter-spacing: 3px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        h1 { margin: 0; font-size: 27px; }
-        .descripcion { color: #a9a7ae; font-size: 13px; line-height: 1.5; }
-        .icono {
-            width: 47px;
-            height: 47px;
-            border: 1px solid #ee3642;
-            border-radius: 12px;
-            background: #5c111a;
-            display: grid;
-            place-items: center;
-            font-size: 24px;
-            color: #ffc42f;
-            box-shadow: 0 0 20px #ca263044;
-            flex-shrink: 0;
-        }
-        .panel {
-            background: linear-gradient(145deg, #171418, #0e0e12);
-            border: 1px solid #5a3139;
-            border-radius: 14px;
-            padding: 25px;
-        }
+        body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 100% 0%, #581016 0%, transparent 45%), #0a0a0d; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; }
+        .contenedor { max-width: 1500px; margin: 0 auto; padding: 35px; }
+        .encabezado { margin-bottom: 28px; }
+        h1 { margin: 0; font-size: clamp(28px,3vw,39px); font-weight: 800; letter-spacing: -1px; }
+        h1 span { color: #ffbd2e; }
+        .panel { background: linear-gradient(145deg,#171418,#0e0e12); border: 1px solid #5a3139; border-radius: 14px; padding: 25px; }
         label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 9px; }
-        .campo { margin-bottom: 21px; }
-        input, select, textarea {
-            width: 100%;
-            padding: 13px 14px;
-            background: #111216;
-            color: white;
-            border: 1px solid #554c55;
-            border-radius: 9px;
-            font: inherit;
-            outline: none;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: #ff3d46;
-            box-shadow: 0 0 10px #e41b303b;
-        }
-        input::placeholder, textarea::placeholder { color: #85858f; }
-        textarea { min-height: 105px; resize: vertical; }
-        select:disabled { opacity: .6; }
-        .ayuda { color: #898a94; font-size: 11px; margin-top: 7px; }
+        .campo { margin-bottom: 22px; }
+        input, textarea { width: 100%; padding: 13px 14px; background: #111216; color: white; border: 1px solid #554c55; border-radius: 9px; font: inherit; outline: none; }
+        input:focus, textarea:focus { border-color: #ff3d46; box-shadow: 0 0 10px #e41b303b; }
+        textarea { min-height: 115px; resize: vertical; }
         .requerido { color: #ff4753; }
         .mensaje { color: #ffb64e; min-height: 18px; font-size: 12px; margin-bottom: 12px; }
-        .acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
-        button {
-            padding: 13px 23px;
-            border-radius: 9px;
-            font-weight: 700;
-            border: 0;
-            cursor: pointer;
-            transition: .2s;
-        }
+        .acciones { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+        button { padding: 13px 23px; border-radius: 9px; font: inherit; font-weight: 700; border: 0; cursor: pointer; transition: .2s; }
         .cancelar { background: #242328; color: #e5e5e5; border: 1px solid #56535b; }
         .cancelar:hover { background: #353039; }
-        .guardar {
-            color: #140c0d;
-            background: linear-gradient(105deg, #ff3543, #ffbd2b);
-            box-shadow: 0 0 16px #e5233533;
-        }
+        .guardar { color: #140c0d; background: linear-gradient(105deg,#ff3543,#ffbd2b); box-shadow: 0 0 16px #e5233533; }
         .guardar:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-2px); }
         .guardar:disabled { opacity: .55; cursor: not-allowed; }
-        @media (max-width: 500px) {
-            .contenedor { padding: 17px; }
-            .panel { padding: 18px; }
-            .acciones { flex-wrap: wrap; }
-        }
+        .modal[hidden] { display: none !important; }
+        .modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 18px; background: #000c; }
+        .modal-panel { width: min(100%,430px); padding: 30px 26px; text-align: center; background: linear-gradient(145deg,#21161b,#111115); border: 1px solid #81424a; border-radius: 16px; box-shadow: 0 25px 80px #000a; }
+        .icono-exito { display: grid; place-items: center; margin: 0 auto 17px; width: 65px; height: 65px; border-radius: 50%; background: #113925; border: 1px solid #318d61; color: #8cf0af; }
+        .modal-panel h2 { margin: 0 0 10px; font-size: 22px; }
+        .modal-panel p { margin: 0 0 24px; color: #c6c3c9; font-size: 14px; line-height: 1.6; }
+        .modal-panel .guardar { min-width: 130px; }
+        @media(max-width:500px) { .contenedor { padding: 18px; } .panel { padding: 18px; } .acciones button { flex: 1; } }
     </style>
 </head>
 <body>
-    <div class="contenedor">
-        <div class="encabezado">
-            <div>
-                <div class="subtitulo">AUTOPARTS · ADMINISTRACIÓN</div>
-                <h1>Nuevo puesto</h1>
-                <p class="descripcion">Registra un nuevo puesto en el catálogo de AutoParts.</p>
-            </div>
-            <div class="icono">+</div>
-        </div>
-        <div class="panel">
+    <main class="contenedor">
+        <header class="encabezado"><h1>Nuevo <span>puesto</span></h1></header>
+        <section class="panel">
             <form id="formPuesto">
                 <div class="campo">
                     <label for="nombre">Nombre del puesto <span class="requerido">*</span></label>
-                    <input type="text" id="nombre" maxlength="100" placeholder="Ej. Vendedor" required>
-                    <div class="ayuda">Ingresa el nombre con el que se identificará el puesto.</div>
+                    <input id="nombre" type="text" maxlength="100" autocomplete="off" required>
                 </div>
                 <div class="campo">
                     <label for="descripcion">Descripción (opcional)</label>
-                    <textarea id="descripcion" placeholder="Ej. Atención al cliente y venta de repuestos"></textarea>
-                    <div class="ayuda">Describe las responsabilidades principales del puesto.</div>
-                </div>
-                <div class="campo">
-                    <label for="estado">Estado <span class="requerido">*</span></label>
-                    <select id="estado" required disabled>
-                        <option value="">Cargando estados...</option>
-                    </select>
-                    <div class="ayuda">Selecciona el estado del puesto.</div>
+                    <textarea id="descripcion" maxlength="500"></textarea>
                 </div>
                 <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
                 <div class="acciones">
-                    <button class="cancelar" type="button" id="cancelar">Cancelar</button>
-                    <button class="guardar" type="submit" id="guardar" disabled>Guardar puesto</button>
+                    <button class="cancelar" id="cancelar" type="button">Cancelar</button>
+                    <button class="guardar" id="guardar" type="submit">Guardar puesto</button>
                 </div>
             </form>
+        </section>
+    </main>
+    <div id="modalExito" class="modal" hidden>
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="tituloExito" aria-describedby="descripcionExito">
+            <div class="icono-exito" aria-hidden="true">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h2 id="tituloExito">¡Puesto guardado!</h2>
+            <p id="descripcionExito">El puesto se registró correctamente.</p>
+            <button type="button" id="aceptarExito" class="guardar">Aceptar</button>
         </div>
     </div>
     <script>
+        'use strict';
         const formulario = document.getElementById('formPuesto');
         const nombre = document.getElementById('nombre');
         const descripcion = document.getElementById('descripcion');
-        const estado = document.getElementById('estado');
         const guardar = document.getElementById('guardar');
         const mensaje = document.getElementById('mensaje');
+        const modalExito = document.getElementById('modalExito');
+        let guardando = false;
+        let guardadoExitoso = false;
 
         function enviar(datos) {
-            if (window.parent !== window) {
-                window.parent.postMessage(datos, '*');
-                return true;
-            }
-            if (window.chrome?.webview?.postMessage) {
-                window.chrome.webview.postMessage(datos);
-                return true;
-            }
+            if (window.parent !== window) { window.parent.postMessage(datos, '*'); return true; }
+            if (window.chrome?.webview?.postMessage) { window.chrome.webview.postMessage(datos); return true; }
             mensaje.textContent = 'No hay conexión con Windows Forms.';
             return false;
         }
-
+        function restaurarGuardado() {
+            guardando = false;
+            guardar.disabled = false;
+            guardar.textContent = 'Guardar puesto';
+        }
         document.getElementById('cancelar').addEventListener('click', () => {
-            enviar({ type: 'cancelar' });
+            if (!guardando && !guardadoExitoso) enviar({ type: 'cancelar' });
         });
-
         formulario.addEventListener('submit', evento => {
             evento.preventDefault();
+            if (guardando || guardadoExitoso) return;
             const nombreValor = nombre.value.trim();
             const descripcionValor = descripcion.value.trim();
-            const estadoId = Number(estado.value);
-
-            if (!nombreValor || nombreValor.length > 100 || !estado.value || !Number.isInteger(estadoId) || estadoId <= 0) {
-                mensaje.textContent = 'Ingresa un nombre válido y selecciona un estado.';
+            if (!nombreValor || nombreValor.length > 100) {
+                mensaje.textContent = 'Ingresa un nombre válido de hasta 100 caracteres.';
+                nombre.focus();
                 return;
             }
-
+            if (descripcionValor.length > 500) {
+                mensaje.textContent = 'La descripción no puede superar los 500 caracteres.';
+                descripcion.focus();
+                return;
+            }
+            guardando = true;
             guardar.disabled = true;
             guardar.textContent = 'Guardando...';
             mensaje.textContent = '';
-
-            const enviado = enviar({
-                type: 'guardar',
-                data: {
-                    Nombre: nombreValor,
-                    Descripcion: descripcionValor || null,
-                    EstadoId: estadoId
-                }
-            });
-
-            if (!enviado) {
-                guardar.disabled = false;
-                guardar.textContent = 'Guardar puesto';
-            }
+            if (!enviar({ type: 'guardar', data: { Nombre: nombreValor, Descripcion: descripcionValor || null, EstadoId: 1 } })) restaurarGuardado();
         });
-
         function recibirMensaje(evento) {
+            if (window.parent !== window && evento.source && evento.source !== window.parent) return;
             let respuesta = evento.data;
             if (typeof respuesta === 'string') {
                 try { respuesta = JSON.parse(respuesta); } catch { return; }
             }
             if (!respuesta || typeof respuesta !== 'object') return;
-
-            if (respuesta.type === 'estados') {
-                const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
-                estado.innerHTML = '';
-
-                const opcionInicial = document.createElement('option');
-                opcionInicial.value = '';
-                opcionInicial.textContent = 'Selecciona un estado';
-                estado.appendChild(opcionInicial);
-
-                for (const item of lista) {
-                    const id = item.EstadoId ?? item.estadoId;
-                    const texto = item.Nombre ?? item.nombre;
-                    if (id == null) continue;
-                    const opcion = document.createElement('option');
-                    opcion.value = id;
-                    opcion.textContent = texto ?? '';
-                    estado.appendChild(opcion);
-                }
-
-                estado.disabled = estado.options.length <= 1;
-                guardar.disabled = estado.disabled;
-                mensaje.textContent = estado.disabled ? 'No hay estados disponibles.' : '';
-            }
-
-            if (respuesta.type === 'error') {
+            if (respuesta.type === 'puestos:guardado') {
+                guardadoExitoso = true;
+                guardando = false;
+                mensaje.textContent = '';
+                modalExito.hidden = false;
+                document.getElementById('aceptarExito').focus();
+            } else if (respuesta.type === 'error' || respuesta.type === 'puestos:error') {
+                if (!guardando) return;
                 mensaje.textContent = respuesta.message || 'No se pudo guardar el puesto.';
-                guardar.disabled = estado.disabled;
-                guardar.textContent = 'Guardar puesto';
+                restaurarGuardado();
             }
         }
-
+        document.getElementById('aceptarExito').addEventListener('click', () => enviar({ type: 'cancelar' }));
         window.addEventListener('message', recibirMensaje);
-        window.chrome?.webview?.addEventListener?.('message', recibirMensaje);
-        enviar({ type: 'obtenerEstados' });
+        if (window.chrome?.webview?.addEventListener) window.chrome.webview.addEventListener('message', recibirMensaje);
     </script>
 </body>
 </html>

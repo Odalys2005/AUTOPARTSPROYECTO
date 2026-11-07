@@ -109,7 +109,7 @@ namespace AutoParts.View
             try
             {
                 await webViewMain.EnsureCoreWebView2Async();
-                // Solo las fotos del catálogo se exponen a WebView2.
+
                 Directory.CreateDirectory(CarpetaImagenes);
                 webViewMain.CoreWebView2.SetVirtualHostNameToFolderMapping(
                     HostImagenes,
@@ -118,7 +118,7 @@ namespace AutoParts.View
                 webViewMain.CoreWebView2.WebMessageReceived += WebViewMain_WebMessageReceived;
                 webViewMain.CoreWebView2.NavigationStarting += (s, args) =>
                 {
-                    // No permitir que la interfaz navegue a sitios externos.
+
                     if (!Uri.TryCreate(args.Uri, UriKind.Absolute, out Uri? destino)
                         || !destino.IsFile
                         || (!RutaCoincide(destino, "login.html")
@@ -253,7 +253,7 @@ namespace AutoParts.View
                     .GetProperty("type")
                     .GetString() ?? "";
 
-                // Nunca atender operaciones del Dashboard antes de iniciar sesión.
+
                 if (_sesionActual == null)
                 {
                     if (tipo == "auth:login" && PaginaActualEs("login.html"))
@@ -261,7 +261,7 @@ namespace AutoParts.View
                     return;
                 }
 
-                // Después de autenticarse, solo el Dashboard puede mandar operaciones.
+
                 if (!PaginaActualEs("index.html")) return;
                 if (tipo == "auth:logout")
                 {
@@ -269,6 +269,33 @@ namespace AutoParts.View
                     NavegarPagina("login.html");
                     return;
                 }
+                SesionUsuario? sesionVigente;
+                try
+                {
+                    sesionVigente = _usuarioBL.ValidarSesion(_sesionActual.UsuarioId);
+                }
+                catch (Exception)
+                {
+                    EnviarAlDashboard(new
+                    {
+                        type = "error",
+                        message = "No fue posible comprobar la sesión. Revisa la conexión con la base de datos."
+                    });
+                    return;
+                }
+
+                if (sesionVigente == null ||
+                    sesionVigente.UsuarioId != _sesionActual.UsuarioId ||
+                    sesionVigente.EmpleadoId != _sesionActual.EmpleadoId ||
+                    sesionVigente.RolId != _sesionActual.RolId)
+                {
+                    _sesionActual = null;
+                    NavegarPagina("login.html");
+                    return;
+                }
+
+                _sesionActual = sesionVigente;
+
                 if (tipo == "auth:sesionSolicitar")
                 {
                     EnviarSesion();
@@ -276,16 +303,43 @@ namespace AutoParts.View
                 }
                 if (tipo == "auth:login") return;
 
-                if (!PermisosSistema.EsAdministrador(_sesionActual))
+                if (!PermisosSistema.EsAdministrador(_sesionActual) &&
+                    !AutorizarMensajePorRol(tipo))
                 {
                     EnviarAlDashboard(new
                     {
                         type = "error",
                         message = "No tienes permisos para realizar esta operación."
                     });
-
                     return;
                 }
+
+                if (!PermisosSistema.EsAdministrador(_sesionActual) &&
+                    tipo == "empleados:selectAll")
+                {
+                    try
+                    {
+                        var empleadosConsulta = _empleadoBL.SelectAll()
+                            .Select(empleado => new
+                            {
+                                empleado.EmpleadoId,
+                                empleado.Nombre,
+                                empleado.Apellido,
+                                empleado.EstadoId
+                            })
+                            .ToList();
+                        EnviarAlDashboard(new { type = "empleados:list", data = empleadosConsulta });
+                    }
+                    catch (Exception ex)
+                    {
+                        EnviarAlDashboard(new { type = "error", message = ex.Message });
+                    }
+                    return;
+                }
+
+
+                if (ProcesarCrudMaestros(tipo, raiz))
+                    return;
 
                 switch (tipo)
                 {
@@ -443,7 +497,7 @@ namespace AutoParts.View
 
                         break;
 
-                    // DASHBOARD: resumen de ventas e inventario en modo solo lectura.
+
                     case "dashboard:solicitarResumen":
                         try
                         {
@@ -464,8 +518,7 @@ namespace AutoParts.View
                         }
                         break;
 
-                    // COMPRAS: registra cabecera, detalles y aumento de stock una sola vez.
-                    // La transaccion atomica se ejecuta en dbo.spCompraRegistrarCompleta.
+
                     case "compras:registrarCompleta":
                         try
                         {
@@ -490,8 +543,7 @@ namespace AutoParts.View
                                 lineasCompra.Deserialize<List<Detalle_Compra>>(opcionesCompra)
                                 ?? throw new ArgumentException("Los detalles de compra no son validos.");
 
-                            // No confiar en totales enviados por el HTML. CompraBL y SQL
-                            // validan y recalculan todos los importes desde las lineas.
+
                             CompraRegistroResultado resultadoCompra =
                                 _compraBL.RegistrarCompleta(compraNueva, detallesNuevos);
                             EnviarAlDashboard(new
@@ -508,8 +560,8 @@ namespace AutoParts.View
                         }
                         catch (Exception ex)
                         {
-                            // Un error SQL se revierte en el procedimiento; no
-                            // efectuar aqui otra insercion ni actualizar stock.
+
+
                             EnviarAlDashboard(new
                             {
                                 type = "compras:error",
@@ -518,7 +570,7 @@ namespace AutoParts.View
                         }
                         break;
 
-                    // PASO 4: Confirmación de ventas completas (factura, detalles y stock).
+
                     case "ventas:registrarCompleta":
                         try
                         {
@@ -548,7 +600,7 @@ namespace AutoParts.View
                         }
                         break;
 
-                    // PT-210: imprimir una venta existente. NO registra ni descuenta inventario.
+
                     case "ventas:imprimirTicket":
                         try
                         {
@@ -558,7 +610,7 @@ namespace AutoParts.View
                                 !idTicketJson.TryGetInt32(out int idVentaTicket) || idVentaTicket <= 0)
                                 throw new ArgumentException("Selecciona una venta registrada válida.");
 
-                            // Recuperar la factura y sus líneas desde SQL, nunca desde HTML.
+
                             await Task.Run(() => ImprimirTicketVentaPt210(idVentaTicket));
                             EnviarAlDashboard(new
                             {
@@ -576,15 +628,14 @@ namespace AutoParts.View
                         }
                         break;
 
-                    // GARANTÍAS: operaciones validadas en SQL Server.
-                    // EmpleadoId se obtiene de la sesión, nunca de los datos HTML.
+
                     case "garantias:registrarSolicitud":
                     case "garantias:evaluar":
                     case "reemplazos-garantia:entregar":
                         ProcesarOperacionGarantia(tipo, raiz);
                         break;
 
-                    // PRODUCTOS: consulta y registro desde WebView2.
+
                     case "productos:selectAll":
                     case "productos:guardarIntegrado":
                         ProcesarProductoIntegrado(tipo, raiz);
@@ -623,6 +674,11 @@ namespace AutoParts.View
                         ProcesarPuestoIntegrado(tipo, raiz);
                         break;
 
+                    case "empleados:selectAll":
+                    case "empleados:guardarIntegrado":
+                        ProcesarEmpleadoIntegrado(tipo, raiz);
+                        break;
+
                     case "roles:selectAll":
                     case "roles:guardarIntegrado":
                         ProcesarRolIntegrado(tipo, raiz);
@@ -649,8 +705,7 @@ namespace AutoParts.View
                         }
                         break;
 
-                    // Todas las demás entidades se atienden desde un solo
-                    // procesador. No hay que agregar más cases aquí.
+
                     default:
                         ProcesarModuloAdicional(tipo, raiz);
                         break;
@@ -667,23 +722,626 @@ namespace AutoParts.View
             }
         }
 
-        // ==========================================================
-        // GARANTÍAS - SOLICITUD, EVALUACIÓN Y ENTREGA
-        // La autorización del administrador ya se verifica en el receptor
-        // central antes de llegar a este método.
-        // ==========================================================
+
+        private bool AutorizarMensajePorRol(string tipo)
+        {
+            if (_sesionActual == null)
+                return false;
+
+            if (tipo == "obtenerEstados" || tipo == "estados:selectAll" ||
+                tipo == "categorias:selectAll" || tipo == "subcategorias:selectAll" ||
+                tipo == "empleados:selectAll")
+                return _sesionActual.RolId == PermisosSistema.RolVendedor ||
+                       _sesionActual.RolId == PermisosSistema.RolTecnico;
+
+            int separador = tipo.IndexOf(':');
+            if (separador <= 0 || separador == tipo.Length - 1)
+                return false;
+
+            string modulo = tipo.Substring(0, separador);
+            string accion = tipo.Substring(separador + 1);
+            return PermisosSistema.PuedeRealizar(_sesionActual, modulo, accion);
+        }
+
+        private bool ProcesarCrudMaestros(string tipo, JsonElement raiz)
+        {
+            const string sufijoActualizar = ":actualizarIntegrado";
+            const string sufijoDesactivar = ":desactivarIntegrado";
+            bool actualizar = tipo.EndsWith(sufijoActualizar, StringComparison.Ordinal);
+            bool desactivar = tipo.EndsWith(sufijoDesactivar, StringComparison.Ordinal);
+            if (!actualizar && !desactivar) return false;
+
+            string modulo = tipo.Substring(0, tipo.Length -
+                (actualizar ? sufijoActualizar.Length : sufijoDesactivar.Length));
+
+
+            if (modulo == "categorias") return false;
+
+
+            string[] permitidos = { "subcategorias", "marcas", "modelos", "vehiculos", "compatibilidad",
+                "productos", "proveedores", "clientes", "puestos", "empleados",
+                "usuarios", "roles" };
+            if (!permitidos.Contains(modulo)) return false;
+
+            try
+            {
+                if (!raiz.TryGetProperty("data", out JsonElement datos) ||
+                    datos.ValueKind != JsonValueKind.Object)
+                    throw new ArgumentException("No se recibieron datos válidos para " + modulo + ".");
+
+                if (desactivar && modulo == "marcas")
+                {
+                    if (!datos.TryGetProperty("MarcaId", out JsonElement marcaIdJson) ||
+                        !marcaIdJson.TryGetInt32(out int marcaId) || marcaId <= 0)
+                        throw new ArgumentException("Selecciona una marca válida.");
+
+                    Marca marcaActual = _marcaBL.SelectAll()
+                        .FirstOrDefault(m => m.MarcaId == marcaId)
+                        ?? throw new InvalidOperationException("La marca no existe en SQL Server.");
+
+                    if (marcaActual.EstadoId != 1 && marcaActual.EstadoId != 2)
+                        throw new InvalidOperationException("La marca tiene un estado no válido.");
+
+                    int estadoEsperado = marcaActual.EstadoId == 1 ? 2 : 1;
+                    int estadoNuevo = _marcaBL.Delete(new Marca { MarcaId = marcaId });
+
+                    if (estadoNuevo != estadoEsperado)
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado de la marca.");
+
+                    EnviarAlDashboard(new
+                    {
+                        type = "marcas:desactivada",
+                        message = estadoNuevo == 1 ? "Marca habilitada correctamente." : "Marca desactivada correctamente.",
+                        data = new { MarcaId = marcaId, EstadoId = estadoNuevo }
+                    });
+                    return true;
+                }
+
+                if (desactivar && modulo == "modelos")
+                {
+                    if (!datos.TryGetProperty("ModeloId", out JsonElement modeloIdJson) ||
+                        !modeloIdJson.TryGetInt32(out int modeloId) || modeloId <= 0)
+                        throw new ArgumentException("Selecciona un modelo válido.");
+
+                    Modelo modeloActual = _modeloBL.SelectAll()
+                        .FirstOrDefault(m => m.ModeloId == modeloId)
+                        ?? throw new InvalidOperationException("El modelo no existe en SQL Server.");
+
+                    if (modeloActual.EstadoId != 1 && modeloActual.EstadoId != 2)
+                        throw new InvalidOperationException("El modelo tiene un estado no válido.");
+
+                    int estadoEsperado = modeloActual.EstadoId == 1 ? 2 : 1;
+                    int estadoNuevo = _modeloBL.Delete(new Modelo { ModeloId = modeloId });
+
+                    if (estadoNuevo != estadoEsperado)
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado del modelo.");
+
+                    EnviarAlDashboard(new
+                    {
+                        type = "modelos:desactivada",
+                        message = estadoNuevo == 1 ? "Modelo habilitado correctamente." : "Modelo desactivado correctamente.",
+                        data = new { ModeloId = modeloId, EstadoId = estadoNuevo }
+                    });
+                    return true;
+                }
+
+                if (desactivar && modulo == "vehiculos")
+                {
+                    if (!datos.TryGetProperty("VehiculoId", out JsonElement vehiculoIdJson) ||
+                        !vehiculoIdJson.TryGetInt32(out int vehiculoId) || vehiculoId <= 0)
+                        throw new ArgumentException("Selecciona un vehículo válido.");
+
+                    Vehiculo vehiculoActual = _vehiculoBL.SelectAll()
+                        .FirstOrDefault(v => v.VehiculoId == vehiculoId)
+                        ?? throw new InvalidOperationException("El vehículo no existe en SQL Server.");
+
+                    if (vehiculoActual.EstadoId != 1 && vehiculoActual.EstadoId != 2)
+                        throw new InvalidOperationException("El vehículo tiene un estado no válido.");
+
+                    int estadoEsperado = vehiculoActual.EstadoId == 1 ? 2 : 1;
+                    int estadoNuevo = _vehiculoBL.Delete(new Vehiculo { VehiculoId = vehiculoId });
+
+                    if (estadoNuevo != estadoEsperado)
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado del vehículo.");
+
+                    EnviarAlDashboard(new
+                    {
+                        type = "vehiculos:desactivada",
+                        message = estadoNuevo == 1 ? "Vehículo habilitado correctamente." : "Vehículo desactivado correctamente.",
+                        data = new { VehiculoId = vehiculoId, EstadoId = estadoNuevo }
+                    });
+                    return true;
+                }
+
+                if (desactivar && modulo == "compatibilidad")
+                {
+                    if (!datos.TryGetProperty("CompatibilidadId", out JsonElement compatibilidadIdJson) ||
+                        !compatibilidadIdJson.TryGetInt32(out int compatibilidadId) || compatibilidadId <= 0)
+                        throw new ArgumentException("Selecciona una compatibilidad válida.");
+
+                    CompatibilidadRepuesto compatibilidadActual = _compatibilidadBL.SelectAll()
+                        .FirstOrDefault(c => c.CompatibilidadId == compatibilidadId)
+                        ?? throw new InvalidOperationException("La compatibilidad no existe en SQL Server.");
+
+                    if (compatibilidadActual.EstadoId != 1 && compatibilidadActual.EstadoId != 2)
+                        throw new InvalidOperationException("La compatibilidad tiene un estado no válido.");
+
+                    int estadoEsperado = compatibilidadActual.EstadoId == 1 ? 2 : 1;
+                    int estadoNuevo = _compatibilidadBL.Delete(new CompatibilidadRepuesto
+                    {
+                        CompatibilidadId = compatibilidadId
+                    });
+
+                    if (estadoNuevo != estadoEsperado)
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado de la compatibilidad.");
+
+                    EnviarAlDashboard(new
+                    {
+                        type = "compatibilidad:desactivada",
+                        message = estadoNuevo == 1 ? "Compatibilidad habilitada correctamente." : "Compatibilidad desactivada correctamente.",
+                        data = new { CompatibilidadId = compatibilidadId, EstadoId = estadoNuevo }
+                    });
+                    return true;
+                }
+
+                if (desactivar && modulo == "puestos")
+                {
+                    if (!datos.TryGetProperty("PuestoId", out JsonElement puestoIdJson) ||
+                        !puestoIdJson.TryGetInt32(out int puestoId) || puestoId <= 0)
+                        throw new ArgumentException("Selecciona un puesto válido.");
+
+                    Puesto puestoActual = _puestoBL.SelectAll().FirstOrDefault(p => p.PuestoId == puestoId)
+                        ?? throw new InvalidOperationException("El puesto no existe en SQL Server.");
+
+                    if (puestoActual.EstadoId != 1 && puestoActual.EstadoId != 2)
+                        throw new InvalidOperationException("El puesto tiene un estado no válido.");
+
+                    int estadoEsperado = puestoActual.EstadoId == 1 ? 2 : 1;
+                    int estadoNuevo = _puestoBL.Delete(new Puesto { PuestoId = puestoId });
+
+                    if (estadoNuevo != estadoEsperado)
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado del puesto.");
+
+                    EnviarAlDashboard(new
+                    {
+                        type = "puestos:desactivada",
+                        message = estadoNuevo == 1 ? "Puesto habilitado correctamente." : "Puesto desactivado correctamente.",
+                        data = new { PuestoId = puestoId, EstadoId = estadoNuevo }
+                    });
+                    return true;
+                }
+
+                if (desactivar && modulo == "empleados")
+                {
+                    if (!datos.TryGetProperty("EmpleadoId", out JsonElement empleadoIdJson) ||
+                        !empleadoIdJson.TryGetInt32(out int empleadoId) || empleadoId <= 0)
+                        throw new ArgumentException("Selecciona un empleado válido.");
+
+                    Empleado empleadoActual = _empleadoBL.SelectAll()
+                        .FirstOrDefault(e => e.EmpleadoId == empleadoId)
+                        ?? throw new InvalidOperationException("El empleado no existe en SQL Server.");
+
+                    if (empleadoActual.EstadoId != 1 && empleadoActual.EstadoId != 2)
+                        throw new InvalidOperationException("El empleado tiene un estado no válido.");
+
+                    if (_sesionActual != null && empleadoId == _sesionActual.EmpleadoId &&
+                        empleadoActual.EstadoId == 1)
+                        throw new InvalidOperationException("No puedes desactivar tu propio empleado durante la sesión.");
+
+                    int estadoEsperado = empleadoActual.EstadoId == 1 ? 2 : 1;
+                    int estadoNuevo = _empleadoBL.Delete(new Empleado { EmpleadoId = empleadoId });
+
+                    if (estadoNuevo != estadoEsperado)
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado del empleado.");
+
+                    EnviarAlDashboard(new
+                    {
+                        type = "empleados:desactivada",
+                        message = estadoNuevo == 1 ? "Empleado habilitado correctamente." : "Empleado desactivado correctamente.",
+                        data = new { EmpleadoId = empleadoId, EstadoId = estadoNuevo }
+                    });
+                    return true;
+                }
+
+                if (desactivar && modulo == "usuarios")
+                {
+                    if (!datos.TryGetProperty("UsuarioId", out JsonElement usuarioIdJson) ||
+                        !usuarioIdJson.TryGetInt32(out int usuarioId) || usuarioId <= 0)
+                        throw new ArgumentException("Selecciona una cuenta de usuario válida.");
+
+                    Usuario usuarioActual = _usuarioBL.SelectAll()
+                        .FirstOrDefault(u => u.UsuarioId == usuarioId)
+                        ?? throw new InvalidOperationException("La cuenta de usuario no existe.");
+
+                    if (usuarioActual.EstadoId != 1 && usuarioActual.EstadoId != 2)
+                        throw new InvalidOperationException("La cuenta tiene un estado no válido.");
+
+                    if (_sesionActual != null && usuarioId == _sesionActual.UsuarioId &&
+                        usuarioActual.EstadoId == 1)
+                        throw new InvalidOperationException("No puedes desactivar tu propia cuenta mientras tienes la sesión iniciada.");
+
+                    int estadoEsperado = usuarioActual.EstadoId == 1 ? 2 : 1;
+                    int estadoNuevo = _usuarioBL.Delete(new Usuario { UsuarioId = usuarioId });
+
+                    if (estadoNuevo != estadoEsperado)
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado de la cuenta.");
+
+                    EnviarAlDashboard(new
+                    {
+                        type = "usuarios:desactivada",
+                        message = estadoNuevo == 1 ? "Usuario habilitado correctamente." : "Usuario desactivado correctamente.",
+                        data = new { UsuarioId = usuarioId, EstadoId = estadoNuevo }
+                    });
+                    return true;
+                }
+
+                if (desactivar && modulo == "roles")
+                {
+                    if (!datos.TryGetProperty("RolId", out JsonElement rolIdJson) ||
+                        !rolIdJson.TryGetInt32(out int rolId) || rolId <= 0)
+                        throw new ArgumentException("Selecciona un rol válido.");
+
+                    Rol rolActual = _rolBL.SelectAll().FirstOrDefault(r => r.RolId == rolId)
+                        ?? throw new InvalidOperationException("El rol no existe en SQL Server.");
+
+                    if (rolId == 1 && rolActual.EstadoId == 1)
+                        throw new InvalidOperationException("No se puede desactivar el rol administrador principal.");
+
+                    if (_sesionActual != null && rolId == _sesionActual.RolId && rolActual.EstadoId == 1)
+                        throw new InvalidOperationException("No puedes desactivar tu rol actual.");
+
+                    if (rolActual.EstadoId != 1 && rolActual.EstadoId != 2)
+                        throw new InvalidOperationException("El rol tiene un estado no válido.");
+
+                    int estadoEsperado = rolActual.EstadoId == 1 ? 2 : 1;
+                    int estadoNuevo = _rolBL.Delete(new Rol { RolId = rolId });
+
+                    if (estadoNuevo != estadoEsperado)
+                        throw new InvalidOperationException("El estado devuelto por SQL Server no coincide con el cambio solicitado.");
+
+                    EnviarAlDashboard(new
+                    {
+                        type = "roles:desactivada",
+                        message = estadoNuevo == 1 ? "Rol habilitado correctamente." : "Rol desactivado correctamente.",
+                        data = new { RolId = rolId, EstadoId = estadoNuevo }
+                    });
+                    return true;
+                }
+
+
+                switch (modulo)
+                {
+                    case "subcategorias":
+                        EjecutarCrudMaestro<Subcategoria>(modulo, datos, actualizar,
+                            "SubcategoriaId", x => x.SubcategoriaId,
+                            _subcategoriaBL.SelectAll, _subcategoriaBL.Update, _subcategoriaBL.Delete,
+                            x =>
+                            {
+                                RequerirId(x.CategoriaId, "categoría");
+                                RequerirTexto(x.Nombre, 120, "nombre de subcategoría");
+                            });
+                        break;
+                    case "marcas":
+                        EjecutarCrudMaestro<Marca>(modulo, datos, actualizar,
+                            "MarcaId", x => x.MarcaId,
+                            _marcaBL.SelectAll, _marcaBL.Update, _marcaBL.Delete,
+                            x =>
+                            {
+                                RequerirTexto(x.Nombre, 100, "nombre de marca");
+                            },
+                            (nuevo, anterior) =>
+                            {
+                                nuevo.EstadoId = anterior.EstadoId;
+                            });
+                        break;
+                    case "modelos":
+                        EjecutarCrudMaestro<Modelo>(modulo, datos, actualizar,
+                            "ModeloId", x => x.ModeloId,
+                            _modeloBL.SelectAll, _modeloBL.Update, _modeloBL.Delete,
+                            x =>
+                            {
+                                ValidarModelo(x);
+                                if (!_marcaBL.SelectAll().Any(m => m.MarcaId == x.MarcaId && m.EstadoId == 1))
+                                    throw new ArgumentException("Selecciona una marca activa.");
+                            },
+                            (nuevo, anterior) =>
+                            {
+                                nuevo.EstadoId = anterior.EstadoId;
+                            });
+                        break;
+                    case "vehiculos":
+                        EjecutarCrudMaestro<Vehiculo>(modulo, datos, actualizar,
+                            "VehiculoId", x => x.VehiculoId,
+                            _vehiculoBL.SelectAll, _vehiculoBL.Update, _vehiculoBL.Delete,
+                            x =>
+                            {
+                                ValidarVehiculo(x);
+                                if (!_modeloBL.SelectAll().Any(m => m.ModeloId == x.ModeloId && m.EstadoId == 1))
+                                    throw new ArgumentException("Selecciona un modelo activo.");
+                            },
+                            (nuevo, anterior) =>
+                            {
+                                nuevo.EstadoId = anterior.EstadoId;
+                            });
+                        break;
+                    case "compatibilidad":
+                        EjecutarCrudMaestro<CompatibilidadRepuesto>(modulo, datos, actualizar,
+                            "CompatibilidadId", x => x.CompatibilidadId,
+                            _compatibilidadBL.SelectAll, _compatibilidadBL.Update, _compatibilidadBL.Delete,
+                            x =>
+                            {
+                                ValidarCompatibilidad(x);
+                                if (!_productoBL.SelectAll().Any(p => p.ProductoId == x.ProductoId && p.EstadoId == 1))
+                                    throw new ArgumentException("Selecciona un producto activo.");
+                                if (!_vehiculoBL.SelectAll().Any(v => v.VehiculoId == x.VehiculoId && v.EstadoId == 1))
+                                    throw new ArgumentException("Selecciona un vehículo activo.");
+                            },
+                            (nuevo, anterior) =>
+                            {
+                                nuevo.EstadoId = anterior.EstadoId;
+                            });
+                        break;
+                    case "productos":
+                        if (actualizar)
+                        {
+                            ActualizarProductoConFotografia(datos);
+                            break;
+                        }
+                        EjecutarCrudMaestro<Producto>(modulo, datos, actualizar,
+                            "ProductoId", x => x.ProductoId,
+                            _productoBL.SelectAll, _productoBL.Update, _productoBL.Delete,
+                            x => { ValidarProducto(x); ValidarEstadoMaestro(x.EstadoId); },
+                            (nuevo, anterior) =>
+                            {
+
+
+                                nuevo.Imagen = anterior.Imagen;
+                                if (datos.TryGetProperty("ImagenArchivo", out var imagen) &&
+                                    imagen.ValueKind != JsonValueKind.Null &&
+                                    imagen.ValueKind != JsonValueKind.Undefined)
+                                    throw new ArgumentException(
+                                        "La edición de fotografía requiere su flujo específico; no se modificó la actual.");
+                            });
+                        break;
+                    case "proveedores":
+                        EjecutarCrudMaestro<Proveedor>(modulo, datos, actualizar,
+                            "ProveedorId", x => x.ProveedorId,
+                            _proveedorBL.SelectAll, _proveedorBL.Update, _proveedorBL.Delete,
+                            x =>
+                            {
+                                RequerirTexto(x.NombreEmpresa, 100, "nombre de empresa");
+                                RequerirTexto(x.NIT, 20, "NIT");
+                                RequerirTexto(x.Telefono, 25, "teléfono");
+                                RequerirTexto(x.Correo, 150, "correo");
+                                RequerirTexto(x.Contacto, 100, "contacto");
+                            });
+                        break;
+                    case "clientes":
+                        EjecutarCrudMaestro<Cliente>(modulo, datos, actualizar,
+                            "ClienteId", x => x.ClienteId,
+                            _clienteBL.SelectAll, _clienteBL.Update,
+                            x => _clienteBL.Delete(x.ClienteId),
+                            ValidarClienteMaestro);
+                        break;
+                    case "puestos":
+                        EjecutarCrudMaestro<Puesto>(modulo, datos, actualizar,
+                            "PuestoId", x => x.PuestoId,
+                            _puestoBL.SelectAll, _puestoBL.Update, _puestoBL.Delete,
+                            x =>
+                            {
+                                RequerirTexto(x.Nombre, 100, "nombre del puesto");
+                                RequerirTexto(x.Descripcion, 500, "descripción del puesto");
+                            },
+                            (nuevo, anterior) =>
+                            {
+                                nuevo.EstadoId = anterior.EstadoId;
+                            });
+                        break;
+                    case "empleados":
+                        EjecutarCrudMaestro<Empleado>(modulo, datos, actualizar,
+                            "EmpleadoId", x => x.EmpleadoId,
+                            _empleadoBL.SelectAll, _empleadoBL.Update, _empleadoBL.Delete,
+                            ValidarEmpleado,
+                            (nuevo, anterior) =>
+                            {
+                                nuevo.EstadoId = anterior.EstadoId;
+                            },
+                            id =>
+                            {
+                                if (_sesionActual != null && id == _sesionActual.EmpleadoId)
+                                    throw new InvalidOperationException("No puedes desactivar tu propio empleado.");
+                            });
+                        break;
+                    case "roles":
+                        EjecutarCrudMaestro<Rol>(modulo, datos, actualizar,
+                            "RolId", x => x.RolId,
+                            _rolBL.SelectAll, _rolBL.Update, _rolBL.Delete,
+                            x =>
+                            {
+                                RequerirTexto(x.Nombre, 100, "nombre del rol");
+                            },
+                            (nuevo, anterior) =>
+                            {
+                                nuevo.EstadoId = anterior.EstadoId;
+                            },
+                            id =>
+                            {
+                                if (_sesionActual != null && id == _sesionActual.RolId)
+                                    throw new InvalidOperationException("No puedes desactivar tu rol actual.");
+                            });
+                        break;
+                    case "usuarios":
+                        EjecutarCrudMaestro<Usuario>(modulo, datos, actualizar,
+                            "UsuarioId", x => x.UsuarioId,
+                            _usuarioBL.SelectAll, _usuarioBL.Update, _usuarioBL.Delete,
+                            x =>
+                            {
+                                RequerirId(x.EmpleadoId, "empleado");
+                                RequerirId(x.RolId, "rol");
+                                RequerirTexto(x.NombreUsuario, 50, "nombre de usuario");
+                                x.NombreUsuario = x.NombreUsuario.Trim();
+                                if (x.NombreUsuario.Length < 3 ||
+                                    !System.Text.RegularExpressions.Regex.IsMatch(x.NombreUsuario, @"\A[A-Za-z0-9._-]+\z"))
+                                    throw new ArgumentException("El usuario debe tener de 3 a 50 caracteres y usar letras, números, punto, guion o guion bajo.");
+
+                                if (!string.IsNullOrEmpty(x.Contrasena) &&
+                                    (string.IsNullOrWhiteSpace(x.Contrasena) || x.Contrasena.Length < 8 || x.Contrasena.Length > 72))
+                                    throw new ArgumentException("La contraseña nueva debe tener de 8 a 72 caracteres, o quedar vacía para conservar la actual.");
+
+                                if (!_empleadoBL.SelectAll().Any(e => e.EmpleadoId == x.EmpleadoId && e.EstadoId == 1))
+                                    throw new ArgumentException("Selecciona un empleado activo.");
+                                if (!_rolBL.SelectAll().Any(r => r.RolId == x.RolId && r.EstadoId == 1))
+                                    throw new ArgumentException("Selecciona un rol activo.");
+                            },
+                            (nuevo, anterior) =>
+                            {
+                                nuevo.EstadoId = anterior.EstadoId;
+                                if (_sesionActual != null && nuevo.UsuarioId == _sesionActual.UsuarioId &&
+                                    (nuevo.RolId != anterior.RolId || nuevo.EmpleadoId != anterior.EmpleadoId))
+                                    throw new InvalidOperationException("No puedes cambiar tu propio rol o empleado mientras tienes la sesión iniciada.");
+
+                                if (anterior.EstadoId == 1 && anterior.RolId == 1 && nuevo.RolId != 1 &&
+                                    !_usuarioBL.SelectAll().Any(u => u.UsuarioId != anterior.UsuarioId &&
+                                        u.RolId == 1 && u.EstadoId == 1))
+                                    throw new InvalidOperationException("No puedes quitar el rol de la última cuenta administradora activa.");
+                            },
+                            id =>
+                            {
+                                if (_sesionActual != null && id == _sesionActual.UsuarioId)
+                                    throw new InvalidOperationException("No puedes desactivar tu propia cuenta.");
+                            });
+                        break;
+                }
+
+                EnviarAlDashboard(new
+                {
+                    type = modulo + (actualizar ? ":actualizada" : ":desactivada"),
+                    message = actualizar ? "Registro actualizado correctamente." :
+                        "Estado del registro cambiado correctamente."
+                });
+            }
+            catch (Exception ex)
+            {
+                EnviarAlDashboard(new { type = modulo + ":error", message = ex.Message });
+            }
+            return true;
+        }
+
+        private void EjecutarCrudMaestro<T>(
+            string modulo, JsonElement datos, bool actualizar, string nombreId,
+            Func<T, int> obtenerId, Func<List<T>> seleccionar,
+            Func<T, int> modificar, Func<T, int>? desactivar,
+            Action<T>? validar = null, Action<T, T>? validarCambio = null,
+            Action<int>? validarBaja = null) where T : class, new()
+        {
+            if (!datos.TryGetProperty(nombreId, out JsonElement campoId) ||
+                !campoId.TryGetInt32(out int id) || id <= 0)
+                throw new ArgumentException("Selecciona un registro válido de " + modulo + ".");
+
+            T anterior = seleccionar().FirstOrDefault(x => obtenerId(x) == id)
+                ?? throw new InvalidOperationException("El registro no existe en SQL Server.");
+
+            var propiedadEstado = typeof(T).GetProperty("EstadoId");
+
+            if (!actualizar)
+            {
+                if (desactivar == null)
+                    throw new InvalidOperationException("Este módulo no admite cambio de estado.");
+
+                if (propiedadEstado == null || !propiedadEstado.CanRead)
+                    throw new InvalidOperationException("Este módulo no tiene un EstadoId válido.");
+
+                object? valor = propiedadEstado.GetValue(anterior);
+                if (valor == null)
+                    throw new InvalidOperationException("El registro no tiene un estado válido.");
+
+                int estadoAnterior = Convert.ToInt32(valor, CultureInfo.InvariantCulture);
+                ValidarEstadoMaestro(estadoAnterior);
+                validarBaja?.Invoke(id);
+
+                int estadoEsperado = estadoAnterior == 1 ? 2 : 1;
+                int estadoNuevo = desactivar(new TConId<T>(id, nombreId).Crear());
+
+                if (estadoNuevo != estadoEsperado)
+                    throw new InvalidOperationException(
+                        "SQL Server no confirmó el nuevo estado. Se esperaba EstadoId = " + estadoEsperado + ".");
+                return;
+            }
+
+            T entidad = datos.Deserialize<T>(new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? throw new ArgumentException("Los datos de edición no son válidos.");
+
+            if (obtenerId(entidad) != id)
+                throw new ArgumentException("El identificador de edición es incorrecto.");
+
+            if (propiedadEstado != null && propiedadEstado.CanRead && propiedadEstado.CanWrite)
+                propiedadEstado.SetValue(entidad, propiedadEstado.GetValue(anterior));
+
+            validar?.Invoke(entidad);
+            validarCambio?.Invoke(entidad, anterior);
+
+            int resultado = modificar(entidad);
+            if (resultado <= 0)
+                throw new InvalidOperationException("SQL Server no confirmó la actualización.");
+        }
+
+
+        private sealed class TConId<T> where T : class, new()
+        {
+            private readonly int _id;
+            private readonly string _propiedad;
+            public TConId(int id, string propiedad) { _id = id; _propiedad = propiedad; }
+            public T Crear()
+            {
+                T entidad = new T();
+                var propiedad = typeof(T).GetProperty(_propiedad);
+                if (propiedad == null || propiedad.PropertyType != typeof(int) || !propiedad.CanWrite)
+                    throw new InvalidOperationException("El identificador de entidad no es válido.");
+                propiedad.SetValue(entidad, _id);
+                return entidad;
+            }
+        }
+
+        private static void ValidarEstadoMaestro(int estadoId)
+        {
+            if (estadoId != 1 && estadoId != 2)
+                throw new ArgumentException("El estado debe ser Activo (1) o Inactivo (2).");
+        }
+
+        private static void ValidarClienteMaestro(Cliente cliente)
+        {
+            RequerirTexto(cliente.Nombre, 100, "nombre");
+            RequerirTexto(cliente.Apellido, 100, "apellido");
+            RequerirTexto(cliente.DUI, 10, "DUI");
+            RequerirTexto(cliente.Telefono, 25, "teléfono");
+            RequerirTexto(cliente.Correo, 150, "correo");
+            if ((cliente.NIT?.Length ?? 0) > 20 ||
+                (cliente.Direccion?.Length ?? 0) > 50)
+                throw new ArgumentException("NIT o dirección superan la longitud permitida.");
+            if (!System.Net.Mail.MailAddress.TryCreate(cliente.Correo, out var correo) ||
+                correo.Address != cliente.Correo)
+                throw new ArgumentException("El correo electrónico no es válido.");
+        }
+
+
         private void ProcesarOperacionGarantia(string tipo, JsonElement raiz)
         {
             try
             {
-                if (_sesionActual == null || !PermisosSistema.EsAdministrador(_sesionActual))
+                int separadorPermiso = tipo.IndexOf(':');
+                if (_sesionActual == null || separadorPermiso <= 0 ||
+                    !PermisosSistema.PuedeRealizar(_sesionActual,
+                        tipo.Substring(0, separadorPermiso),
+                        tipo.Substring(separadorPermiso + 1)))
                     throw new UnauthorizedAccessException("No tienes permisos para gestionar garantías.");
 
                 if (!raiz.TryGetProperty("data", out JsonElement datos) ||
                     datos.ValueKind != JsonValueKind.Object)
                     throw new ArgumentException("No se recibieron los datos de la garantía.");
 
-                // Nunca confiar en el EmpleadoId proporcionado por JavaScript.
+
                 int empleadoId = _sesionActual.EmpleadoId;
                 if (empleadoId <= 0)
                     throw new InvalidOperationException("La sesión no tiene un empleado válido.");
@@ -722,7 +1380,7 @@ namespace AutoParts.View
                     ReemplazoEntregaResultado resultado = _reemplazoGarantiaBL.EntregarReemplazo(
                         garantiaId, empleadoId, observaciones);
 
-                    // El estado del resultado distingue entrega efectiva de pendiente.
+
                     EnviarAlDashboard(new { type = "reemplazos-garantia:resultadoEntrega", data = resultado });
                 }
             }
@@ -756,8 +1414,7 @@ namespace AutoParts.View
             return campo.GetString();
         }
 
-        // Datos reales para las dos tablas del Dashboard.
-        // Esta consulta no registra movimientos ni modifica existencias.
+
         private object ObtenerResumenDashboard()
         {
             var ventas = _ventaBL.SelectAll()
@@ -771,7 +1428,7 @@ namespace AutoParts.View
                 .Where(c => idsClientes.Contains(c.ClienteId))
                 .ToDictionary(c => c.ClienteId);
 
-            // app.js espera [factura, cliente, fecha, total, estado].
+
             var filasVentas = ventas.Select(v => new object[]
             {
                 v.NumeroFactura ?? ("Venta #" + v.VentaId),
@@ -794,7 +1451,7 @@ namespace AutoParts.View
                 .Where(p => idsProductos.Contains(p.ProductoId))
                 .ToDictionary(p => p.ProductoId);
 
-            // app.js espera [simbolo, nombre, detalle, sku, actual, minimo].
+
             var filasStock = bajos.Select(i =>
             {
                 productos.TryGetValue(i.ProductoId, out var producto);
@@ -812,11 +1469,7 @@ namespace AutoParts.View
             return new { Ventas = filasVentas, StockBajo = filasStock };
         }
 
-        // ==========================================================
-        // IMPRESIÓN PT-210 / Windows Generic-Text Only / papel de 57 mm
-        // 32 columnas ASCII: compatible con impresión RAW de texto.
-        // Los datos se recuperan de las tablas existentes mediante BL.
-        // ==========================================================
+
         private const string NombreImpresoraPt210 = "AutoParts PT-210";
         private const int AnchoTicketPt210 = 32;
 
@@ -862,8 +1515,7 @@ namespace AutoParts.View
             t.AppendLine();
             t.AppendLine();
 
-            // El controlador Generic / Text Only ya fue probado en Windows.
-            // RAW envía solamente texto ASCII; no necesita comandos ESC/POS.
+
             byte[] datos = Encoding.ASCII.GetBytes(t.ToString().Replace("\n", "\r\n"));
             EnviarTextoCrudoPt210(NombreImpresoraPt210, datos);
         }
@@ -1054,16 +1706,66 @@ namespace AutoParts.View
             webViewMain.CoreWebView2.PostWebMessageAsJson(json);
         }
 
-        // ==========================================================
-        // PRODUCTOS - LISTADO / NUEVO REGISTRO
-        // ==========================================================
+
+        private void ActualizarProductoConFotografia(JsonElement datos)
+        {
+            if (!datos.TryGetProperty("ProductoId", out JsonElement campoId) ||
+                !campoId.TryGetInt32(out int productoId) || productoId <= 0)
+                throw new ArgumentException("Selecciona un producto válido.");
+
+            Producto anterior = _productoBL.SelectAll()
+                .FirstOrDefault(p => p.ProductoId == productoId)
+                ?? throw new InvalidOperationException("El producto no existe en SQL Server.");
+
+            Producto producto = datos.Deserialize<Producto>(new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? throw new ArgumentException("Los datos de edición del producto no son válidos.");
+
+            if (producto.ProductoId != productoId)
+                throw new ArgumentException("El identificador de edición es incorrecto.");
+
+            producto.EstadoId = anterior.EstadoId;
+            producto.Imagen = anterior.Imagen;
+            producto.CodigoBarras = anterior.CodigoBarras;
+            ValidarProducto(producto);
+            ValidarEstadoMaestro(producto.EstadoId);
+
+            string? rutaImagenCreada = null;
+            try
+            {
+                if (datos.TryGetProperty("ImagenArchivo", out JsonElement imagenArchivo) &&
+                    imagenArchivo.ValueKind != JsonValueKind.Null &&
+                    imagenArchivo.ValueKind != JsonValueKind.Undefined)
+                {
+                    string nuevoNombre = GuardarFotografia(imagenArchivo);
+                    producto.Imagen = nuevoNombre;
+                    rutaImagenCreada = Path.Combine(CarpetaImagenes, nuevoNombre);
+                }
+
+                int resultado = _productoBL.Update(producto);
+                if (resultado <= 0)
+                    throw new InvalidOperationException("SQL Server no confirmó la actualización del producto.");
+            }
+            catch
+            {
+                if (rutaImagenCreada != null)
+                {
+                    try { File.Delete(rutaImagenCreada); }
+                    catch (IOException) { }
+                    catch (UnauthorizedAccessException) { }
+                }
+                throw;
+            }
+        }
+
         private void ProcesarProductoIntegrado(string tipo, JsonElement raiz)
         {
             try
             {
                 if (tipo == "productos:selectAll")
                 {
-                    // Devuelve la lista real, incluida una lista vacía si no hay productos.
+
                     var productos = _productoBL.SelectAll();
                     EnviarAlDashboard(new
                     {
@@ -1085,7 +1787,7 @@ namespace AutoParts.View
 
                     ValidarProducto(producto);
 
-                    // Nunca aceptar rutas de archivos suministradas por el HTML.
+
                     producto.Imagen = null;
                     string? rutaImagenCreada = null;
                     try
@@ -1105,7 +1807,7 @@ namespace AutoParts.View
                     }
                     catch
                     {
-                        // Si SQL Server falla, no dejamos la fotografía huérfana.
+
                         if (rutaImagenCreada != null)
                         {
                             try { File.Delete(rutaImagenCreada); }
@@ -1120,7 +1822,7 @@ namespace AutoParts.View
             }
             catch (Exception ex)
             {
-                // El HTML muestra la causa, sin quedarse en «Cargando...».
+
                 EnviarAlDashboard(new
                 {
                     type = "error",
@@ -1130,8 +1832,6 @@ namespace AutoParts.View
         }
 
 
-        // Guardar una sola fotografía principal en la carpeta privada de AutoParts.
-        // ImagenArchivo = { TipoMime: "image/jpeg|png|webp", Base64: "..." }.
         private static string GuardarFotografia(JsonElement archivo)
         {
             if (archivo.ValueKind != JsonValueKind.Object)
@@ -1286,7 +1986,7 @@ namespace AutoParts.View
 
                         break;
 
-                    // UPDATE - editar nombre y estado de una categoria existente.
+
                     case "categorias:actualizarIntegrado":
                         {
                             if (!raiz.TryGetProperty("data", out JsonElement datosEdicion) ||
@@ -1303,9 +2003,11 @@ namespace AutoParts.View
 
                             string nombreEdicion = (nombreEdicionJson.GetString() ?? "").Trim();
 
-                            if (!datosEdicion.TryGetProperty("EstadoId", out JsonElement estadoEdicionJson) ||
-                                !estadoEdicionJson.TryGetInt32(out int estadoIdEdicion))
-                                throw new ArgumentException("Selecciona un estado válido para la categoría.");
+                            Categoria anteriorCategoria = _categoriaBL.SelectAll()
+                                .FirstOrDefault(c => c.CategoriaId == categoriaIdEdicion)
+                                ?? throw new InvalidOperationException("La categoría no existe en SQL Server.");
+                            int estadoIdEdicion = anteriorCategoria.EstadoId;
+                            ValidarEstadoMaestro(estadoIdEdicion);
 
                             Categoria categoriaEditada = new Categoria
                             {
@@ -1314,7 +2016,7 @@ namespace AutoParts.View
                                 EstadoId = estadoIdEdicion
                             };
 
-                            // La BL valida nombre, longitud e identificadores.
+
                             int filasEditadas = _categoriaBL.Update(categoriaEditada);
                             if (filasEditadas <= 0)
                                 throw new InvalidOperationException("No se confirmó la actualización de la categoría.");
@@ -1327,7 +2029,7 @@ namespace AutoParts.View
                             break;
                         }
 
-                    // DELETE lógico - conserva la fila y cambia EstadoId a 2.
+
                     case "categorias:desactivarIntegrado":
                         {
                             if (!raiz.TryGetProperty("data", out JsonElement datosBaja) ||
@@ -1336,18 +2038,24 @@ namespace AutoParts.View
                                 !idBaja.TryGetInt32(out int categoriaIdBaja) || categoriaIdBaja <= 0)
                                 throw new ArgumentException("Selecciona una categoría válida para desactivar.");
 
-                            int filasDesactivadas = _categoriaBL.Delete(new Categoria
+                            Categoria anteriorCategoria = _categoriaBL.SelectAll()
+                                .FirstOrDefault(c => c.CategoriaId == categoriaIdBaja)
+                                ?? throw new InvalidOperationException("La categoría no existe en SQL Server.");
+                            ValidarEstadoMaestro(anteriorCategoria.EstadoId);
+                            int estadoEsperado = anteriorCategoria.EstadoId == 1 ? 2 : 1;
+
+                            int estadoDevuelto = _categoriaBL.Delete(new Categoria
                             {
                                 CategoriaId = categoriaIdBaja
                             });
 
-                            if (filasDesactivadas <= 0)
-                                throw new InvalidOperationException("No se confirmó la desactivación de la categoría.");
+                            if (estadoDevuelto != estadoEsperado)
+                                throw new InvalidOperationException("SQL Server no confirmó el cambio de estado esperado.");
 
                             EnviarAlDashboard(new
                             {
                                 type = "categorias:desactivada",
-                                data = new { CategoriaId = categoriaIdBaja, EstadoId = 2 }
+                                data = new { CategoriaId = categoriaIdBaja, EstadoId = estadoDevuelto }
                             });
                             break;
                         }
@@ -1364,9 +2072,6 @@ namespace AutoParts.View
         }
 
 
-        // ==========================================
-        // SUBCATEGORÍAS - MÓDULO INTEGRADO
-        // ==========================================
         private void ProcesarSubcategoriaIntegrada(
             string tipo,
             JsonElement raiz)
@@ -1375,15 +2080,32 @@ namespace AutoParts.View
             {
                 switch (tipo)
                 {
-                    case "subcategorias:selectAll":
-                        var subcategorias = _subcategoriaBL.SelectAll();
 
-                        EnviarAlDashboard(new
+                    case "subcategorias:selectAll":
                         {
-                            type = "subcategorias:list",
-                            data = subcategorias
-                        });
-                        break;
+                            var subcategorias = _subcategoriaBL.SelectAll();
+                            var categorias = _categoriaBL.SelectAll();
+
+                            var listado = subcategorias.Select(s => new
+                            {
+                                s.SubcategoriaId,
+                                s.CategoriaId,
+                                s.Nombre,
+                                s.EstadoId,
+                                CategoriaNombre = categorias
+                                    .FirstOrDefault(c => c.CategoriaId == s.CategoriaId)
+                                    ?.Nombre ?? ""
+                            }).ToList();
+
+                            EnviarAlDashboard(new
+                            {
+                                type = "subcategorias:list",
+                                data = listado
+                            });
+
+                            break;
+                        }
+
 
                     case "subcategorias:guardarIntegrado":
                         JsonElement datos = raiz.GetProperty("data");
@@ -1582,63 +2304,34 @@ namespace AutoParts.View
                 switch (tipo)
                 {
                     case "marcas:selectAll":
-                        var marcas = _marcaBL.SelectAll();
                         EnviarAlDashboard(new
                         {
                             type = "marcas:list",
-                            data = marcas
+                            data = _marcaBL.SelectAll()
                         });
                         break;
 
                     case "marcas:guardarIntegrado":
-                        JsonElement datos = raiz.GetProperty("data");
+                        if (!raiz.TryGetProperty("data", out JsonElement datos) ||
+                            datos.ValueKind != JsonValueKind.Object ||
+                            !datos.TryGetProperty("Nombre", out JsonElement nombreJson) ||
+                            nombreJson.ValueKind != JsonValueKind.String)
+                            throw new ArgumentException("Ingresa un nombre válido para la marca.");
 
-                        string nombre = (datos.GetProperty("Nombre").GetString() ?? "").Trim();
-                        int estadoId = datos.GetProperty("EstadoId").GetInt32();
+                        string nombre = (nombreJson.GetString() ?? string.Empty).Trim();
+                        if (nombre.Length == 0 || nombre.Length > 100)
+                            throw new ArgumentException("El nombre de la marca debe tener de 1 a 100 caracteres.");
 
-                        if (string.IsNullOrWhiteSpace(nombre) || nombre.Length > 100)
-                        {
-                            EnviarAlDashboard(new
-                            {
-                                type = "error",
-                                message = "Ingresa un nombre válido de hasta 100 caracteres."
-                            });
-                            return;
-                        }
-
-                        if (estadoId <= 0)
-                        {
-                            EnviarAlDashboard(new
-                            {
-                                type = "error",
-                                message = "Selecciona un estado válido."
-                            });
-                            return;
-                        }
-
-                        Marca marca = new Marca()
+                        int resultado = _marcaBL.Insert(new Marca
                         {
                             Nombre = nombre,
-                            EstadoId = estadoId
-                        };
+                            EstadoId = 1
+                        });
 
-                        int resultado = _marcaBL.Insert(marca);
+                        if (resultado <= 0)
+                            throw new InvalidOperationException("SQL Server no confirmó el registro de la marca.");
 
-                        if (resultado > 0)
-                        {
-                            EnviarAlDashboard(new
-                            {
-                                type = "marcas:guardado"
-                            });
-                        }
-                        else
-                        {
-                            EnviarAlDashboard(new
-                            {
-                                type = "error",
-                                message = "No se pudo registrar la marca."
-                            });
-                        }
+                        EnviarAlDashboard(new { type = "marcas:guardado" });
                         break;
                 }
             }
@@ -1646,7 +2339,7 @@ namespace AutoParts.View
             {
                 EnviarAlDashboard(new
                 {
-                    type = "error",
+                    type = "marcas:error",
                     message = ex.Message
                 });
             }
@@ -1771,35 +2464,20 @@ namespace AutoParts.View
 
                     case "puestos:guardarIntegrado":
                         JsonElement datos = raiz.GetProperty("data");
-                        string nombre = ObtenerTextoCliente(datos, "Nombre") ?? "";
-                        string? descripcion = ObtenerTextoCliente(datos, "Descripcion");
-                        int estadoId = datos.GetProperty("EstadoId").GetInt32();
+                        string nombre = (ObtenerTextoCliente(datos, "Nombre") ?? "").Trim();
+                        string descripcion = (ObtenerTextoCliente(datos, "Descripcion") ?? "").Trim();
 
                         if (string.IsNullOrWhiteSpace(nombre) || nombre.Length > 100)
-                        {
-                            EnviarAlDashboard(new
-                            {
-                                type = "error",
-                                message = "Ingresa un nombre válido de hasta 100 caracteres."
-                            });
-                            return;
-                        }
+                            throw new ArgumentException("Ingresa un nombre válido de hasta 100 caracteres.");
 
-                        if (estadoId <= 0)
-                        {
-                            EnviarAlDashboard(new
-                            {
-                                type = "error",
-                                message = "Selecciona un estado válido."
-                            });
-                            return;
-                        }
+                        if (string.IsNullOrWhiteSpace(descripcion) || descripcion.Length > 500)
+                            throw new ArgumentException("Ingresa una descripción válida de hasta 500 caracteres.");
 
                         Puesto puesto = new Puesto()
                         {
                             Nombre = nombre,
                             Descripcion = descripcion,
-                            EstadoId = estadoId
+                            EstadoId = 1
                         };
 
                         int resultado = _puestoBL.Insert(puesto);
@@ -1829,6 +2507,46 @@ namespace AutoParts.View
                     type = "error",
                     message = ex.Message
                 });
+            }
+        }
+
+        private void ProcesarEmpleadoIntegrado(string tipo, JsonElement raiz)
+        {
+            try
+            {
+                if (tipo == "empleados:selectAll")
+                {
+                    EnviarAlDashboard(new
+                    {
+                        type = "empleados:list",
+                        data = _empleadoBL.SelectAll()
+                    });
+                    return;
+                }
+
+                if (tipo != "empleados:guardarIntegrado") return;
+
+                if (!raiz.TryGetProperty("data", out JsonElement datos) ||
+                    datos.ValueKind != JsonValueKind.Object)
+                    throw new ArgumentException("No se recibieron los datos del empleado.");
+
+                Empleado empleado = datos.Deserialize<Empleado>(new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? throw new ArgumentException("Los datos del empleado no son válidos.");
+
+                empleado.EstadoId = 1;
+                ValidarEmpleado(empleado);
+
+                int resultado = _empleadoBL.Insert(empleado);
+                if (resultado <= 0)
+                    throw new InvalidOperationException("SQL Server no confirmó el registro del empleado.");
+
+                EnviarAlDashboard(new { type = "empleados:guardado" });
+            }
+            catch (Exception ex)
+            {
+                EnviarAlDashboard(new { type = "empleados:error", message = ex.Message });
             }
         }
 
@@ -1896,13 +2614,42 @@ namespace AutoParts.View
             }
         }
 
-        // ==========================================================
-        // MÓDULOS ADICIONALES DEL DASHBOARD
-        // Estas claves coinciden con categorias-integradas_21_modulos.js.
-        // Las consultas quedan listas. Los módulos transaccionales
-        // solo permiten consultar hasta que existan operaciones
-        // atómicas en BusinessLogic / DataAccess.
-        // ==========================================================
+
+        private void ProcesarModeloIntegrado(string accion, JsonElement raiz)
+        {
+            if (accion == "selectAll")
+            {
+                EnviarAlDashboard(new
+                {
+                    type = "modelos:list",
+                    data = _modeloBL.SelectAll()
+                });
+                return;
+            }
+
+            if (accion != "guardarIntegrado") return;
+
+            if (!raiz.TryGetProperty("data", out JsonElement datos) ||
+                datos.ValueKind != JsonValueKind.Object)
+                throw new ArgumentException("No se recibieron los datos del modelo.");
+
+            Modelo modelo = datos.Deserialize<Modelo>(new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? throw new ArgumentException("Los datos del modelo no son válidos.");
+
+            ValidarModelo(modelo);
+            if (!_marcaBL.SelectAll().Any(m => m.MarcaId == modelo.MarcaId && m.EstadoId == 1))
+                throw new ArgumentException("Selecciona una marca activa.");
+
+            modelo.EstadoId = 1;
+            int resultado = _modeloBL.Insert(modelo);
+            if (resultado <= 0)
+                throw new InvalidOperationException("SQL Server no confirmó el registro del modelo.");
+
+            EnviarAlDashboard(new { type = "modelos:guardado" });
+        }
+
         private void ProcesarModuloAdicional(string tipo, JsonElement raiz)
         {
             const string consulta = ":selectAll";
@@ -1923,7 +2670,7 @@ namespace AutoParts.View
             }
             else
             {
-                return; // No intercepta otras funciones del Dashboard.
+                return;
             }
 
             try
@@ -1936,8 +2683,7 @@ namespace AutoParts.View
                         break;
 
                     case "modelos":
-                        ProcesarEntidad<Modelo>(modulo, accion, raiz,
-                            _modeloBL.SelectAll, _modeloBL.Insert, ValidarModelo);
+                        ProcesarModeloIntegrado(accion, raiz);
                         break;
 
                     case "vehiculos":
@@ -1951,16 +2697,12 @@ namespace AutoParts.View
                         break;
 
                     case "inventario":
-                        // Alta inicial de existencias; movimientos de stock
-                        // por compras, ventas o garantías necesitan transacción.
+
+
                         ProcesarEntidad<Inventario>(modulo, accion, raiz,
                             _inventarioBL.SelectAll, _inventarioBL.Insert, ValidarInventario);
                         break;
 
-                    case "empleados":
-                        ProcesarEntidad<Empleado>(modulo, accion, raiz,
-                            _empleadoBL.SelectAll, _empleadoBL.Insert, ValidarEmpleado);
-                        break;
 
                     case "compras":
                         ProcesarEntidad<Compra>(modulo, accion, raiz, _compraBL.SelectAll);
@@ -1989,7 +2731,7 @@ namespace AutoParts.View
                     case "usuarios":
                         if (accion == "selectAll")
                         {
-                            // Nunca enviar contraseñas o hashes al HTML.
+
                             var usuarios = _usuarioBL.SelectAll().Select(u => new
                             {
                                 u.UsuarioId,
@@ -2030,8 +2772,7 @@ namespace AutoParts.View
             }
         }
 
-        // Registro de usuarios desde el Dashboard. Las contraseñas solo se usan
-        // en memoria para crear el hash dentro de UsuarioBL.Insert().
+
         private void RegistrarUsuarioIntegrado(JsonElement raiz)
         {
             if (_sesionActual == null || !PermisosSistema.EsAdministrador(_sesionActual))
@@ -2052,10 +2793,10 @@ namespace AutoParts.View
 
             int empleadoId = LeerId("EmpleadoId");
             int rolId = LeerId("RolId");
-            int estadoId = LeerId("EstadoId");
+            const int estadoId = 1;
             string nombreUsuario = (ObtenerTextoCliente(datos, "NombreUsuario") ?? "").Trim();
 
-            // No registrar ni mostrar jamás la contraseña recibida en errores o logs.
+
             if (!datos.TryGetProperty("Contrasena", out JsonElement campoClave) ||
                 campoClave.ValueKind != JsonValueKind.String)
                 throw new ArgumentException("Ingresa una contraseña válida.");
@@ -2070,15 +2811,12 @@ namespace AutoParts.View
                 string.IsNullOrWhiteSpace(contrasena))
                 throw new ArgumentException("La contraseña debe tener de 8 a 72 caracteres.");
 
-            if (!_empleadoBL.SelectAll().Any(e => e.EmpleadoId == empleadoId))
-                throw new ArgumentException("El empleado seleccionado no existe.");
-            if (!_rolBL.SelectAll().Any(r => r.RolId == rolId))
-                throw new ArgumentException("El rol seleccionado no existe.");
-            if (!_estadoBL.SelectAll().Any(e => e.EstadoId == estadoId))
-                throw new ArgumentException("El estado seleccionado no existe.");
+            if (!_empleadoBL.SelectAll().Any(e => e.EmpleadoId == empleadoId && e.EstadoId == 1))
+                throw new ArgumentException("Selecciona un empleado activo.");
+            if (!_rolBL.SelectAll().Any(r => r.RolId == rolId && r.EstadoId == 1))
+                throw new ArgumentException("Selecciona un rol activo.");
 
-            // Comprobación amigable; las restricciones UNIQUE de SQL Server
-            // siguen siendo la protección definitiva ante registros simultáneos.
+
             var existentes = _usuarioBL.SelectAll();
             if (existentes.Any(u => u.EmpleadoId == empleadoId))
                 throw new ArgumentException("Este empleado ya tiene una cuenta.");
@@ -2086,7 +2824,7 @@ namespace AutoParts.View
                     StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException("Ese nombre de usuario ya está registrado.");
 
-            // UsuarioBL.Insert genera PasswordHelper.CrearHash; no hashear aquí.
+
             var nuevo = new Usuario
             {
                 EmpleadoId = empleadoId,
@@ -2110,9 +2848,7 @@ namespace AutoParts.View
             EnviarAlDashboard(new { type = "usuarios:guardado" });
         }
 
-        // Comportamiento compartido para listados y registros básicos.
-        // Para compras, ventas y garantías Insert no se expone aquí:
-        // sus cabeceras, detalles y stock deben procesarse juntos.
+
         private void ProcesarEntidad<T>(
             string modulo,
             string accion,
@@ -2158,7 +2894,7 @@ namespace AutoParts.View
             T entidad = datos.Deserialize<T>(opciones)
                 ?? throw new ArgumentException("Los datos del registro están incompletos.");
 
-            // Las validaciones obligatorias se ejecutan en C#.
+
             validar?.Invoke(entidad);
 
             int resultado = insertar(entidad);
@@ -2170,10 +2906,7 @@ namespace AutoParts.View
             EnviarAlDashboard(new { type = modulo + ":guardado" });
         }
 
-        // ==========================================================
-        // VALIDACIONES DE ENTIDADES QUE SE PUEDEN GUARDAR DE FORMA
-        // INDIVIDUAL DESDE LOS HTML DEL DASHBOARD
-        // ==========================================================
+
         private static void ValidarProducto(Producto p)
         {
             RequerirTexto(p.CodigoOEM, 50, "código OEM");
@@ -2193,13 +2926,11 @@ namespace AutoParts.View
         {
             RequerirTexto(modelo.Nombre, 100, "nombre del modelo");
             RequerirId(modelo.MarcaId, "marca");
-            RequerirId(modelo.EstadoId, "estado");
         }
 
         private static void ValidarVehiculo(Vehiculo vehiculo)
         {
             RequerirId(vehiculo.ModeloId, "modelo");
-            RequerirId(vehiculo.EstadoId, "estado");
             RequerirTexto(vehiculo.TipoMotor, 100, "tipo de motor");
 
             if (vehiculo.Anio < 1886 || vehiculo.Anio > DateTime.Now.Year + 2)
@@ -2230,7 +2961,6 @@ namespace AutoParts.View
         private static void ValidarEmpleado(Empleado empleado)
         {
             RequerirId(empleado.PuestoId, "puesto");
-            RequerirId(empleado.EstadoId, "estado");
             RequerirTexto(empleado.Nombre, 100, "nombre");
             RequerirTexto(empleado.Apellido, 100, "apellido");
             RequerirTexto(empleado.DUI, 10, "DUI");

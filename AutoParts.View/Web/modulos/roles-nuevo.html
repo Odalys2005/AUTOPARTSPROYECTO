@@ -71,7 +71,6 @@
             box-shadow: 0 0 10px #e41b303b;
         }
         input::placeholder { color: #85858f; }
-        .ayuda { color: #898a94; font-size: 11px; margin-top: 7px; }
         .requerido { color: #ff4753; }
         .mensaje {
             color: #ffb64e;
@@ -114,24 +113,58 @@
             .panel { padding: 18px; }
             .acciones { flex-wrap: wrap; }
         }
+        .modal-exito[hidden] { display: none; }
+        .modal-exito {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .8);
+            display: grid;
+            place-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        .modal-exito-panel {
+            width: min(100%, 420px);
+            padding: 32px 26px;
+            text-align: center;
+            background: linear-gradient(145deg, #22161b, #101115);
+            border: 1px solid #79404a;
+            border-radius: 16px;
+            box-shadow: 0 20px 65px #000b;
+        }
+        .exito-simbolo {
+            width: 62px;
+            height: 62px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            margin: 0 auto 18px;
+            background: #113d29;
+            border: 1px solid #34855d;
+            color: #83edab;
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .modal-exito-panel h2 { margin: 0 0 10px; font-size: 23px; }
+        .modal-exito-panel p { color: #c9c5cb; font-size: 13px; margin: 0 0 24px; }
+        .modal-exito-panel button { min-width: 124px; }
     </style>
 </head>
 <body>
     <div class="contenedor">
         <div class="encabezado">
             <div>
-                <div class="subtitulo">AUTOPARTS · ADMINISTRACIÓN</div>
+                
                 <h1>Nuevo rol</h1>
-                <p class="descripcion">Registra un nuevo rol de usuario en el sistema.</p>
+                
             </div>
-            <div class="icono">+</div>
+            
         </div>
         <div class="panel">
             <form id="formRol">
                 <div class="campo">
                     <label for="nombre">Nombre del rol <span class="requerido">*</span></label>
-                    <input type="text" id="nombre" maxlength="100" placeholder="Ej. Administrador" required>
-                    <div class="ayuda">Ingresa el nombre que identificará el rol.</div>
+                    <input type="text" id="nombre" maxlength="100" required>
                 </div>
                 <div id="mensaje" class="mensaje" role="alert"></div>
                 <div class="acciones">
@@ -139,6 +172,14 @@
                     <button class="guardar" type="submit" id="guardar">Guardar rol</button>
                 </div>
             </form>
+        </div>
+    </div>
+    <div id="modalExito" class="modal-exito" hidden>
+        <div class="modal-exito-panel" role="dialog" aria-modal="true" aria-labelledby="tituloExito">
+            <div class="exito-simbolo" aria-hidden="true">✓</div>
+            <h2 id="tituloExito">¡Rol guardado!</h2>
+            <p>El rol se registró correctamente.</p>
+            <button type="button" class="guardar" id="aceptarExito">Aceptar</button>
         </div>
     </div>
     <script>
@@ -193,13 +234,22 @@
             guardar.textContent = "Guardar rol";
         }
 
+        document.getElementById("aceptarExito").addEventListener("click", () => {
+            enviar({ type: "cancelar" });
+        });
+
         function recibirRespuesta(evento) {
             let respuesta = evento.data;
             if (typeof respuesta === "string") {
                 try { respuesta = JSON.parse(respuesta); } catch { return; }
             }
             if (!respuesta || typeof respuesta !== "object") return;
-            if (respuesta.type === "error") {
+            if (respuesta.type === "roles:guardado") {
+                document.getElementById("modalExito").hidden = false;
+                document.getElementById("aceptarExito").focus();
+                return;
+            }
+            if (respuesta.type === "error" || respuesta.type === "roles:error") {
                 mensaje.textContent = respuesta.message || "No se pudo guardar el rol.";
                 restaurarGuardado();
             }

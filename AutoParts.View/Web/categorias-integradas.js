@@ -1,20 +1,3 @@
-// VERSIÓN CORREGIDA: Productos + 21 módulos; reemplaza TODO el JS viejo.
-// Prueba en DevTools: window.AUTOPARTS_INTEGRADOS_VERSION
-window.AUTOPARTS_INTEGRADOS_VERSION = '21-modulos-garantias-integradas-20261031';
-console.info('AutoParts módulos integrados cargados:', window.AUTOPARTS_INTEGRADOS_VERSION);
-
-// ============================================================
-// AUTOPARTS - MÓDULOS INTEGRADOS EN EL DASHBOARD
-// 21 entidades | Un solo MainForm + WebView2
-//
-// Este archivo se carga DESPUÉS de app.js desde index.html.
-// Mantiene los mensajes actuales y prepara los módulos futuros.
-// Para un módulo nuevo se crean sus archivos en Web/modulos/.
-// Las operaciones SQL todavía deben implementarse en MainForm.cs.
-// ============================================================
-
-// Nombres EXACTOS de data-section en index.html, vinculados
-// con el nombre del archivo HTML en Web/modulos/.
 const configuracionModulosIntegrados = {
     'Productos':                 { slug: 'productos',           descripcion: 'Administración del catálogo de repuestos y sus precios.' },
     'Categorías':                { slug: 'categorias',          descripcion: 'Administración de categorías de repuestos.' },
@@ -44,9 +27,6 @@ const slugsModulosIntegrados = new Set(
     Object.values(configuracionModulosIntegrados).map(item => item.slug)
 );
 
-// ============================================================
-// ABRIR MÓDULO DENTRO DEL DASHBOARD
-// ============================================================
 function abrirModuloEnDashboard(modulo, titulo, descripcion, archivo) {
     const dashboard = document.getElementById('dashboardContent');
     const vista = document.getElementById('sectionView');
@@ -92,7 +72,6 @@ function abrirModuloEnDashboard(modulo, titulo, descripcion, archivo) {
     window.scrollTo(0, 0);
 }
 
-// Forma alternativa de abrir cualquier módulo por su nombre visible.
 function abrirModuloPorNombre(nombre) {
     const datos = configuracionModulosIntegrados[nombre];
     if (!datos) return;
@@ -105,7 +84,6 @@ function abrirModuloPorNombre(nombre) {
     );
 }
 
-// Conservar los nombres de funciones usados por versiones anteriores de app.js.
 function abrirProductosEnDashboard() { abrirModuloPorNombre('Productos'); }
 function abrirCategoriasEnDashboard() { abrirModuloPorNombre('Categorías'); }
 function abrirSubcategoriasEnDashboard() { abrirModuloPorNombre('Subcategorías'); }
@@ -116,9 +94,6 @@ function abrirProveedoresEnDashboard() { abrirModuloPorNombre('Proveedores'); }
 function abrirPuestosEnDashboard() { abrirModuloPorNombre('Puestos'); }
 function abrirRolesEnDashboard() { abrirModuloPorNombre('Roles'); }
 
-// ============================================================
-// FUNCIONES AUXILIARES
-// ============================================================
 function obtenerMarcoIntegrado() {
     return document.getElementById('moduloIntegrado');
 }
@@ -141,9 +116,6 @@ function rutaNuevo(modulo) {
     return `modulos/${modulo}-nuevo.html`;
 }
 
-// ============================================================
-// VOLVER AL DASHBOARD
-// ============================================================
 const botonVolver = document.getElementById('backButton');
 if (botonVolver) {
     botonVolver.addEventListener('click', () => {
@@ -153,8 +125,6 @@ if (botonVolver) {
     });
 }
 
-// Al entrar en una sección no integrada (Configuración, Inicio),
-// volvemos a mostrar el encabezado habitual.
 document.querySelectorAll('.nav-link').forEach(enlace => {
     enlace.addEventListener('click', () => {
         if (!modulosIntegrados.includes(enlace.dataset.section)) {
@@ -171,16 +141,6 @@ document.querySelectorAll('[data-open]').forEach(boton => {
     });
 });
 
-// ============================================================
-// MENSAJES DESDE EL HTML DEL MÓDULO HACIA C#
-//
-// Ejemplos:
-//   productos:abrirNuevo   => abre productos-nuevo.html
-//   guardar                => productos:guardarIntegrado
-//   productos:selectAll    => reenvía consulta a MainForm.cs
-//   categorias:selectAll   => reenvía consulta a MainForm.cs
-//   obtenerEstados         => reenvía consulta a MainForm.cs
-// ============================================================
 window.addEventListener('message', evento => {
     const marco = obtenerMarcoIntegrado();
     if (!marco || evento.source !== marco.contentWindow) return;
@@ -204,27 +164,21 @@ window.addEventListener('message', evento => {
         return;
     }
 
-    // COMPRAS: reenviar la compra completa sin pasar por guardarIntegrado.
-    // La transaccion y el stock se gestionan en SQL Server mediante CompraBL.
     if (modulo === 'compras' && mensaje.type === 'compras:registrarCompleta') {
         enviarACSharp(mensaje);
         return;
     }
 
-    // PASO 5: reenviar el carrito completo sin usar guardarIntegrado.
     if (modulo === 'ventas' && mensaje.type === 'ventas:registrarCompleta') {
         enviarACSharp(mensaje);
         return;
     }
 
-    // PT-210: solicitar impresión de una venta YA registrada (sin guardar otra vez).
     if (modulo === 'ventas' && mensaje.type === 'ventas:imprimirTicket') {
         enviarACSharp(mensaje);
         return;
     }
 
-    // GARANTÍAS: operaciones especiales, validadas por MainForm y SQL.
-    // No utilizar la inserción genérica para solicitudes ni entregas.
     const operacionesGarantia = {
         'garantias:registrarSolicitud': 'garantias',
         'garantias:evaluar': 'garantias',
@@ -237,7 +191,6 @@ window.addEventListener('message', evento => {
         return;
     }
 
-    // CRUD Categorías: reenviar actualización y desactivación al MainForm.
     if (modulo === 'categorias' && (
         mensaje.type === 'categorias:actualizarIntegrado' ||
         mensaje.type === 'categorias:desactivarIntegrado'
@@ -245,6 +198,102 @@ window.addEventListener('message', evento => {
         enviarACSharp(mensaje);
         return;
     }
+  
+
+    if (modulo === 'subcategorias' && (
+        mensaje.type === 'subcategorias:actualizarIntegrado' ||
+        mensaje.type === 'subcategorias:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+    if (modulo === 'productos' && (
+        mensaje.type === 'productos:actualizarIntegrado' ||
+        mensaje.type === 'productos:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+    if (modulo === 'empleados' && (
+        mensaje.type === 'empleados:actualizarIntegrado' ||
+        mensaje.type === 'empleados:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'marcas' && (
+        mensaje.type === 'marcas:actualizarIntegrado' ||
+        mensaje.type === 'marcas:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'modelos' && (
+        mensaje.type === 'modelos:actualizarIntegrado' ||
+        mensaje.type === 'modelos:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'vehiculos' && (
+        mensaje.type === 'vehiculos:actualizarIntegrado' ||
+        mensaje.type === 'vehiculos:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'compatibilidad' && (
+        mensaje.type === 'compatibilidad:actualizarIntegrado' ||
+        mensaje.type === 'compatibilidad:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'usuarios' && (
+        mensaje.type === 'usuarios:actualizarIntegrado' ||
+        mensaje.type === 'usuarios:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'proveedores' && (
+        mensaje.type === 'proveedores:actualizarIntegrado' ||
+        mensaje.type === 'proveedores:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'clientes' && (
+        mensaje.type === 'clientes:actualizarIntegrado' ||
+        mensaje.type === 'clientes:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'puestos' && (
+        mensaje.type === 'puestos:actualizarIntegrado' ||
+        mensaje.type === 'puestos:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
+    if (modulo === 'roles' && (
+        mensaje.type === 'roles:actualizarIntegrado' ||
+        mensaje.type === 'roles:desactivarIntegrado'
+    )) {
+        enviarACSharp(mensaje);
+        return;
+    }
+
 
     if (mensaje.type === 'guardar') {
         if (modulo === 'garantias' || modulo === 'reemplazos-garantia') {
@@ -263,8 +312,6 @@ window.addEventListener('message', evento => {
         return;
     }
 
-    // Consultas de cualquier entidad, incluso cuando otro módulo
-    // necesita categorías, subcategorías, proveedores o estados.
     const tipoConsulta = mensaje.type.endsWith(':selectAll')
         ? mensaje.type.slice(0, -':selectAll'.length)
         : '';
@@ -274,16 +321,6 @@ window.addEventListener('message', evento => {
     }
 });
 
-// ============================================================
-// RESPUESTAS DE C# HACIA EL HTML DEL MÓDULO
-//
-//   productos:guardado      => vuelve a productos.html
-//   productos:list          => envía datos al iframe
-//   subcategorias:list      => sirve como lista auxiliar
-//   categorias:list         => sirve como lista auxiliar
-//   estados                 => llena combos de estado
-//   error                   => muestra error al iframe
-// ============================================================
 if (window.chrome?.webview?.addEventListener) {
     window.chrome.webview.addEventListener('message', evento => {
         let mensaje = evento.data;
@@ -304,8 +341,6 @@ if (window.chrome?.webview?.addEventListener) {
         const modulo = marco.dataset.modulo;
         if (!slugsModulosIntegrados.has(modulo)) return;
 
-        // COMPRAS: devolver confirmacion o error al formulario de compra.
-        // No navegar al listado automáticamente: el HTML muestra total y advertencias.
         if (modulo === 'compras' && (
             mensaje.type === 'compras:registrada' ||
             mensaje.type === 'compras:error'
@@ -314,13 +349,11 @@ if (window.chrome?.webview?.addEventListener) {
             return;
         }
 
-        // PASO 5: entregar al POS la confirmación con ID y total de la venta.
         if (modulo === 'ventas' && mensaje.type === 'ventas:registrada') {
             marco.contentWindow?.postMessage(mensaje, '*');
             return;
         }
 
-        // PT-210: respuestas del servicio de impresión de C# al POS.
         if (modulo === 'ventas' && (
             mensaje.type === 'ventas:ticketImpreso' ||
             mensaje.type === 'ventas:ticketError'
@@ -329,9 +362,6 @@ if (window.chrome?.webview?.addEventListener) {
             return;
         }
 
-        // Respuestas de las operaciones de garantía y entrega.
-        // Mantener el iframe actual para mostrar al usuario el resultado,
-        // incluso cuando queda PENDIENTE_REEMPLAZO.
         const respuestasGarantias = new Set([
             'garantias:solicitudRegistrada',
             'garantias:solicitudError',
@@ -348,7 +378,6 @@ if (window.chrome?.webview?.addEventListener) {
             return;
         }
 
-        // Respuestas del CRUD de Categorías; mantener el listado visible.
         if (modulo === 'categorias' && (
             mensaje.type === 'categorias:actualizada' ||
             mensaje.type === 'categorias:desactivada' ||
@@ -357,9 +386,163 @@ if (window.chrome?.webview?.addEventListener) {
             marco.contentWindow?.postMessage(mensaje, '*');
             return;
         }
+        
+
+        if (modulo === 'subcategorias' && (
+            mensaje.type === 'subcategorias:actualizada' ||
+            mensaje.type === 'subcategorias:desactivada' ||
+            mensaje.type === 'subcategorias:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+        
+
+        if (modulo === 'productos' && (
+            mensaje.type === 'productos:actualizada' ||
+            mensaje.type === 'productos:desactivada' ||
+            mensaje.type === 'productos:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'proveedores' && (
+            mensaje.type === 'proveedores:actualizada' ||
+            mensaje.type === 'proveedores:desactivada' ||
+            mensaje.type === 'proveedores:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'clientes' && (
+            mensaje.type === 'clientes:actualizada' ||
+            mensaje.type === 'clientes:desactivada' ||
+            mensaje.type === 'clientes:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'empleados' && (
+            mensaje.type === 'empleados:actualizada' ||
+            mensaje.type === 'empleados:desactivada' ||
+            mensaje.type === 'empleados:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'marcas' && (
+            mensaje.type === 'marcas:actualizada' ||
+            mensaje.type === 'marcas:desactivada' ||
+            mensaje.type === 'marcas:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'modelos' && (
+            mensaje.type === 'modelos:actualizada' ||
+            mensaje.type === 'modelos:desactivada' ||
+            mensaje.type === 'modelos:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'vehiculos' && (
+            mensaje.type === 'vehiculos:actualizada' ||
+            mensaje.type === 'vehiculos:desactivada' ||
+            mensaje.type === 'vehiculos:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'compatibilidad' && (
+            mensaje.type === 'compatibilidad:actualizada' ||
+            mensaje.type === 'compatibilidad:desactivada' ||
+            mensaje.type === 'compatibilidad:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'usuarios' && (
+            mensaje.type === 'usuarios:actualizada' ||
+            mensaje.type === 'usuarios:desactivada' ||
+            mensaje.type === 'usuarios:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'puestos' && (
+            mensaje.type === 'puestos:actualizada' ||
+            mensaje.type === 'puestos:desactivada' ||
+            mensaje.type === 'puestos:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'roles' && (
+            mensaje.type === 'roles:actualizada' ||
+            mensaje.type === 'roles:desactivada' ||
+            mensaje.type === 'roles:error'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'roles' && mensaje.type === 'roles:guardado') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'puestos' && mensaje.type === 'puestos:guardado') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'empleados' && mensaje.type === 'empleados:guardado') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'marcas' && mensaje.type === 'marcas:guardado') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'modelos' && mensaje.type === 'modelos:guardado') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'vehiculos' && mensaje.type === 'vehiculos:guardado') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'compatibilidad' && mensaje.type === 'compatibilidad:guardado') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
+        if (modulo === 'usuarios' && mensaje.type === 'usuarios:guardado') {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
 
         if (mensaje.type === `${modulo}:guardado`) {
-            marco.src = rutaListado(modulo);
+            if (modulo === 'proveedores' || modulo === 'subcategorias' || modulo === 'categorias' || modulo === 'productos' || modulo === 'clientes') {
+                marco.contentWindow?.postMessage(mensaje, '*');
+            } else {
+                marco.src = rutaListado(modulo);
+            }
             return;
         }
 

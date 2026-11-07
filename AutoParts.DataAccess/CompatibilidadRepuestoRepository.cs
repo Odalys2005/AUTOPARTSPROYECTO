@@ -20,27 +20,31 @@ namespace AutoParts.DataAccess
             List<CompatibilidadRepuesto> result = new List<CompatibilidadRepuesto>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spCompatibilidadRepuestoSelectAll", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spCompatibilidadRepuestoSelectAll", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    int idOrdinal = dr.GetOrdinal("CompatibilidadId");
+                    int productoOrdinal = dr.GetOrdinal("ProductoId");
+                    int vehiculoOrdinal = dr.GetOrdinal("VehiculoId");
+                    int estadoOrdinal = dr.GetOrdinal("EstadoId");
 
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    while (dr.Read())
                     {
-                        while (dr.Read())
+                        CompatibilidadRepuesto entity = new CompatibilidadRepuesto
                         {
-                            CompatibilidadRepuesto entity = new CompatibilidadRepuesto();
-
-                            entity.CompatibilidadId = dr.GetInt32(0);
-                            entity.ProductoId = dr.GetInt32(1);
-                            entity.VehiculoId = dr.IsDBNull(2)
+                            CompatibilidadId = dr.GetInt32(idOrdinal),
+                            ProductoId = dr.GetInt32(productoOrdinal),
+                            VehiculoId = dr.IsDBNull(vehiculoOrdinal)
                                 ? null
-                                : dr.GetInt32(2);
+                                : dr.GetInt32(vehiculoOrdinal),
+                            EstadoId = dr.GetInt32(estadoOrdinal)
+                        };
 
-                            result.Add(entity);
-                        }
+                        result.Add(entity);
                     }
                 }
             }
@@ -50,27 +54,65 @@ namespace AutoParts.DataAccess
 
         public int Insert(CompatibilidadRepuesto entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spCompatibilidadRepuestoInsert", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spCompatibilidadRepuestoInsert", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@ProductoId", SqlDbType.Int).Value = entity.ProductoId;
+                cmd.Parameters.Add("@VehiculoId", SqlDbType.Int).Value =
+                    (object?)entity.VehiculoId ?? DBNull.Value;
 
-                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
-                        .Value = entity.ProductoId;
-
-                    cmd.Parameters.Add("@VehiculoId", SqlDbType.Int)
-                        .Value = (object?)entity.VehiculoId ?? DBNull.Value;
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                conn.Open();
+                return cmd.ExecuteNonQuery();
             }
+        }
 
-            return result;
+        public int Update(CompatibilidadRepuesto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spCompatibilidadRepuestoUpdate", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@CompatibilidadId", SqlDbType.Int).Value = entity.CompatibilidadId;
+                cmd.Parameters.Add("@ProductoId", SqlDbType.Int).Value = entity.ProductoId;
+                cmd.Parameters.Add("@VehiculoId", SqlDbType.Int).Value =
+                    (object?)entity.VehiculoId ?? DBNull.Value;
+
+                conn.Open();
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
+        public int Delete(CompatibilidadRepuesto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spCompatibilidadRepuestoDelete", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@CompatibilidadId", SqlDbType.Int).Value = entity.CompatibilidadId;
+
+                conn.Open();
+                object? resultado = cmd.ExecuteScalar();
+
+                if (resultado == null || resultado == DBNull.Value)
+                    throw new InvalidOperationException("SQL Server no confirmó el cambio de estado.");
+
+                int estadoId = Convert.ToInt32(resultado);
+
+                if (estadoId != 1 && estadoId != 2)
+                    throw new InvalidOperationException("SQL Server devolvió un estado no válido.");
+
+                return estadoId;
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,18 +10,21 @@ namespace AutoParts.Entity
         public int CompatibilidadId { get; set; }
         public int ProductoId { get; set; }
         public int? VehiculoId { get; set; }
+        public int EstadoId { get; set; }
 
         public CompatibilidadRepuesto()
         {
-
         }
 
         public CompatibilidadRepuesto(int compatibilidadId,
-                                      int productoId, int? vehiculoId)
+                                      int productoId,
+                                      int? vehiculoId,
+                                      int estadoId)
         {
             CompatibilidadId = compatibilidadId;
             ProductoId = productoId;
             VehiculoId = vehiculoId;
+            EstadoId = estadoId;
         }
     }
 }

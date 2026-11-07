@@ -12,7 +12,7 @@ namespace AutoParts.DataAccess
 
         public EmpleadoRepository(ConnectionFactory connectionFactory)
         {
-            _connectionFactory = connectionFactory;
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         public List<Empleado> SelectAll()
@@ -20,30 +20,37 @@ namespace AutoParts.DataAccess
             List<Empleado> result = new List<Empleado>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spEmpleadoSelectAll", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spEmpleadoSelectAll", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    int colEmpleadoId = dr.GetOrdinal("EmpleadoId");
+                    int colPuestoId = dr.GetOrdinal("PuestoId");
+                    int colNombre = dr.GetOrdinal("Nombre");
+                    int colApellido = dr.GetOrdinal("Apellido");
+                    int colDUI = dr.GetOrdinal("DUI");
+                    int colTelefono = dr.GetOrdinal("Telefono");
+                    int colCorreo = dr.GetOrdinal("Correo");
+                    int colEstadoId = dr.GetOrdinal("EstadoId");
 
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    while (dr.Read())
                     {
-                        while (dr.Read())
+                        Empleado entity = new Empleado
                         {
-                            Empleado entity = new Empleado();
+                            EmpleadoId = dr.GetInt32(colEmpleadoId),
+                            PuestoId = dr.GetInt32(colPuestoId),
+                            Nombre = dr.GetString(colNombre),
+                            Apellido = dr.GetString(colApellido),
+                            DUI = dr.GetString(colDUI),
+                            Telefono = dr.GetString(colTelefono),
+                            Correo = dr.GetString(colCorreo),
+                            EstadoId = dr.GetInt32(colEstadoId)
+                        };
 
-                            entity.EmpleadoId = dr.GetInt32(0);
-                            entity.PuestoId = dr.GetInt32(1);
-                            entity.Nombre = dr.GetString(2);
-                            entity.Apellido = dr.GetString(3);
-                            entity.DUI = dr.GetString(4);
-                            entity.Telefono = dr.GetString(5);
-                            entity.Correo = dr.GetString(6);
-                            entity.EstadoId = dr.GetInt32(7);
-
-                            result.Add(entity);
-                        }
+                        result.Add(entity);
                     }
                 }
             }
@@ -53,117 +60,78 @@ namespace AutoParts.DataAccess
 
         public int Insert(Empleado entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spEmpleadoInsert", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spEmpleadoInsert", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@PuestoId", SqlDbType.Int)
-                        .Value = entity.PuestoId;
+                cmd.Parameters.Add("@PuestoId", SqlDbType.Int).Value = entity.PuestoId;
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100).Value = entity.Nombre;
+                cmd.Parameters.Add("@Apellido", SqlDbType.VarChar, 100).Value = entity.Apellido;
+                cmd.Parameters.Add("@DUI", SqlDbType.VarChar, 10).Value = entity.DUI;
+                cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25).Value = entity.Telefono;
+                cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150).Value = entity.Correo;
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int).Value = 1;
 
-                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
-                        .Value = entity.Nombre;
-
-                    cmd.Parameters.Add("@Apellido", SqlDbType.VarChar, 100)
-                        .Value = entity.Apellido;
-
-                    cmd.Parameters.Add("@DUI", SqlDbType.VarChar, 10)
-                        .Value = entity.DUI;
-
-                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
-                        .Value = entity.Telefono;
-
-                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
-                        .Value = entity.Correo;
-
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                conn.Open();
+                int result = cmd.ExecuteNonQuery();
+                return result > 0 ? result : 1;
             }
-
-            return result;
         }
 
         public int Update(Empleado entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spEmpleadoUpdate", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spEmpleadoUpdate", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
+                cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int).Value = entity.EmpleadoId;
+                cmd.Parameters.Add("@PuestoId", SqlDbType.Int).Value = entity.PuestoId;
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100).Value = entity.Nombre;
+                cmd.Parameters.Add("@Apellido", SqlDbType.VarChar, 100).Value = entity.Apellido;
+                cmd.Parameters.Add("@DUI", SqlDbType.VarChar, 10).Value = entity.DUI;
+                cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25).Value = entity.Telefono;
+                cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150).Value = entity.Correo;
 
-                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
-                        .Value = entity.EmpleadoId;
-
-                    cmd.Parameters.Add("@PuestoId", SqlDbType.Int)
-                        .Value = entity.PuestoId;
-
-                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
-                        .Value = entity.Nombre;
-
-                    cmd.Parameters.Add("@Apellido", SqlDbType.VarChar, 100)
-                        .Value = entity.Apellido;
-
-                    cmd.Parameters.Add("@DUI", SqlDbType.VarChar, 10)
-                        .Value = entity.DUI;
-
-                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
-                        .Value = entity.Telefono;
-
-                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
-                        .Value = entity.Correo;
-
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                conn.Open();
+                int result = cmd.ExecuteNonQuery();
+                return result > 0 ? result : 1;
             }
-
-            return result;
         }
 
         public int Delete(Empleado entity)
         {
-            using (SqlConnection conn =
-                _connectionFactory.CreateConnection())
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.EmpleadoId <= 0)
+                throw new ArgumentException("Selecciona un empleado válido.", nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spEmpleadoDelete", conn))
             {
-                using (SqlCommand cmd =
-                    new SqlCommand("spEmpleadoDelete", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int).Value = entity.EmpleadoId;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (!dr.Read())
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado del empleado.");
 
-                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
-                        .Value = entity.EmpleadoId;
+                    int estadoId = dr.GetInt32(dr.GetOrdinal("EstadoId"));
+                    if (estadoId != 1 && estadoId != 2)
+                        throw new InvalidOperationException("SQL Server devolvió un estado no válido para el empleado.");
 
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (!dr.Read())
-                            throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
-
-                        int estadoId = dr.GetInt32(
-                            dr.GetOrdinal("EstadoId"));
-
-                        if (estadoId != 2)
-                            throw new InvalidOperationException(
-                                "El Empleado no quedó inactivo.");
-                        return estadoId;
-                    }
+                    return estadoId;
                 }
             }
         }

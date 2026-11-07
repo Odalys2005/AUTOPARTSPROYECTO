@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoParts | Proveedores</title>
-    <style>
+	<head>
+		<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>AutoParts | Proveedores</title>
+				<style>
 					:root { color-scheme: dark; }
 					* { box-sizing: border-box; }
 					body {
@@ -38,14 +38,6 @@
 					font-weight: 700;
 					letter-spacing: 3px;
 					margin-bottom: 12px;
-					}
-					.etiqueta::before {
-					content: "";
-					width: 22px;
-					height: 3px;
-					border-radius: 10px;
-					background: #ff3844;
-					box-shadow: 0 0 12px #ff243a;
 					}
 					h1 {
 					margin: 0;
@@ -107,8 +99,8 @@
 					.herramientas {
 					display: flex;
 					align-items: center;
-					flex-wrap: wrap;
-					gap: 11px;
+					flex-wrap: nowrap;
+					gap: 9px;
 					}
 					.buscador {
 					display: flex;
@@ -117,6 +109,8 @@
 					border: 1px solid #51454c;
 					border-radius: 9px;
 					width: min(340px, 100%);
+					min-width: 0;
+					flex: 1 1 240px;
 					height: 44px;
 					padding: 0 13px;
 					}
@@ -139,16 +133,17 @@
 					}
 					.buscador input::placeholder { color: #898992; }
 					.btn-actualizar {
+					width: 44px;
 					height: 44px;
-					padding: 0 14px;
-					display: flex;
+					padding: 0;
+					display: inline-flex;
 					align-items: center;
-					gap: 8px;
+					justify-content: center;
+					flex: 0 0 44px;
 					color: #e8e8eb;
 					background: #211a1f;
 					border: 1px solid #60444d;
 					border-radius: 9px;
-					font-size: 12px;
 					transition: .2s;
 					}
 					.btn-actualizar:hover {
@@ -270,189 +265,465 @@
 					.herramientas { width: 100%; }
 					.buscador {
 					flex: 1;
-					min-width: 190px;
+					min-width: 0;
 					}
 					th, td { padding: 14px 13px; }
 					.panel-inferior { padding: 16px; }
 					}
 				
-        /* Ajustes para las seis columnas de Proveedores */
-        .tabla-contenedor { overflow-x: auto; }
-        table { min-width: 960px; }
-        .correo { color: #ffc15b; }
-        .correo a { color: inherit; text-decoration: none; }
-        .correo a:hover { text-decoration: underline; }
-        .total { line-height: 1.5; }
-        .btn-nueva:focus-visible, .btn-actualizar:focus-visible, input:focus-visible { outline: 2px solid #ffbd37; outline-offset: 3px; }
-    </style>
-</head>
-<body>
-    <main class="contenedor">
-        <header class="encabezado">
-            <div>
-                <div class="etiqueta">AUTOPARTS · ABASTECIMIENTO</div>
-                <h1>Gestión de <span>Proveedores</span></h1>
-                <p class="subtitulo">Organiza y consulta los proveedores de repuestos de tu negocio.</p>
-            </div>
-            <button class="btn-nueva" type="button" id="btnNuevoProveedor">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                Nuevo proveedor
-            </button>
-        </header>
+.acciones-proveedor{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.boton-proveedor{border:1px solid #65444c;background:#241a20;border-radius:8px;padding:8px 12px;color:#f4f4f5;font-size:12px;font-weight:700}
+.boton-proveedor:hover{border-color:#ffbd35;background:#35212a}
+.boton-proveedor.desactivar{border-color:#91434c;color:#ff9ca2}
+.boton-proveedor:disabled{opacity:.4;cursor:not-allowed}
+.mensaje-proveedor{padding:12px 25px;color:#ffbd69;font-size:12px;min-height:38px}
+.modal-proveedor[hidden]{display:none!important}
+.modal-proveedor{position:fixed;inset:0;z-index:50;background:#000b;display:grid;place-items:center;padding:18px}
+.modal-panel-proveedor{width:min(100%,480px);background:linear-gradient(145deg,#21161b,#111115);border:1px solid #81424a;border-radius:16px;padding:26px;box-shadow:0 25px 80px #000a}
+.modal-panel-proveedor h2{margin:0 0 18px;color:#fff}
+.modal-panel-proveedor label{display:block;font-size:13px;margin-bottom:8px}
+.modal-panel-proveedor input{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none}
+.modal-acciones-proveedor{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+.modal-acciones-proveedor button{border-radius:9px;padding:11px 17px;font-weight:700}
+.modal-guardar-proveedor{background:linear-gradient(105deg,#e42739,#ffbd2b);border:0;color:#140b0d}
 
-        <section class="panel">
-            <div class="panel-superior">
-                <div class="panel-titulo">
-                    <h2>Listado de proveedores</h2>
-                    <p>Consulta los proveedores registrados en el sistema.</p>
-                </div>
-                <div class="herramientas">
-                    <div class="buscador">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
-                        <input id="buscarProveedor" type="search" autocomplete="off" placeholder="Buscar proveedores..." aria-label="Buscar proveedores">
+.boton-proveedor.habilitar{border-color:#247e54;color:#91f2bb;background:#11291e}
+.boton-proveedor.habilitar:hover{border-color:#5fd39a;background:#173b29}
+.modal-descripcion-proveedor{color:#c1b8bf;font-size:13px;line-height:1.7;margin:0}
+.modal-nombre-proveedor{color:#ffbd35;font-weight:800}
+.modal-confirmar-proveedor{background:#9e2533;border:1px solid #f15d69;color:#fff}
+.modal-confirmar-proveedor.habilitar{background:#155a3b;border-color:#48c78b;color:#e3ffef}
+
+.modal-resultado-proveedor{text-align:center;width:min(100%,430px)}
+.icono-resultado-proveedor{width:65px;height:65px;border-radius:50%;display:grid;place-items:center;margin:0 auto 17px;border:1px solid #318d61;background:#113925;color:#8cf0af;font-size:33px;font-weight:800}
+.modal-resultado-proveedor h2{margin:0 0 10px}
+.modal-resultado-proveedor p{color:#c6c3c9;font-size:14px;line-height:1.6;margin:0 0 23px}
+.modal-resultado-proveedor .modal-acciones-proveedor{justify-content:center}
+.modal-resultado-proveedor .modal-guardar-proveedor{min-width:120px;cursor:pointer}
+
+.modal-detalles-proveedor{width:min(100%,460px)}
+.modal-detalles-proveedor h2{margin-bottom:24px}
+.detalle-fila-proveedor{padding:15px 0;border-bottom:1px solid #3d2b33}
+.detalle-fila-proveedor:first-of-type{padding-top:0}
+.detalle-etiqueta-proveedor{display:block;color:#a8a3ac;font-size:12px;margin-bottom:8px}
+.detalle-valor-proveedor{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.modal-detalles-proveedor .modal-acciones-proveedor{margin-top:24px}
+.modal-detalles-proveedor .modal-guardar-proveedor{min-width:110px;cursor:pointer}
+.boton-proveedor.ver{border-color:#675277;color:#e4c8ff}
+.boton-proveedor.ver:hover{background:#30213b;border-color:#ab75d1}
+.acciones-proveedor{gap:9px;flex-wrap:nowrap}
+.acciones-proveedor .boton-proveedor{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:10px;transition:background .2s,border-color .2s,transform .2s}
+.acciones-proveedor .boton-proveedor svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.acciones-proveedor .boton-proveedor:hover:not(:disabled){transform:translateY(-2px)}
+.acciones-proveedor .boton-proveedor.ver{color:#62b9ff;border-color:#285f91;background:#0e2234}
+.acciones-proveedor .boton-proveedor.ver:hover{color:#94d2ff;background:#18374f;border-color:#419cdb}
+.acciones-proveedor .boton-proveedor.editar{color:#75e4a4;border-color:#276546;background:#10291d}
+.acciones-proveedor .boton-proveedor.editar:hover{color:#a2f5c1;background:#173d2a;border-color:#43b878}
+.acciones-proveedor .boton-proveedor.desactivar{color:#ff818d;border-color:#81333e;background:#31151d}
+.acciones-proveedor .boton-proveedor.desactivar:hover{color:#ffb0b9;background:#4c1d27;border-color:#ef5366}
+.acciones-proveedor .boton-proveedor.habilitar{color:#74e8ad;border-color:#297d55;background:#102d20}
+.acciones-proveedor .boton-proveedor.habilitar:hover{color:#adffd0;background:#19432e;border-color:#4ac587}
+
+.campos-proveedor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.campos-proveedor>div{min-width:0}
+.campos-proveedor .campo-ancho-proveedor{grid-column:1/-1}
+.modal-formulario-proveedor{width:min(100%,680px);max-height:90vh;overflow-y:auto}
+.modal-formulario-proveedor input{box-sizing:border-box}
+@media(max-width:600px){.campos-proveedor{grid-template-columns:1fr}.campos-proveedor .campo-ancho-proveedor{grid-column:auto}}
+.tabla-contenedor table{min-width:1150px}
+</style>
+			</head>
+	<body>
+		<main class="contenedor">
+			<header class="encabezado">
+				<div>
+					<div class="etiqueta">AUTOPARTS · ABASTECIMIENTO</div>
+					<h1>
+						Gestión de <span>Proveedores</span>
+					</h1>
+				</div>
+				<button class="btn-nueva" type="button" id="btnNuevoProveedor">
+					<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+						<path d="M12 5v14M5 12h14"/>
+					</svg>
+					Nuevo proveedor
+				</button>
+			</header>
+
+			<section class="panel">
+				<div class="panel-superior">
+					<div class="panel-titulo">
+						<h2>Listado de proveedores</h2>
+					</div>
+					<div class="herramientas">
+						<div class="buscador">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+								<circle cx="11" cy="11" r="7"/>
+								<path d="m16 16 5 5"/>
+							</svg>
+							<input id="buscarProveedor" type="search" autocomplete="off" placeholder="Buscar proveedores..." aria-label="Buscar proveedores">
                     </div>
-                    <button class="btn-actualizar" type="button" id="btnActualizar">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2 6"/><path d="M20 4v7h-7"/></svg>
-                        Actualizar
-                    </button>
+						<button class="btn-actualizar" type="button" id="btnActualizar" title="Actualizar proveedores" aria-label="Actualizar proveedores">
+							<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M20 11a8 8 0 1 0-2 6"/>
+								<path d="M20 4v7h-7"/>
+							</svg>
+						</button>
+					</div>
+				</div>
+
+				<div id="avisoProveedor" class="mensaje-proveedor" role="status" aria-live="polite"></div>
+                <div class="tabla-contenedor">
+					<table>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Empresa</th>
+                                <th>NIT</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Contacto</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody id="proveedorRows">
+							<tr>
+								<td colspan="8">
+									<div class="vacio">Cargando proveedores...</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<footer class="panel-inferior">
+					<div class="total">
+						Total de proveedores: <strong id="totalProveedores">0</strong>
+					</div>
+					<div class="indicador">
+						<span class="punto"></span>
+						AutoParts · Gestión de proveedores
+					</div>
+				</footer>
+			</section>
+		</main>
+
+        <div id="modalEditarProveedor" class="modal-proveedor" hidden>
+            <div class="modal-panel-proveedor modal-formulario-proveedor" role="dialog" aria-modal="true" aria-labelledby="tituloEditarProveedor">
+                <h2 id="tituloEditarProveedor">Editar proveedor</h2>
+                <form id="formEditarProveedor">
+                    <div class="campos-proveedor">
+                        <div><label for="nombreEditarProveedor">Nombre de la empresa</label><input id="nombreEditarProveedor" maxlength="100" required></div>
+                        <div><label for="nitEditarProveedor">NIT</label><input id="nitEditarProveedor" maxlength="20" required></div>
+                        <div><label for="telefonoEditarProveedor">Teléfono</label><input id="telefonoEditarProveedor" maxlength="25" required></div>
+                        <div><label for="correoEditarProveedor">Correo electrónico</label><input id="correoEditarProveedor" type="email" maxlength="150" required></div>
+                        <div class="campo-ancho-proveedor"><label for="contactoEditarProveedor">Contacto</label><input id="contactoEditarProveedor" maxlength="100" required></div>
+                    </div>
+                    <div class="modal-acciones-proveedor">
+                        <button type="button" class="boton-proveedor" id="cancelarEditarProveedor">Cancelar</button>
+                        <button type="submit" class="modal-guardar-proveedor" id="guardarEditarProveedor">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="modalConfirmarProveedor" class="modal-proveedor" hidden>
+            <div class="modal-panel-proveedor" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmarProveedor">
+                <h2 id="tituloConfirmarProveedor">Confirmar cambio</h2>
+                <p id="descripcionConfirmarProveedor" class="modal-descripcion-proveedor"></p>
+                <div class="modal-acciones-proveedor">
+                    <button type="button" class="boton-proveedor" id="cancelarCambioProveedor">Cancelar</button>
+                    <button type="button" class="modal-confirmar-proveedor" id="confirmarCambioProveedor">Confirmar</button>
                 </div>
             </div>
-
-            <div class="tabla-contenedor">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Empresa</th>
-                            <th>NIT</th>
-                            <th>Teléfono</th>
-                            <th>Correo</th>
-                            <th>Contacto</th>
-                        </tr>
-                    </thead>
-                    <tbody id="proveedorRows">
-                        <tr><td colspan="6"><div class="vacio">Cargando proveedores...</div></td></tr>
-                    </tbody>
-                </table>
+        </div>
+        <div id="modalVerProveedor" class="modal-proveedor" hidden>
+            <div class="modal-panel-proveedor modal-detalles-proveedor" role="dialog" aria-modal="true" aria-labelledby="tituloVerProveedor">
+                <h2 id="tituloVerProveedor">Detalles del proveedor</h2>
+                <div id="datosVerProveedor"></div>
+                <div class="modal-acciones-proveedor"><button type="button" class="modal-guardar-proveedor" id="cerrarVerProveedor">Cerrar</button></div>
             </div>
+        </div>
+        <div id="modalResultadoProveedor" class="modal-proveedor" hidden>
+            <div class="modal-panel-proveedor modal-resultado-proveedor" role="dialog" aria-modal="true" aria-labelledby="tituloResultadoProveedor">
+                <div class="icono-resultado-proveedor" aria-hidden="true">✓</div>
+                <h2 id="tituloResultadoProveedor">Operación realizada</h2>
+                <p id="textoResultadoProveedor"></p>
+                <div class="modal-acciones-proveedor"><button type="button" class="modal-guardar-proveedor" id="aceptarResultadoProveedor">Aceptar</button></div>
+            </div>
+        </div>
+        <script>
+            'use strict';
+            let proveedores = [];
+            let proveedorEditandoId = 0;
+            let proveedorCambioId = 0;
+            let ultimaAccionProveedor = '';
+            let operacionPendiente = false;
+            const $ = id => document.getElementById(id);
 
-            <footer class="panel-inferior">
-                <div class="total">Proveedores mostrados: <strong id="totalProveedores">0</strong></div>
-                <div class="indicador"><span class="punto"></span> AutoParts · Gestión de proveedores</div>
-            </footer>
-        </section>
-    </main>
+            function escapar(valor) {
+                return String(valor ?? '').replace(/[&<>"']/g, caracter => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[caracter]));
+            }
 
-    <script>
-        let proveedores = [];
+            function obtener(objeto, ...nombres) {
+                for (const nombre of nombres) {
+                    if (objeto && objeto[nombre] !== undefined && objeto[nombre] !== null)
+                        return objeto[nombre];
+                }
+                return '';
+            }
 
-        function escapar(valor) {
-            return String(valor ?? "").replace(/[&<>"']/g, c => ({
-                "&": "&amp;", "<": "&lt;", ">": "&gt;",
-                '"': "&quot;", "'": "&#39;"
-            }[c]));
-        }
+            function campo(proveedor, nombre) {
+                return obtener(proveedor, nombre, nombre.charAt(0).toLowerCase() + nombre.slice(1), nombre.toLowerCase());
+            }
 
-        function obtener(objeto, ...nombres) {
-            for (const nombre of nombres) {
-                if (objeto?.[nombre] !== undefined && objeto[nombre] !== null) {
-                    return objeto[nombre];
+            function buscarPorId(id) {
+                return proveedores.find(p => Number(campo(p, 'ProveedorId')) === id);
+            }
+
+            function enviarACSharp(mensaje) {
+                if (window.parent !== window) {
+                    window.parent.postMessage(mensaje, '*');
+                    return true;
+                }
+                if (window.chrome?.webview?.postMessage) {
+                    window.chrome.webview.postMessage(mensaje);
+                    return true;
+                }
+                aviso('Esta pantalla requiere el Dashboard de AutoParts o WebView2.');
+                return false;
+            }
+
+            function aviso(texto) {
+                $('avisoProveedor').textContent = texto || '';
+            }
+
+            function mostrarResultadoProveedor(titulo, texto) {
+                $('tituloResultadoProveedor').textContent = titulo;
+                $('textoResultadoProveedor').textContent = texto;
+                $('modalResultadoProveedor').hidden = false;
+                $('aceptarResultadoProveedor').focus();
+            }
+
+            function cerrarResultadoProveedor() {
+                $('modalResultadoProveedor').hidden = true;
+            }
+
+            function mostrarMensaje(texto) {
+                $('proveedorRows').innerHTML = '<tr><td colspan="8"><div class="vacio"><strong>' +
+                    escapar(texto) + '</strong></div></td></tr>';
+            }
+
+            const iconoVer = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+            const iconoEditar = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></svg>';
+            const iconoDesactivar = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6"/><path d="M10 10v7M14 10v7"/></svg>';
+            const iconoHabilitar = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>';
+
+            function pintarProveedores() {
+                const texto = $('buscarProveedor').value.trim().toLocaleLowerCase('es');
+                const filtrados = proveedores.filter(p => {
+                    const estado = Number(campo(p, 'EstadoId'));
+                    return ['ProveedorId', 'NombreEmpresa', 'NIT', 'Telefono', 'Correo', 'Contacto']
+                        .map(nombre => campo(p, nombre))
+                        .concat(estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'desconocido')
+                        .some(valor => String(valor).toLocaleLowerCase('es').includes(texto));
+                });
+                $('totalProveedores').textContent = String(filtrados.length);
+                if (!filtrados.length) {
+                    mostrarMensaje(texto ? 'No se encontraron coincidencias.' : 'No hay proveedores registrados.');
+                    return;
+                }
+                $('proveedorRows').innerHTML = filtrados.map(p => {
+                    const id = Number(campo(p, 'ProveedorId'));
+                    const nombre = String(campo(p, 'NombreEmpresa'));
+                    const estado = Number(campo(p, 'EstadoId'));
+                    const activo = estado === 1;
+                    const estadoTexto = estado === 1 ? 'Activo' : estado === 2 ? 'Inactivo' : 'Desconocido';
+                    const estadoClase = estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'otro';
+                    return `<tr>
+                        <td class="codigo">#${escapar(id)}</td>
+                        <td class="nombre">${escapar(nombre)}</td>
+                        <td>${escapar(campo(p, 'NIT'))}</td>
+                        <td>${escapar(campo(p, 'Telefono'))}</td>
+                        <td>${escapar(campo(p, 'Correo'))}</td>
+                        <td>${escapar(campo(p, 'Contacto'))}</td>
+                        <td><span class="estado ${estadoClase}">${estadoTexto}</span></td>
+                        <td><div class="acciones-proveedor">
+                            <button type="button" class="boton-proveedor ver" data-ver="${id}" title="Ver detalles" aria-label="Ver detalles de ${escapar(nombre)}">${iconoVer}</button>
+                            <button type="button" class="boton-proveedor editar" data-editar="${id}" title="Editar proveedor" aria-label="Editar ${escapar(nombre)}">${iconoEditar}</button>
+                            <button type="button" class="boton-proveedor ${activo ? 'desactivar' : 'habilitar'}" data-cambiar-estado="${id}" title="${activo ? 'Eliminar (desactivar)' : 'Habilitar'}" aria-label="${activo ? 'Eliminar' : 'Habilitar'} ${escapar(nombre)}" ${estado !== 1 && estado !== 2 ? 'disabled' : ''}>${activo ? iconoDesactivar : iconoHabilitar}</button>
+                        </div></td>
+                    </tr>`;
+                }).join('');
+            }
+
+            function solicitarProveedores() {
+                aviso('');
+                mostrarMensaje('Cargando proveedores...');
+                enviarACSharp({ type: 'proveedores:selectAll' });
+            }
+
+            function abrirVerProveedor(id) {
+                const p = buscarPorId(id);
+                if (!p || operacionPendiente) return;
+                const estado = Number(campo(p, 'EstadoId'));
+                $('datosVerProveedor').innerHTML = [
+                    ['Empresa', 'NombreEmpresa'], ['NIT', 'NIT'], ['Teléfono', 'Telefono'],
+                    ['Correo', 'Correo'], ['Contacto', 'Contacto']
+                ].map(([etiqueta, nombre]) => `<div class="detalle-fila-proveedor"><span class="detalle-etiqueta-proveedor">${etiqueta}</span><div class="detalle-valor-proveedor">${escapar(campo(p, nombre))}</div></div>`).join('') +
+                    `<div class="detalle-fila-proveedor"><span class="detalle-etiqueta-proveedor">Estado</span><span class="estado ${estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'otro'}">${estado === 1 ? 'Activo' : estado === 2 ? 'Inactivo' : 'Desconocido'}</span></div>`;
+                $('modalVerProveedor').hidden = false;
+                $('cerrarVerProveedor').focus();
+            }
+
+            function cerrarVerProveedor() {
+                $('modalVerProveedor').hidden = true;
+            }
+
+            function abrirEditor(id) {
+                const p = buscarPorId(id);
+                if (!p || operacionPendiente) return;
+                proveedorEditandoId = id;
+                $('nombreEditarProveedor').value = String(campo(p, 'NombreEmpresa'));
+                $('nitEditarProveedor').value = String(campo(p, 'NIT'));
+                $('telefonoEditarProveedor').value = String(campo(p, 'Telefono'));
+                $('correoEditarProveedor').value = String(campo(p, 'Correo'));
+                $('contactoEditarProveedor').value = String(campo(p, 'Contacto'));
+                $('modalEditarProveedor').hidden = false;
+                $('nombreEditarProveedor').focus();
+            }
+
+            function cerrarEditor() {
+                $('modalEditarProveedor').hidden = true;
+                proveedorEditandoId = 0;
+            }
+
+            function abrirConfirmacionProveedor(id) {
+                const p = buscarPorId(id);
+                if (!p || operacionPendiente) return;
+                const estado = Number(campo(p, 'EstadoId'));
+                if (estado !== 1 && estado !== 2) return;
+                proveedorCambioId = id;
+                const activo = estado === 1;
+                $('tituloConfirmarProveedor').textContent = activo ? '¿Eliminar proveedor?' : '¿Habilitar proveedor?';
+                $('descripcionConfirmarProveedor').textContent = activo
+                    ? `¿Seguro que deseas desactivar el proveedor "${campo(p, 'NombreEmpresa')}"?`
+                    : `¿Seguro que deseas habilitar el proveedor "${campo(p, 'NombreEmpresa')}"?`;
+                $('confirmarCambioProveedor').textContent = activo ? 'Sí, desactivar' : 'Sí, habilitar';
+                $('confirmarCambioProveedor').classList.toggle('habilitar', !activo);
+                $('modalConfirmarProveedor').hidden = false;
+                $('cancelarCambioProveedor').focus();
+            }
+
+            function cerrarConfirmacionProveedor() {
+                if (operacionPendiente) return;
+                $('modalConfirmarProveedor').hidden = true;
+                proveedorCambioId = 0;
+            }
+
+            function cambiarEstadoProveedor() {
+                if (operacionPendiente || proveedorCambioId <= 0) return;
+                const p = buscarPorId(proveedorCambioId);
+                if (!p) return;
+                const activo = Number(campo(p, 'EstadoId')) === 1;
+                const id = proveedorCambioId;
+                $('modalConfirmarProveedor').hidden = true;
+                proveedorCambioId = 0;
+                operacionPendiente = true;
+                ultimaAccionProveedor = activo ? 'desactivar' : 'habilitar';
+                aviso(activo ? 'Desactivando proveedor...' : 'Habilitando proveedor...');
+                if (!enviarACSharp({ type: 'proveedores:desactivarIntegrado', data: { ProveedorId: id } }))
+                    operacionPendiente = false;
+            }
+
+            function recibirRespuesta(evento) {
+                if (evento.source && window.parent !== window && evento.source !== window.parent) return;
+                let mensaje = evento.data;
+                if (typeof mensaje === 'string') {
+                    try { mensaje = JSON.parse(mensaje); } catch { return; }
+                }
+                if (!mensaje || typeof mensaje !== 'object') return;
+                if (mensaje.type === 'proveedores:list') {
+                    proveedores = Array.isArray(mensaje.data) ? mensaje.data : [];
+                    pintarProveedores();
+                    return;
+                }
+                if (mensaje.type === 'proveedores:actualizada' || mensaje.type === 'proveedores:desactivada') {
+                    const accion = mensaje.type === 'proveedores:actualizada' ? 'actualizar' : ultimaAccionProveedor;
+                    operacionPendiente = false;
+                    ultimaAccionProveedor = '';
+                    $('guardarEditarProveedor').disabled = false;
+                    cerrarEditor();
+                    solicitarProveedores();
+                    const titulo = accion === 'actualizar' ? 'Proveedor actualizado' :
+                        accion === 'habilitar' ? 'Proveedor habilitado' : 'Proveedor desactivado';
+                    const texto = accion === 'actualizar' ? 'El proveedor se actualizó correctamente.' :
+                        accion === 'habilitar' ? 'El proveedor se habilitó correctamente.' :
+                        'El proveedor se desactivó correctamente.';
+                    mostrarResultadoProveedor(titulo, texto);
+                    return;
+                }
+                if (mensaje.type === 'proveedores:error' || mensaje.type === 'error') {
+                    operacionPendiente = false;
+                    $('guardarEditarProveedor').disabled = false;
+                    aviso(mensaje.message || 'No se pudo completar la operación.');
                 }
             }
-            return "";
-        }
 
-        function mostrarMensaje(texto) {
-            document.getElementById("proveedorRows").innerHTML = `
-                <tr><td colspan="6">
-                    <div class="vacio">
-                        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                        </svg>
-                        <strong>${escapar(texto)}</strong>
-                        <p>Los registros se mostrarán aquí cuando estén disponibles.</p>
-                    </div>
-                </td></tr>`;
-        }
-
-        function enviarACSharp(mensaje) {
-            if (window.parent !== window) {
-                window.parent.postMessage(mensaje, '*');
-                return true;
-            }
-            if (window.chrome?.webview?.postMessage) {
-                window.chrome.webview.postMessage(mensaje);
-                return true;
-            }
-            mostrarMensaje('Esta pantalla requiere WebView2 para consultar los datos.');
-            return false;
-        }
-
-        function pintarProveedores() {
-            const texto = document.getElementById("buscarProveedor").value.trim().toLocaleLowerCase("es");
-            const filtradas = proveedores.filter(p => {
-                const campos = [
-                    obtener(p, "ProveedorId", "proveedorId"),
-                    obtener(p, "NombreEmpresa", "nombreEmpresa"),
-                    obtener(p, "NIT", "nit", "nIT"),
-                    obtener(p, "Telefono", "telefono"),
-                    obtener(p, "Correo", "correo"),
-                    obtener(p, "Contacto", "contacto")
-                ];
-                return campos.some(v => String(v).toLocaleLowerCase("es").includes(texto));
+            $('proveedorRows').addEventListener('click', evento => {
+                const ver = evento.target.closest('[data-ver]');
+                const editar = evento.target.closest('[data-editar]');
+                const cambiar = evento.target.closest('[data-cambiar-estado]');
+                if (ver) abrirVerProveedor(Number(ver.dataset.ver));
+                if (editar) abrirEditor(Number(editar.dataset.editar));
+                if (cambiar) abrirConfirmacionProveedor(Number(cambiar.dataset.cambiarEstado));
             });
 
-            document.getElementById("totalProveedores").textContent = String(filtradas.length);
-            if (filtradas.length === 0) {
-                mostrarMensaje(texto ? "No se encontraron coincidencias." : "No hay proveedores registrados.");
-                return;
-            }
+            $('formEditarProveedor').addEventListener('submit', evento => {
+                evento.preventDefault();
+                if (operacionPendiente || proveedorEditandoId <= 0) return;
+                const data = {
+                    ProveedorId: proveedorEditandoId,
+                    NombreEmpresa: $('nombreEditarProveedor').value.trim(),
+                    NIT: $('nitEditarProveedor').value.trim(),
+                    Telefono: $('telefonoEditarProveedor').value.trim(),
+                    Correo: $('correoEditarProveedor').value.trim(),
+                    Contacto: $('contactoEditarProveedor').value.trim()
+                };
+                if (!data.NombreEmpresa || !data.NIT || !data.Telefono || !data.Correo || !data.Contacto ||
+                    data.NombreEmpresa.length > 100 || data.NIT.length > 20 || data.Telefono.length > 25 ||
+                    data.Correo.length > 150 || data.Contacto.length > 100) {
+                    aviso('Completa los cinco campos del proveedor respetando sus longitudes.');
+                    return;
+                }
+                if (!$('correoEditarProveedor').checkValidity()) {
+                    aviso('Ingresa un correo electrónico válido.');
+                    return;
+                }
+                operacionPendiente = true;
+                ultimaAccionProveedor = 'actualizar';
+                $('guardarEditarProveedor').disabled = true;
+                aviso('Guardando cambios...');
+                if (!enviarACSharp({ type: 'proveedores:actualizarIntegrado', data })) {
+                    operacionPendiente = false;
+                    $('guardarEditarProveedor').disabled = false;
+                }
+            });
 
-            document.getElementById("proveedorRows").innerHTML = filtradas.map(p => `
-                <tr>
-                    <td class="codigo">#${escapar(obtener(p, "ProveedorId", "proveedorId"))}</td>
-                    <td class="nombre">${escapar(obtener(p, "NombreEmpresa", "nombreEmpresa"))}</td>
-                    <td>${escapar(obtener(p, "NIT", "nit", "nIT"))}</td>
-                    <td>${escapar(obtener(p, "Telefono", "telefono"))}</td>
-                    <td class="correo">${escapar(obtener(p, "Correo", "correo"))}</td>
-                    <td>${escapar(obtener(p, "Contacto", "contacto"))}</td>
-                </tr>`).join("");
-        }
-
-        function recibirRespuestaProveedores(evento) {
-            let mensaje = evento.data;
-            if (typeof mensaje === 'string') {
-                try { mensaje = JSON.parse(mensaje); } catch { return; }
-            }
-            if (!mensaje || typeof mensaje !== 'object') return;
-
-            if (mensaje.type === 'proveedores:list') {
-                proveedores = Array.isArray(mensaje.data) ? mensaje.data : [];
-                pintarProveedores();
-            } else if (mensaje.type === 'error') {
-                document.getElementById('totalProveedores').textContent = '0';
-                mostrarMensaje(mensaje.message || 'No se pudieron cargar los proveedores.');
-            }
-        }
-
-        window.chrome?.webview?.addEventListener?.('message', recibirRespuestaProveedores);
-        window.addEventListener('message', recibirRespuestaProveedores);
-
-        function solicitarProveedores() {
-            mostrarMensaje("Cargando proveedores...");
-            enviarACSharp({ type: "proveedores:selectAll" });
-        }
-
-        document.getElementById("btnNuevoProveedor").addEventListener("click", () => {
-            enviarACSharp({ type: "proveedores:abrirNuevo" });
-        });
-        document.getElementById("btnActualizar").addEventListener("click", solicitarProveedores);
-        document.getElementById("buscarProveedor").addEventListener("input", pintarProveedores);
-
-        solicitarProveedores();
-    </script>
-</body>
+            $('cerrarVerProveedor').addEventListener('click', cerrarVerProveedor);
+            $('cancelarEditarProveedor').addEventListener('click', cerrarEditor);
+            $('aceptarResultadoProveedor').addEventListener('click', cerrarResultadoProveedor);
+            $('cancelarCambioProveedor').addEventListener('click', cerrarConfirmacionProveedor);
+            $('confirmarCambioProveedor').addEventListener('click', cambiarEstadoProveedor);
+            $('btnNuevoProveedor').addEventListener('click', () => enviarACSharp({ type: 'proveedores:abrirNuevo' }));
+            $('btnActualizar').addEventListener('click', solicitarProveedores);
+            $('buscarProveedor').addEventListener('input', pintarProveedores);
+            window.addEventListener('message', recibirRespuesta);
+            if (window.chrome?.webview?.addEventListener)
+                window.chrome.webview.addEventListener('message', recibirRespuesta);
+            solicitarProveedores();
+        </script>
+    </body>
 </html>

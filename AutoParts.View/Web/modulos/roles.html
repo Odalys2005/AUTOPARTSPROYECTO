@@ -39,14 +39,6 @@
 					letter-spacing: 3px;
 					margin-bottom: 12px;
 					}
-					.etiqueta::before {
-					content: "";
-					width: 22px;
-					height: 3px;
-					border-radius: 10px;
-					background: #ff3844;
-					box-shadow: 0 0 12px #ff243a;
-					}
 					h1 {
 					margin: 0;
 					font-size: clamp(28px, 3vw, 39px);
@@ -107,8 +99,8 @@
 					.herramientas {
 					display: flex;
 					align-items: center;
-					flex-wrap: wrap;
-					gap: 11px;
+					flex-wrap: nowrap;
+					gap: 9px;
 					}
 					.buscador {
 					display: flex;
@@ -117,6 +109,8 @@
 					border: 1px solid #51454c;
 					border-radius: 9px;
 					width: min(340px, 100%);
+					min-width: 0;
+					flex: 1 1 240px;
 					height: 44px;
 					padding: 0 13px;
 					}
@@ -139,16 +133,17 @@
 					}
 					.buscador input::placeholder { color: #898992; }
 					.btn-actualizar {
+					width: 44px;
 					height: 44px;
-					padding: 0 14px;
-					display: flex;
+					padding: 0;
+					display: inline-flex;
 					align-items: center;
-					gap: 8px;
+					justify-content: center;
+					flex: 0 0 44px;
 					color: #e8e8eb;
 					background: #211a1f;
 					border: 1px solid #60444d;
 					border-radius: 9px;
-					font-size: 12px;
 					transition: .2s;
 					}
 					.btn-actualizar:hover {
@@ -270,12 +265,65 @@
 					.herramientas { width: 100%; }
 					.buscador {
 					flex: 1;
-					min-width: 190px;
+					min-width: 0;
 					}
 					th, td { padding: 14px 13px; }
 					.panel-inferior { padding: 16px; }
 					}
-				</style>
+				
+.acciones-rol{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.boton-rol{border:1px solid #65444c;background:#241a20;border-radius:8px;padding:8px 12px;color:#f4f4f5;font-size:12px;font-weight:700}
+.boton-rol:hover{border-color:#ffbd35;background:#35212a}
+.boton-rol.desactivar{border-color:#91434c;color:#ff9ca2}
+.boton-rol:disabled{opacity:.4;cursor:not-allowed}
+.mensaje-rol{padding:12px 25px;color:#ffbd69;font-size:12px;min-height:38px}
+.modal-rol[hidden]{display:none!important}
+.modal-rol{position:fixed;inset:0;z-index:50;background:#000b;display:grid;place-items:center;padding:18px}
+.modal-panel-rol{width:min(100%,480px);background:linear-gradient(145deg,#21161b,#111115);border:1px solid #81424a;border-radius:16px;padding:26px;box-shadow:0 25px 80px #000a}
+.modal-panel-rol h2{margin:0 0 18px;color:#fff}
+.modal-panel-rol label{display:block;font-size:13px;margin-bottom:8px}
+.modal-panel-rol input{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none}
+.modal-acciones-rol{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+.modal-acciones-rol button{border-radius:9px;padding:11px 17px;font-weight:700}
+.modal-guardar-rol{background:linear-gradient(105deg,#e42739,#ffbd2b);border:0;color:#140b0d}
+
+.boton-rol.habilitar{border-color:#247e54;color:#91f2bb;background:#11291e}
+.boton-rol.habilitar:hover{border-color:#5fd39a;background:#173b29}
+.modal-descripcion-rol{color:#c1b8bf;font-size:13px;line-height:1.7;margin:0}
+.modal-nombre-rol{color:#ffbd35;font-weight:800}
+.modal-confirmar-rol{background:#9e2533;border:1px solid #f15d69;color:#fff}
+.modal-confirmar-rol.habilitar{background:#155a3b;border-color:#48c78b;color:#e3ffef}
+
+.modal-resultado-rol{text-align:center;width:min(100%,430px)}
+.icono-resultado-rol{width:65px;height:65px;border-radius:50%;display:grid;place-items:center;margin:0 auto 17px;border:1px solid #318d61;background:#113925;color:#8cf0af;font-size:33px;font-weight:800}
+.modal-resultado-rol h2{margin:0 0 10px}
+.modal-resultado-rol p{color:#c6c3c9;font-size:14px;line-height:1.6;margin:0 0 23px}
+.modal-resultado-rol .modal-acciones-rol{justify-content:center}
+.modal-resultado-rol .modal-guardar-rol{min-width:120px;cursor:pointer}
+
+.modal-detalles-rol{width:min(100%,460px)}
+.modal-detalles-rol h2{margin-bottom:24px}
+.detalle-fila-rol{padding:15px 0;border-bottom:1px solid #3d2b33}
+.detalle-fila-rol:first-of-type{padding-top:0}
+.detalle-etiqueta-rol{display:block;color:#a8a3ac;font-size:12px;margin-bottom:8px}
+.detalle-valor-rol{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.modal-detalles-rol .modal-acciones-rol{margin-top:24px}
+.modal-detalles-rol .modal-guardar-rol{min-width:110px;cursor:pointer}
+.boton-rol.ver{border-color:#675277;color:#e4c8ff}
+.boton-rol.ver:hover{background:#30213b;border-color:#ab75d1}
+.acciones-rol{gap:9px;flex-wrap:nowrap}
+.acciones-rol .boton-rol{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:10px;transition:background .2s,border-color .2s,transform .2s}
+.acciones-rol .boton-rol svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.acciones-rol .boton-rol:hover:not(:disabled){transform:translateY(-2px)}
+.acciones-rol .boton-rol.ver{color:#62b9ff;border-color:#285f91;background:#0e2234}
+.acciones-rol .boton-rol.ver:hover{color:#94d2ff;background:#18374f;border-color:#419cdb}
+.acciones-rol .boton-rol.editar{color:#75e4a4;border-color:#276546;background:#10291d}
+.acciones-rol .boton-rol.editar:hover{color:#a2f5c1;background:#173d2a;border-color:#43b878}
+.acciones-rol .boton-rol.desactivar{color:#ff818d;border-color:#81333e;background:#31151d}
+.acciones-rol .boton-rol.desactivar:hover{color:#ffb0b9;background:#4c1d27;border-color:#ef5366}
+.acciones-rol .boton-rol.habilitar{color:#74e8ad;border-color:#297d55;background:#102d20}
+.acciones-rol .boton-rol.habilitar:hover{color:#adffd0;background:#19432e;border-color:#4ac587}
+</style>
 			</head>
 	<body>
 		<main class="contenedor">
@@ -285,7 +333,6 @@
 					<h1>
 						Gestión de <span>Roles</span>
 					</h1>
-					<p class="subtitulo">Administra los roles y permisos asignados a los usuarios de AutoParts.</p>
 				</div>
 				<button class="btn-nueva" type="button" id="btnNuevoRol">
 					<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
@@ -299,7 +346,6 @@
 				<div class="panel-superior">
 					<div class="panel-titulo">
 						<h2>Listado de roles</h2>
-						<p>Consulta los roles registrados en el sistema.</p>
 					</div>
 					<div class="herramientas">
 						<div class="buscador">
@@ -309,27 +355,29 @@
 							</svg>
 							<input id="buscarRol" type="search" autocomplete="off" placeholder="Buscar roles..." aria-label="Buscar roles">
                     </div>
-						<button class="btn-actualizar" type="button" id="btnActualizar">
+						<button class="btn-actualizar" type="button" id="btnActualizar" title="Actualizar roles" aria-label="Actualizar roles">
 							<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 								<path d="M20 11a8 8 0 1 0-2 6"/>
 								<path d="M20 4v7h-7"/>
 							</svg>
-							Actualizar
 						</button>
 					</div>
 				</div>
 
-				<div class="tabla-contenedor">
+				<div id="avisoRol" class="mensaje-rol" role="status" aria-live="polite"></div>
+                <div class="tabla-contenedor">
 					<table>
 						<thead>
 							<tr>
 								<th>ID</th>
 								<th>Nombre</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody id="rolRows">
 							<tr>
-								<td colspan="2">
+								<td colspan="4">
 									<div class="vacio">Cargando roles...</div>
 								</td>
 							</tr>
@@ -349,108 +397,295 @@
 			</section>
 		</main>
 
-		<script>
+        <div id="modalEditarRol" class="modal-rol" hidden>
+<div class="modal-panel-rol" role="dialog" aria-modal="true" aria-labelledby="tituloEditarRol">
+<h2 id="tituloEditarRol">Editar rol</h2>
+<form id="formEditarRol">
+<label for="nombreEditarRol">Nombre del rol</label>
+<input id="nombreEditarRol" type="text" maxlength="100" required autocomplete="off">
+<div class="modal-acciones-rol">
+<button type="button" class="boton-rol" id="cancelarEditarRol">Cancelar</button>
+<button type="submit" class="modal-guardar-rol" id="guardarEditarRol">Guardar cambios</button>
+</div></form></div></div>
+        <div id="modalConfirmarRol" class="modal-rol" hidden>
+            <div class="modal-panel-rol" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmarRol" aria-describedby="descripcionConfirmarRol">
+                <h2 id="tituloConfirmarRol">Confirmar cambio</h2>
+                <p id="descripcionConfirmarRol" class="modal-descripcion-rol"></p>
+                <div class="modal-acciones-rol">
+                    <button type="button" class="boton-rol" id="cancelarCambioRol">Cancelar</button>
+                    <button type="button" class="modal-confirmar-rol" id="confirmarCambioRol">Confirmar</button>
+                </div>
+            </div>
+        </div>
+<div id="modalVerRol" class="modal-rol" hidden>
+    <div class="modal-panel-rol modal-detalles-rol" role="dialog" aria-modal="true" aria-labelledby="tituloVerRol">
+        <h2 id="tituloVerRol">Detalles del rol</h2>
+        <div class="detalle-fila-rol">
+            <span class="detalle-etiqueta-rol">Nombre del rol</span>
+            <div class="detalle-valor-rol" id="verNombreRol"></div>
+        </div>
+        <div class="detalle-fila-rol">
+            <span class="detalle-etiqueta-rol">Estado</span>
+            <span id="verEstadoRol" class="estado"></span>
+        </div>
+        <div class="modal-acciones-rol">
+            <button type="button" class="modal-guardar-rol" id="cerrarVerRol">Cerrar</button>
+        </div>
+    </div>
+</div>
+<div id="modalResultadoRol" class="modal-rol" hidden>
+    <div class="modal-panel-rol modal-resultado-rol" role="dialog" aria-modal="true" aria-labelledby="tituloResultadoRol" aria-describedby="textoResultadoRol">
+        <div class="icono-resultado-rol" aria-hidden="true">✓</div>
+        <h2 id="tituloResultadoRol">Operación realizada</h2>
+        <p id="textoResultadoRol"></p>
+        <div class="modal-acciones-rol">
+            <button type="button" class="modal-guardar-rol" id="aceptarResultadoRol">Aceptar</button>
+        </div>
+    </div>
+</div>
+<script>
+            'use strict';
             let roles = [];
+            let rolEditandoId = 0;
+            let rolCambioId = 0;
+            let ultimaAccionRol = '';
+            let operacionPendiente = false;
+            const $ = id => document.getElementById(id);
 
             function escapar(valor) {
-                return String(valor ?? "").replace(/[&<>"']/g, caracter => ({
-                    "&": "&amp;", "<": "&lt;", ">": "&gt;",
-                    '"': "&quot;", "'": "&#39;"
+                return String(valor ?? '').replace(/[&<>"']/g, caracter => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
                 }[caracter]));
             }
 
             function obtener(objeto, ...nombres) {
                 for (const nombre of nombres) {
-                    if (objeto?.[nombre] !== undefined && objeto[nombre] !== null)
+                    if (objeto && objeto[nombre] !== undefined && objeto[nombre] !== null)
                         return objeto[nombre];
                 }
-                return "";
-            }
-
-            function mostrarMensaje(texto) {
-                document.getElementById("rolRows").innerHTML = `
-                    <tr><td colspan="2"><div class="vacio">
-                        <strong>${escapar(texto)}</strong>
-                        <p>Los registros se mostrarán aquí cuando estén disponibles.</p>
-                    </div></td></tr>`;
+                return '';
             }
 
             function enviarACSharp(mensaje) {
                 if (window.parent !== window) {
-                    window.parent.postMessage(mensaje, "*");
+                    window.parent.postMessage(mensaje, '*');
                     return true;
                 }
                 if (window.chrome?.webview?.postMessage) {
                     window.chrome.webview.postMessage(mensaje);
                     return true;
                 }
-                mostrarMensaje("Esta pantalla requiere el Dashboard de AutoParts o WebView2.");
+                aviso('Esta pantalla requiere el Dashboard de AutoParts o WebView2.');
                 return false;
             }
 
+            function aviso(texto) {
+                $('avisoRol').textContent = texto || '';
+            }
+
+            function mostrarResultadoRol(titulo, texto) {
+                $('tituloResultadoRol').textContent = titulo;
+                $('textoResultadoRol').textContent = texto;
+                $('modalResultadoRol').hidden = false;
+                $('aceptarResultadoRol').focus();
+            }
+
+            function cerrarResultadoRol() {
+                $('modalResultadoRol').hidden = true;
+            }
+
+            function mostrarMensaje(texto) {
+                $('rolRows').innerHTML = '<tr><td colspan="4"><div class="vacio"><strong>' +
+                    escapar(texto) + '</strong></div></td></tr>';
+            }
+
             function pintarRoles() {
-                const texto = document.getElementById("buscarRol").value
-                    .trim().toLocaleLowerCase("es");
-
+                const texto = $('buscarRol').value.trim().toLocaleLowerCase('es');
                 const filtrados = roles.filter(rol => {
-                    const id = obtener(rol, "RolId", "rolId");
-                    const nombre = obtener(rol, "Nombre", "nombre");
-                    return [id, nombre].some(valor =>
-                        String(valor).toLocaleLowerCase("es").includes(texto));
+                    const id = obtener(rol, 'RolId', 'rolId');
+                    const nombre = obtener(rol, 'Nombre', 'nombre');
+                    const estado = Number(obtener(rol, 'EstadoId', 'estadoId'));
+                    return [id, nombre, estado === 1 ? 'activo' : 'inactivo']
+                        .some(valor => String(valor).toLocaleLowerCase('es').includes(texto));
                 });
-
-                document.getElementById("totalRoles").textContent = String(filtrados.length);
-
-                if (filtrados.length === 0) {
-                    mostrarMensaje(texto
-                        ? "No se encontraron coincidencias."
-                        : "No hay roles registrados.");
+                $('totalRoles').textContent = String(filtrados.length);
+                if (!filtrados.length) {
+                    mostrarMensaje(texto ? 'No se encontraron coincidencias.' : 'No hay roles registrados.');
                     return;
                 }
-
-                document.getElementById("rolRows").innerHTML = filtrados.map(rol => {
-                    const id = obtener(rol, "RolId", "rolId");
-                    const nombre = obtener(rol, "Nombre", "nombre");
+                $('rolRows').innerHTML = filtrados.map(rol => {
+                    const id = Number(obtener(rol, 'RolId', 'rolId'));
+                    const nombre = obtener(rol, 'Nombre', 'nombre');
+                    const estado = Number(obtener(rol, 'EstadoId', 'estadoId'));
+                    const activo = estado === 1;
                     return `<tr>
                         <td class="codigo">#${escapar(id)}</td>
                         <td class="nombre">${escapar(nombre)}</td>
+                        <td><span class="estado ${activo ? 'activo' : 'inactivo'}">${activo ? 'Activo' : 'Inactivo'}</span></td>
+                        <td><div class="acciones-rol">
+                            <button type="button" class="boton-rol ver" data-ver="${id}" title="Ver detalles" aria-label="Ver detalles de ${escapar(nombre)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                            <button type="button" class="boton-rol editar" data-editar="${id}" title="Editar rol" aria-label="Editar ${escapar(nombre)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></svg></button>
+                            <button type="button" class="boton-rol ${activo ? 'desactivar' : 'habilitar'}" data-cambiar-estado="${id}" title="${activo ? 'Eliminar (desactivar)' : 'Habilitar'}" aria-label="${activo ? 'Eliminar' : 'Habilitar'} ${escapar(nombre)}" ${activo && id === 1 ? 'disabled' : ''}>${activo ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6"/><path d="M10 10v7M14 10v7"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>'}</button>
+                        </div></td>
                     </tr>`;
-                }).join("");
+                }).join('');
+            }
+
+            function solicitarRoles() {
+                aviso('');
+                mostrarMensaje('Cargando roles...');
+                enviarACSharp({ type: 'roles:selectAll' });
+            }
+
+            function abrirVerRol(id) {
+                const rol = roles.find(x => Number(obtener(x, 'RolId', 'rolId')) === id);
+                if (!rol || operacionPendiente) return;
+                const estado = Number(obtener(rol, 'EstadoId', 'estadoId'));
+                $('verNombreRol').textContent = String(obtener(rol, 'Nombre', 'nombre'));
+                const etiqueta = $('verEstadoRol');
+                etiqueta.textContent = estado === 1 ? 'Activo' : estado === 2 ? 'Inactivo' : 'Desconocido';
+                etiqueta.className = 'estado ' + (estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'otro');
+                $('modalVerRol').hidden = false;
+                $('cerrarVerRol').focus();
+            }
+
+            function cerrarVerRol() {
+                $('modalVerRol').hidden = true;
+            }
+
+            function abrirEditor(id) {
+                const rol = roles.find(x => Number(obtener(x, 'RolId', 'rolId')) === id);
+                if (!rol || operacionPendiente) return;
+                rolEditandoId = id;
+                $('nombreEditarRol').value = String(obtener(rol, 'Nombre', 'nombre'));
+                $('modalEditarRol').hidden = false;
+                $('nombreEditarRol').focus();
+            }
+
+            function cerrarEditor() {
+                $('modalEditarRol').hidden = true;
+                rolEditandoId = 0;
+            }
+
+            function abrirConfirmacionRol(id) {
+                const rol = roles.find(x => Number(obtener(x, 'RolId', 'rolId')) === id);
+                if (!rol || operacionPendiente) return;
+                const activo = Number(obtener(rol, 'EstadoId', 'estadoId')) === 1;
+                if (activo && id === 1) {
+                    aviso('No se puede desactivar el rol administrador principal.');
+                    return;
+                }
+                rolCambioId = id;
+                const accion = activo ? 'desactivar' : 'habilitar';
+                $('tituloConfirmarRol').textContent = activo ? '¿Eliminar rol?' : '¿Habilitar rol?';
+                $('descripcionConfirmarRol').textContent = activo
+                    ? `¿Seguro que deseas desactivar el rol "${obtener(rol, 'Nombre', 'nombre')}"?`
+                    : `¿Seguro que deseas habilitar el rol "${obtener(rol, 'Nombre', 'nombre')}"?`;
+                $('confirmarCambioRol').textContent = activo ? 'Sí, desactivar' : 'Sí, habilitar';
+                $('confirmarCambioRol').classList.toggle('habilitar', !activo);
+                $('modalConfirmarRol').hidden = false;
+                $('cancelarCambioRol').focus();
+            }
+
+            function cerrarConfirmacionRol() {
+                if (operacionPendiente) return;
+                $('modalConfirmarRol').hidden = true;
+                rolCambioId = 0;
+            }
+
+            function cambiarEstadoRol() {
+                if (operacionPendiente || rolCambioId <= 0) return;
+                const rol = roles.find(x => Number(obtener(x, 'RolId', 'rolId')) === rolCambioId);
+                if (!rol) return;
+                const activo = Number(obtener(rol, 'EstadoId', 'estadoId')) === 1;
+                if (activo && rolCambioId === 1) return;
+                const id = rolCambioId;
+                $('modalConfirmarRol').hidden = true;
+                rolCambioId = 0;
+                operacionPendiente = true;
+                ultimaAccionRol = activo ? 'desactivar' : 'habilitar';
+                aviso(activo ? 'Desactivando rol...' : 'Habilitando rol...');
+                if (!enviarACSharp({ type: 'roles:desactivarIntegrado', data: { RolId: id } })) {
+                    operacionPendiente = false;
+                }
             }
 
             function recibirRespuesta(evento) {
+                if (evento.source && window.parent !== window && evento.source !== window.parent) return;
                 let mensaje = evento.data;
-                if (typeof mensaje === "string") {
+                if (typeof mensaje === 'string') {
                     try { mensaje = JSON.parse(mensaje); } catch { return; }
                 }
-                if (!mensaje || typeof mensaje !== "object") return;
-
-                if (mensaje.type === "roles:list") {
+                if (!mensaje || typeof mensaje !== 'object') return;
+                if (mensaje.type === 'roles:list') {
                     roles = Array.isArray(mensaje.data) ? mensaje.data : [];
                     pintarRoles();
-                } else if (mensaje.type === "error") {
-                    document.getElementById("totalRoles").textContent = "0";
-                    mostrarMensaje(mensaje.message || "No se pudieron cargar los roles.");
+                    return;
+                }
+                if (mensaje.type === 'roles:actualizada' || mensaje.type === 'roles:desactivada') {
+                    const accion = mensaje.type === 'roles:actualizada' ? 'actualizar' : ultimaAccionRol;
+                    operacionPendiente = false;
+                    ultimaAccionRol = '';
+                    $('guardarEditarRol').disabled = false;
+                    cerrarEditor();
+                    solicitarRoles();
+                    const titulo = accion === 'actualizar' ? 'Rol actualizado' :
+                        accion === 'habilitar' ? 'Rol habilitado' : 'Rol desactivado';
+                    const texto = accion === 'actualizar' ? 'El rol se actualizó correctamente.' :
+                        accion === 'habilitar' ? 'El rol se habilitó correctamente.' :
+                        'El rol se desactivó correctamente.';
+                    mostrarResultadoRol(titulo, texto);
+                    return;
+                }
+                if (mensaje.type === 'roles:error' || mensaje.type === 'error') {
+                    operacionPendiente = false;
+                    $('guardarEditarRol').disabled = false;
+                    aviso(mensaje.message || 'No se pudo completar la operación.');
                 }
             }
 
-            window.addEventListener("message", recibirRespuesta);
-            if (window.chrome?.webview?.addEventListener) {
-                window.chrome.webview.addEventListener("message", recibirRespuesta);
-            }
-
-            document.getElementById("btnNuevoRol").addEventListener("click", () => {
-                enviarACSharp({ type: "roles:abrirNuevo" });
+            $('rolRows').addEventListener('click', evento => {
+                const ver = evento.target.closest('[data-ver]');
+                const editar = evento.target.closest('[data-editar]');
+                const cambiar = evento.target.closest('[data-cambiar-estado]');
+                if (ver) abrirVerRol(Number(ver.dataset.ver));
+                if (editar) abrirEditor(Number(editar.dataset.editar));
+                if (cambiar) abrirConfirmacionRol(Number(cambiar.dataset.cambiarEstado));
             });
-            document.getElementById("btnActualizar").addEventListener("click", solicitarRoles);
-            document.getElementById("buscarRol").addEventListener("input", pintarRoles);
-
-            function solicitarRoles() {
-                mostrarMensaje("Cargando roles...");
-                enviarACSharp({ type: "roles:selectAll" });
-            }
-
+            $('formEditarRol').addEventListener('submit', evento => {
+                evento.preventDefault();
+                if (operacionPendiente || rolEditandoId <= 0) return;
+                const nombre = $('nombreEditarRol').value.trim();
+                if (!nombre || nombre.length > 100) {
+                    aviso('Ingresa un nombre de 1 a 100 caracteres.');
+                    return;
+                }
+                const original = roles.find(x => Number(obtener(x, 'RolId', 'rolId')) === rolEditandoId);
+                if (!original) { aviso('No se encontró el rol.'); return; }
+                operacionPendiente = true;
+                ultimaAccionRol = 'actualizar';
+                $('guardarEditarRol').disabled = true;
+                aviso('Guardando cambios...');
+                if (!enviarACSharp({
+                    type: 'roles:actualizarIntegrado',
+                    data: { RolId: rolEditandoId, Nombre: nombre }
+                })) {
+                    operacionPendiente = false;
+                    $('guardarEditarRol').disabled = false;
+                }
+            });
+            $('cerrarVerRol').addEventListener('click', cerrarVerRol);
+            $('cancelarEditarRol').addEventListener('click', cerrarEditor);
+            $('aceptarResultadoRol').addEventListener('click', cerrarResultadoRol);
+            $('cancelarCambioRol').addEventListener('click', cerrarConfirmacionRol);
+            $('confirmarCambioRol').addEventListener('click', cambiarEstadoRol);
+            $('btnNuevoRol').addEventListener('click', () => enviarACSharp({ type: 'roles:abrirNuevo' }));
+            $('btnActualizar').addEventListener('click', solicitarRoles);
+            $('buscarRol').addEventListener('input', pintarRoles);
+            window.addEventListener('message', recibirRespuesta);
+            if (window.chrome?.webview?.addEventListener)
+                window.chrome.webview.addEventListener('message', recibirRespuesta);
             solicitarRoles();
-		</script>
+        </script>
 	</body>
 </html>

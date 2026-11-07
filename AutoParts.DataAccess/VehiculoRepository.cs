@@ -12,7 +12,7 @@ namespace AutoParts.DataAccess
 
         public VehiculoRepository(ConnectionFactory connectionFactory)
         {
-            _connectionFactory = connectionFactory;
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         public List<Vehiculo> SelectAll()
@@ -20,28 +20,33 @@ namespace AutoParts.DataAccess
             List<Vehiculo> result = new List<Vehiculo>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spVehiculoSelectAll", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spVehiculoSelectAll", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    int columnaVehiculoId = dr.GetOrdinal("VehiculoId");
+                    int columnaModeloId = dr.GetOrdinal("ModeloId");
+                    int columnaAnio = dr.GetOrdinal("Anio");
+                    int columnaCilindrada = dr.GetOrdinal("Cilindrada");
+                    int columnaTipoMotor = dr.GetOrdinal("TipoMotor");
+                    int columnaEstadoId = dr.GetOrdinal("EstadoId");
 
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    while (dr.Read())
                     {
-                        while (dr.Read())
+                        Vehiculo entity = new Vehiculo
                         {
-                            Vehiculo entity = new Vehiculo();
+                            VehiculoId = dr.GetInt32(columnaVehiculoId),
+                            ModeloId = dr.GetInt32(columnaModeloId),
+                            Anio = dr.GetInt16(columnaAnio),
+                            Cilindrada = dr.GetDecimal(columnaCilindrada),
+                            TipoMotor = dr.GetString(columnaTipoMotor),
+                            EstadoId = dr.GetInt32(columnaEstadoId)
+                        };
 
-                            entity.VehiculoId = dr.GetInt32(0);
-                            entity.ModeloId = dr.GetInt32(1);
-                            entity.Anio = dr.GetInt16(2);
-                            entity.Cilindrada = dr.GetDecimal(3);
-                            entity.TipoMotor = dr.GetString(4);
-                            entity.EstadoId = dr.GetInt32(5);
-
-                            result.Add(entity);
-                        }
+                        result.Add(entity);
                     }
                 }
             }
@@ -51,113 +56,83 @@ namespace AutoParts.DataAccess
 
         public int Insert(Vehiculo entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spVehiculoInsert", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spVehiculoInsert", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
-                        .Value = entity.ModeloId;
+                cmd.Parameters.Add("@ModeloId", SqlDbType.Int).Value = entity.ModeloId;
+                cmd.Parameters.Add("@Anio", SqlDbType.SmallInt).Value = entity.Anio;
 
-                    cmd.Parameters.Add("@Anio", SqlDbType.SmallInt)
-                        .Value = entity.Anio;
+                SqlParameter cilindrada = cmd.Parameters.Add("@Cilindrada", SqlDbType.Decimal);
+                cilindrada.Precision = 5;
+                cilindrada.Scale = 2;
+                cilindrada.Value = entity.Cilindrada;
 
-                    SqlParameter cilindrada = cmd.Parameters.Add(
-                        "@Cilindrada", SqlDbType.Decimal);
+                cmd.Parameters.Add("@TipoMotor", SqlDbType.VarChar, 100).Value = entity.TipoMotor;
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int).Value = 1;
 
-                    cilindrada.Precision = 5;
-                    cilindrada.Scale = 2;
-                    cilindrada.Value = entity.Cilindrada;
-
-                    cmd.Parameters.Add("@TipoMotor", SqlDbType.VarChar, 100)
-                        .Value = entity.TipoMotor;
-
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                conn.Open();
+                return cmd.ExecuteNonQuery();
             }
-
-            return result;
         }
 
         public int Update(Vehiculo entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spVehiculoUpdate", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spVehiculoUpdate", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
+                cmd.Parameters.Add("@VehiculoId", SqlDbType.Int).Value = entity.VehiculoId;
+                cmd.Parameters.Add("@ModeloId", SqlDbType.Int).Value = entity.ModeloId;
+                cmd.Parameters.Add("@Anio", SqlDbType.SmallInt).Value = entity.Anio;
 
-                    cmd.Parameters.Add("@VehiculoId", SqlDbType.Int)
-                        .Value = entity.VehiculoId;
+                SqlParameter cilindrada = cmd.Parameters.Add("@Cilindrada", SqlDbType.Decimal);
+                cilindrada.Precision = 5;
+                cilindrada.Scale = 2;
+                cilindrada.Value = entity.Cilindrada;
 
-                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
-                        .Value = entity.ModeloId;
+                cmd.Parameters.Add("@TipoMotor", SqlDbType.VarChar, 100).Value = entity.TipoMotor;
 
-                    cmd.Parameters.Add("@Anio", SqlDbType.SmallInt)
-                        .Value = entity.Anio;
-
-                    SqlParameter cilindrada = cmd.Parameters.Add(
-                        "@Cilindrada", SqlDbType.Decimal);
-
-                    cilindrada.Precision = 5;
-                    cilindrada.Scale = 2;
-                    cilindrada.Value = entity.Cilindrada;
-
-                    cmd.Parameters.Add("@TipoMotor", SqlDbType.VarChar, 100)
-                        .Value = entity.TipoMotor;
-
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                conn.Open();
+                return cmd.ExecuteNonQuery();
             }
-
-            return result;
         }
 
         public int Delete(Vehiculo entity)
         {
-            using (SqlConnection conn =
-                _connectionFactory.CreateConnection())
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.VehiculoId <= 0)
+                throw new ArgumentException("Selecciona un vehículo válido.", nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spVehiculoDelete", conn))
             {
-                using (SqlCommand cmd =
-                    new SqlCommand("spVehiculoDelete", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@VehiculoId", SqlDbType.Int).Value = entity.VehiculoId;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (!dr.Read())
+                        throw new InvalidOperationException("SQL Server no confirmó el cambio de estado del vehículo.");
 
-                    cmd.Parameters.Add("@VehiculoId", SqlDbType.Int)
-                        .Value = entity.VehiculoId;
+                    int estadoId = dr.GetInt32(dr.GetOrdinal("EstadoId"));
 
-                    conn.Open();
+                    if (estadoId != 1 && estadoId != 2)
+                        throw new InvalidOperationException("SQL Server devolvió un estado no válido para el vehículo.");
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (!dr.Read())
-                            throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
-
-                        int estadoId = dr.GetInt32(
-                            dr.GetOrdinal("EstadoId"));
-
-                        if (estadoId != 2)
-                            throw new InvalidOperationException(
-                                "El Vehiculo no quedó inactivo.");
-                        return estadoId;
-                    }
+                    return estadoId;
                 }
             }
         }

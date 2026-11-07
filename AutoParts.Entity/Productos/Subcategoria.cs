@@ -8,7 +8,8 @@ namespace AutoParts.Entity.Productos
     {
         public int SubcategoriaId { get; set; }
         public int CategoriaId { get; set; }
-        public string Nombre { get; set; }
+        public string CategoriaNombre { get; set; } = string.Empty;
+        public string Nombre { get; set; } = string.Empty;
         public int EstadoId { get; set; }
 
         public Subcategoria()

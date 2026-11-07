@@ -33,13 +33,18 @@ namespace AutoParts.DataAccess
                     using (SqlDataReader dr =
                         cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
+                        int id = dr.GetOrdinal("CategoriaId");
+                        int nombre = dr.GetOrdinal("Nombre");
+                        int estado = dr.GetOrdinal("EstadoId");
+
                         while (dr.Read())
                         {
-                            Categoria entity = new Categoria();
-
-                            entity.CategoriaId = dr.GetInt32(0);
-                            entity.Nombre = dr.GetString(1);
-                            entity.EstadoId = dr.GetInt32(2);
+                            Categoria entity = new Categoria
+                            {
+                                CategoriaId = dr.GetInt32(id),
+                                Nombre = dr.GetString(nombre),
+                                EstadoId = dr.GetInt32(estado)
+                            };
 
                             result.Add(entity);
                         }
@@ -52,6 +57,9 @@ namespace AutoParts.DataAccess
 
         public int Insert(Categoria entity)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
             using (SqlConnection conn =
                 _connectionFactory.CreateConnection())
             {
@@ -64,9 +72,10 @@ namespace AutoParts.DataAccess
                         .Value = entity.Nombre;
 
                     cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
+                        .Value = 1;
 
                     conn.Open();
+
                     cmd.ExecuteNonQuery();
 
                     return 1;
@@ -76,6 +85,9 @@ namespace AutoParts.DataAccess
 
         public int Update(Categoria entity)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
             using (SqlConnection conn =
                 _connectionFactory.CreateConnection())
             {
@@ -90,9 +102,6 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
                         .Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
                     conn.Open();
 
                     cmd.ExecuteNonQuery();
@@ -104,6 +113,13 @@ namespace AutoParts.DataAccess
 
         public int Delete(Categoria entity)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.CategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una categoría válida.");
+
             using (SqlConnection conn =
                 _connectionFactory.CreateConnection())
             {
@@ -117,18 +133,20 @@ namespace AutoParts.DataAccess
 
                     conn.Open();
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr =
+                        cmd.ExecuteReader(CommandBehavior.SingleRow))
                     {
                         if (!dr.Read())
                             throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
+                                "SQL Server no confirmó el cambio de estado.");
 
                         int estadoId = dr.GetInt32(
                             dr.GetOrdinal("EstadoId"));
 
-                        if (estadoId != 2)
+                        if (estadoId != 1 && estadoId != 2)
                             throw new InvalidOperationException(
-                                "La categoría no quedó inactiva.");
+                                "SQL Server devolvió un estado no válido.");
+
                         return estadoId;
                     }
                 }

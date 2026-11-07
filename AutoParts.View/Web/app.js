@@ -298,6 +298,47 @@ const rutasModulos = {
     'Estados': 'estados',
 };
 
+const accesoPorRol = {
+    1: null,
+    2: new Set(['Dashboard', 'Productos', 'Inventario', 'Clientes', 'Ventas', 'Detalles de venta']),
+    3: new Set(['Dashboard', 'Productos', 'Inventario', 'Clientes', 'Ventas', 'Detalles de venta', 'Garantías', 'Reemplazos de garantía'])
+};
+let rolSesionActual = null;
+
+window.addEventListener('message', evento => {
+    if (evento.data?.type !== 'autoparts:solicitarRol') return;
+    const iframe = Array.from(document.querySelectorAll('iframe'))
+        .find(elemento => elemento.contentWindow === evento.source);
+    if (!iframe || rolSesionActual === null) return;
+    evento.source.postMessage({ type: 'autoparts:rolActual', rolId: rolSesionActual }, '*');
+});
+
+function puedeAbrirSeccion(seccion) {
+    if (rolSesionActual === 1) return true;
+    return accesoPorRol[rolSesionActual]?.has(seccion) === true;
+}
+
+function actualizarMenuPorRol() {
+    document.querySelectorAll('[data-section]').forEach(elemento => {
+        const seccion = elemento.dataset.section;
+        const permitido = puedeAbrirSeccion(seccion);
+        elemento.hidden = !permitido;
+        elemento.style.display = permitido ? '' : 'none';
+    });
+    document.querySelectorAll('[data-open]').forEach(elemento => {
+        const permitido = puedeAbrirSeccion(elemento.dataset.open);
+        elemento.hidden = !permitido;
+        elemento.style.display = permitido ? '' : 'none';
+    });
+    const configuracion = document.getElementById('profileSettings');
+    if (configuracion) {
+        configuracion.hidden = !puedeAbrirSeccion('Configuración');
+        configuracion.style.display = puedeAbrirSeccion('Configuración') ? '' : 'none';
+    }
+}
+
+actualizarMenuPorRol();
+
 /* ============================================================
    6. ABRIR FORMULARIOS WINDOWS FORMS
    ============================================================ */
@@ -375,6 +416,11 @@ function abrirFormularioPuestos() {
 function showSection(section) {
 
     const key = section || 'Dashboard';
+
+    if (!puedeAbrirSeccion(key)) {
+        toast('No tienes permisos para acceder a este módulo.');
+        return;
+    }
 
     // Todos los módulos comparten el mismo iframe y MainForm.
     // Si todavía no se ha creado el HTML, WebView2 no podrá cargar esa ruta.
@@ -563,11 +609,8 @@ document.getElementById('logoutButton').onclick = () => {
 
 const rolesSesion = {
     1: 'Administrador',
-    2: 'Gerente',
-    3: 'Vendedor',
-    4: 'Encargado de inventario',
-    5: 'Encargado de compras',
-    6: 'Atención al cliente'
+    2: 'Vendedor',
+    3: 'Técnico'
 };
 
 function actualizarPerfilSesion(sesion) {
@@ -576,6 +619,9 @@ function actualizarPerfilSesion(sesion) {
     const nombre = String(sesion.NombreUsuario ?? sesion.nombreUsuario ?? '').trim();
     const rolId = Number(sesion.RolId ?? sesion.rolId);
     if (!nombre) return;
+    rolSesionActual = rolId;
+    actualizarMenuPorRol();
+    if (!puedeAbrirSeccion(document.querySelector('.nav-link.active')?.dataset.section || 'Dashboard')) showSection('Dashboard');
 
     const nombreRol = rolesSesion[rolId] || `Rol ${Number.isFinite(rolId) ? rolId : 'sin asignar'}`;
     const avatar = nombre.split(/[._\s-]+/).filter(Boolean)
@@ -678,7 +724,7 @@ search.addEventListener('input', () => {
 
     /* Buscar módulos disponibles */
 
-    const opciones = Object.keys(moduleDescriptions).map(nombre => ({
+    const opciones = Object.keys(moduleDescriptions).filter(puedeAbrirSeccion).map(nombre => ({
 
         title: nombre,
 

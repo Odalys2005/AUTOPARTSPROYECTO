@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿
+using Microsoft.Data.SqlClient;
 using AutoParts.Entity.Productos;
 using System;
 using System.Collections.Generic;
@@ -29,14 +30,22 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
+                        int id = dr.GetOrdinal("SubcategoriaId");
+                        int categoria = dr.GetOrdinal("CategoriaId");
+                        int categoriaNombre = dr.GetOrdinal("CategoriaNombre");
+                        int nombre = dr.GetOrdinal("Nombre");
+                        int estado = dr.GetOrdinal("EstadoId");
+
                         while (dr.Read())
                         {
-                            Subcategoria entity = new Subcategoria();
-
-                            entity.SubcategoriaId = dr.GetInt32(0);
-                            entity.CategoriaId = dr.GetInt32(1);
-                            entity.Nombre = dr.GetString(2);
-                            entity.EstadoId = dr.GetInt32(3);
+                            Subcategoria entity = new Subcategoria
+                            {
+                                SubcategoriaId = dr.GetInt32(id),
+                                CategoriaId = dr.GetInt32(categoria),
+                                CategoriaNombre = dr.GetString(categoriaNombre),
+                                Nombre = dr.GetString(nombre),
+                                EstadoId = dr.GetInt32(estado)
+                            };
 
                             result.Add(entity);
                         }
@@ -49,8 +58,6 @@ namespace AutoParts.DataAccess
 
         public int Insert(Subcategoria entity)
         {
-            int result = 0;
-
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
                 using (SqlCommand cmd = new SqlCommand("spSubcategoriaInsert", conn))
@@ -63,30 +70,23 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 120)
                         .Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
                     conn.Open();
 
-                    result = cmd.ExecuteNonQuery();
+                    return cmd.ExecuteNonQuery();
                 }
             }
-
-            return result;
         }
 
         public int Update(Subcategoria entity)
         {
-            int result = 0;
-
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
                 using (SqlCommand cmd = new SqlCommand("spSubcategoriaUpdate", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+
                     cmd.Parameters.Add("@SubcategoriaId", SqlDbType.Int)
                         .Value = entity.SubcategoriaId;
-
 
                     cmd.Parameters.Add("@CategoriaId", SqlDbType.Int)
                         .Value = entity.CategoriaId;
@@ -94,45 +94,43 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 120)
                         .Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
                     conn.Open();
 
-                    result = cmd.ExecuteNonQuery();
+                    return cmd.ExecuteNonQuery();
                 }
             }
-
-            return result;
         }
 
         public int Delete(Subcategoria entity)
         {
-            using (SqlConnection conn =
-                _connectionFactory.CreateConnection())
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
-                using (SqlCommand cmd =
-                    new SqlCommand("spSubCategoriaDelete", conn))
+                using (SqlCommand cmd = new SqlCommand("spSubcategoriaDelete", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@SubCategoriaId", SqlDbType.Int)
+                    cmd.Parameters.Add("@SubcategoriaId", SqlDbType.Int)
                         .Value = entity.SubcategoriaId;
 
                     conn.Open();
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
                         if (!dr.Read())
+                        {
                             throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
+                                "SQL Server no encontró la subcategoría o no confirmó el cambio de estado.");
+                        }
 
                         int estadoId = dr.GetInt32(
                             dr.GetOrdinal("EstadoId"));
 
-                        if (estadoId != 2)
+                        if (estadoId != 1 && estadoId != 2)
+                        {
                             throw new InvalidOperationException(
-                                "La SubCategoria no quedó inactiva.");
+                                "SQL Server devolvió un estado no válido.");
+                        }
+
                         return estadoId;
                     }
                 }

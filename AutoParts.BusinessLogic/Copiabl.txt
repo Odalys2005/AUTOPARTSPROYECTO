@@ -1,0 +1,1672 @@
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class CategoriaBL
+    {
+        private readonly CategoriaRepository _repository;
+
+        public CategoriaBL(CategoriaRepository repository)
+        {
+            _repository = repository;
+        }
+
+        // ==========================================
+        // SELECT ALL - CONSULTAR CATEGORIAS
+        // ==========================================
+        public List<Categoria> SelectAll()
+        {
+            try
+            {
+                return _repository.SelectAll();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        // ==========================================
+        // INSERT - REGISTRAR CATEGORIA
+        // ==========================================
+        public int Insert(Categoria entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (string.IsNullOrWhiteSpace(entity.Nombre))
+                throw new ArgumentException(
+                    "El nombre de la categoría es obligatorio.");
+
+            entity.Nombre = entity.Nombre.Trim();
+
+            if (entity.Nombre.Length > 100)
+                throw new ArgumentException(
+                    "El nombre no puede superar los 100 caracteres.");
+
+            if (entity.EstadoId != 1 && entity.EstadoId != 2)
+                throw new ArgumentException(
+                    "Selecciona un estado válido.");
+
+            return _repository.Insert(entity);
+        }
+
+        // ==========================================
+        // UPDATE - ACTUALIZAR CATEGORIA
+        // ==========================================
+        public int Update(Categoria entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.CategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una categoría válida.");
+
+            if (string.IsNullOrWhiteSpace(entity.Nombre))
+                throw new ArgumentException(
+                    "El nombre de la categoría es obligatorio.");
+
+            entity.Nombre = entity.Nombre.Trim();
+
+            if (entity.Nombre.Length > 100)
+                throw new ArgumentException(
+                    "El nombre no puede superar los 100 caracteres.");
+
+            if (entity.EstadoId != 1 && entity.EstadoId != 2)
+                throw new ArgumentException(
+                    "Selecciona un estado válido.");
+
+            return _repository.Update(entity);
+        }
+
+        // ==========================================
+        // DELETE - DESACTIVACION LOGICA
+        // ==========================================
+        // No elimina físicamente la categoría.
+        // Cambia su EstadoId a 2 (Inactivo).
+        public int Delete(Categoria entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.CategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una categoría válida.");
+
+            return _repository.Delete(entity);
+        }
+
+        /*
+        public int Update(Categoria entity)
+        {
+            int result;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return result;
+        }
+
+        public int Delete(Categoria entity)
+        {
+            int result;
+
+            try
+            {
+                result = _repository.Delete(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return result;
+        }
+        */
+    }
+}
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class ClienteBL
+    {
+        private readonly ClienteRepository _repository;
+
+        public ClienteBL(ClienteRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Cliente> SelectAll()
+        {
+            try
+            {
+                return _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public int Insert(Cliente entity)
+        {
+            try
+            {
+                return _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public int Update(Cliente entity)
+        {
+            int result;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return result;
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class CompatibilidadRepuestoBL
+    {
+        private readonly CompatibilidadRepuestoRepository _repository;
+
+        public CompatibilidadRepuestoBL(CompatibilidadRepuestoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<CompatibilidadRepuesto> SelectAll()
+        {
+            List<CompatibilidadRepuesto> result = new List<CompatibilidadRepuesto>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(CompatibilidadRepuesto entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+    }
+}
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace AutoParts.BusinessLogic
+{
+    public class CompraBL
+    {
+        private readonly CompraRepository _repository;
+
+        public CompraBL(CompraRepository repository)
+        {
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        }
+
+        public List<Compra> SelectAll()
+        {
+            return _repository.SelectAll();
+        }
+
+        // Se conserva por compatibilidad con el proyecto existente.
+        // NO usar Insert para compras que deban aumentar inventario:
+        // usar RegistrarCompleta, que trabaja en una unica transaccion SQL.
+        public int Insert(Compra entity)
+        {
+            return _repository.Insert(entity);
+        }
+
+        // La compra, todos sus detalles y el incremento de existencias
+        // se confirman o se deshacen juntos en spCompraRegistrarCompleta.
+        public CompraRegistroResultado RegistrarCompleta(
+            Compra compra,
+            IReadOnlyCollection<Detalle_Compra> detalles)
+        {
+            if (compra == null)
+                throw new ArgumentNullException(nameof(compra));
+            if (detalles == null)
+                throw new ArgumentNullException(nameof(detalles));
+
+            if (compra.ProveedorId <= 0)
+                throw new ArgumentException("Selecciona un proveedor valido.");
+            if (compra.EmpleadoId <= 0)
+                throw new ArgumentException("Selecciona un empleado valido.");
+
+            compra.NumeroComprobante = (compra.NumeroComprobante ?? "").Trim();
+            if (compra.NumeroComprobante.Length == 0 || compra.NumeroComprobante.Length > 50)
+                throw new ArgumentException("El numero de comprobante debe tener entre 1 y 50 caracteres.");
+
+            if (compra.FechaCompra < new DateTime(1753, 1, 1) ||
+                compra.FechaCompra > new DateTime(9999, 12, 31))
+                throw new ArgumentException("Ingresa una fecha de compra valida.");
+
+            if (detalles.Count == 0)
+                throw new ArgumentException("Agrega al menos un producto a la compra.");
+
+            var productosVistos = new HashSet<int>();
+            decimal totalCalculado = 0m;
+            foreach (Detalle_Compra detalle in detalles)
+            {
+                if (detalle == null)
+                    throw new ArgumentException("Hay un detalle de compra vacio.");
+                if (detalle.ProductoId <= 0)
+                    throw new ArgumentException("Selecciona un producto valido en cada detalle.");
+                if (detalle.Cantidad <= 0)
+                    throw new ArgumentException("La cantidad de cada producto debe ser mayor que cero.");
+                if (detalle.PrecioCosto < 0 || detalle.PrecioCosto > 9999999999999999.99m ||
+                    detalle.PrecioCosto != decimal.Round(detalle.PrecioCosto, 2))
+                    throw new ArgumentException("El costo debe ser positivo o cero, con hasta dos decimales.");
+                if (!productosVistos.Add(detalle.ProductoId))
+                    throw new ArgumentException("No repitas un producto: unifica sus cantidades.");
+
+                try
+                {
+                    checked
+                    {
+                        decimal subtotal = detalle.Cantidad * detalle.PrecioCosto;
+                        totalCalculado += subtotal;
+                        if (subtotal > 9999999999999999.99m || totalCalculado > 9999999999999999.99m)
+                            throw new ArgumentException("El importe de la compra supera el limite admitido.");
+                    }
+                }
+                catch (OverflowException)
+                {
+                    throw new ArgumentException("El importe de la compra es demasiado grande.");
+                }
+            }
+
+            // No utilizar Compra.TotalCompra ni Detalle_Compra.Subtotal enviados
+            // desde la interfaz: SQL Server vuelve a calcular los importes.
+            // StockMaximo es orientativo: la base permite superarlo y devuelve aviso.
+            return _repository.RegistrarCompleta(compra, detalles);
+        }
+    }
+}
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class Detalle_CompraBL
+    {
+        private readonly Detalle_CompraRepository _repository;
+
+        public Detalle_CompraBL(Detalle_CompraRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Detalle_Compra> SelectAll()
+        {
+            List<Detalle_Compra> result = new List<Detalle_Compra>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Detalle_Compra entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class Detalle_VentaBL
+    {
+        private readonly Detalle_VentaRepository _repository;
+
+        public Detalle_VentaBL(Detalle_VentaRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Detalle_Venta> SelectAll()
+        {
+            List<Detalle_Venta> result = new List<Detalle_Venta>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Detalle_Venta entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class EmpleadoBL
+    {
+        private readonly EmpleadoRepository _repository;
+
+        public EmpleadoBL(EmpleadoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Empleado> SelectAll()
+        {
+            List<Empleado> result = new List<Empleado>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Empleado entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Update(Empleado entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Empleado entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.EmpleadoId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un Empleado válido.");
+
+            return _repository.Delete(entity);
+        }
+    }
+}
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class EstadoBL
+    {
+        private readonly EstadoRepository _repository;
+
+        public EstadoBL(EstadoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Estado> SelectAll()
+        {
+            List<Estado> result = null;
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+    }
+}using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class GarantiaBL
+    {
+        private readonly GarantiaRepository _repository;
+
+        public GarantiaBL(GarantiaRepository repository)
+        {
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        }
+
+        public List<Garantia> SelectAll()
+        {
+            return _repository.SelectAll();
+        }
+
+        // Método heredado: se mantiene para compatibilidad.
+        // Las nuevas solicitudes del Dashboard deben usar RegistrarSolicitud,
+        // ya que el procedimiento antiguo spGarantiaInsert no aplica las reglas nuevas.
+        public int Insert(Garantia entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            return _repository.Insert(entity);
+        }
+
+        // Registra una solicitud; no la aprueba ni modifica inventario.
+        public GarantiaSolicitudResultado RegistrarSolicitud(
+            int detalleVentaId,
+            int empleadoId,
+            int cantidadReclamada,
+            string descripcionFalla,
+            string? observaciones = null)
+        {
+            if (detalleVentaId <= 0)
+                throw new ArgumentException("Selecciona un detalle de venta válido.", nameof(detalleVentaId));
+            if (empleadoId <= 0)
+                throw new ArgumentException("Selecciona un empleado válido.", nameof(empleadoId));
+            if (cantidadReclamada <= 0)
+                throw new ArgumentException("La cantidad reclamada debe ser mayor que cero.", nameof(cantidadReclamada));
+
+            descripcionFalla = (descripcionFalla ?? string.Empty).Trim();
+            if (descripcionFalla.Length == 0 || descripcionFalla.Length > 1000)
+                throw new ArgumentException("Describe la falla (máximo 1000 caracteres).", nameof(descripcionFalla));
+
+            observaciones = string.IsNullOrWhiteSpace(observaciones) ? null : observaciones.Trim();
+            if (observaciones?.Length > 1000)
+                throw new ArgumentException("Las observaciones no pueden superar 1000 caracteres.", nameof(observaciones));
+
+            // SQL Server valida la venta original, el plazo y la cantidad no reclamada.
+            return _repository.RegistrarSolicitud(
+                detalleVentaId, empleadoId, cantidadReclamada, descripcionFalla, observaciones);
+        }
+
+        // La evaluación solo permite aprobar un defecto de fabricación o rechazarlo.
+        // Nunca descuenta stock; la entrega se gestiona por el módulo de reemplazos.
+        public GarantiaEvaluacionResultado Evaluar(
+            int garantiaId,
+            int empleadoId,
+            string decision,
+            bool defectoFabricacion,
+            string? observaciones = null)
+        {
+            if (garantiaId <= 0)
+                throw new ArgumentException("Selecciona una garantía válida.", nameof(garantiaId));
+            if (empleadoId <= 0)
+                throw new ArgumentException("Selecciona un empleado válido.", nameof(empleadoId));
+
+            decision = (decision ?? string.Empty).Trim().ToUpperInvariant();
+            if (decision != "APROBADA" && decision != "RECHAZADA")
+                throw new ArgumentException("La decisión debe ser APROBADA o RECHAZADA.", nameof(decision));
+            if (decision == "APROBADA" && !defectoFabricacion)
+                throw new ArgumentException("Solo pueden aprobarse defectos de fabricación.", nameof(defectoFabricacion));
+            if (decision == "RECHAZADA" && defectoFabricacion)
+                throw new ArgumentException("Una solicitud rechazada no debe confirmar defecto de fabricación.", nameof(defectoFabricacion));
+
+            observaciones = string.IsNullOrWhiteSpace(observaciones) ? null : observaciones.Trim();
+            if (observaciones?.Length > 1000)
+                throw new ArgumentException("Las observaciones no pueden superar 1000 caracteres.", nameof(observaciones));
+            if (decision == "RECHAZADA" && observaciones == null)
+                throw new ArgumentException("Explica el motivo del rechazo.", nameof(observaciones));
+
+            return _repository.Evaluar(
+                garantiaId, empleadoId, decision, defectoFabricacion, observaciones);
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class InventarioBL
+    {
+        private readonly InventarioRepository _repository;
+
+        public InventarioBL(InventarioRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Inventario> SelectAll()
+        {
+            List<Inventario> result = new List<Inventario>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Inventario entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class MarcaBL
+    {
+        private readonly MarcaRepository _repository;
+
+        public MarcaBL(MarcaRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Marca> SelectAll()
+        {
+            return _repository.SelectAll();
+        }
+
+        public int Insert(Marca entity)
+        {
+            return _repository.Insert(entity);
+        }
+
+        public int Update(Marca entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+
+        public int Delete(Marca entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.MarcaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una Marca válida.");
+
+            return _repository.Delete(entity);
+        }
+
+
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class ModeloBL
+    {
+        private readonly ModeloRepository _repository;
+
+        public ModeloBL(ModeloRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Modelo> SelectAll()
+        {
+            List<Modelo> result = new List<Modelo>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Modelo entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Update(Modelo entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Modelo entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.ModeloId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un Modelo válido.");
+
+            return _repository.Delete(entity);
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+using System;
+using System.Security.Cryptography;
+
+namespace AutoParts.BusinessLogic
+{
+    public static class PasswordHelper
+    {
+        private const int Iteraciones = 600000;
+        private const int SaltSize = 16;
+        private const int HashSize = 32;
+
+        public static string CrearHash(string contrasena)
+        {
+            if (string.IsNullOrWhiteSpace(contrasena))
+                throw new ArgumentException(
+                    "La contraseña no puede estar vacía.");
+
+            byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
+
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
+                contrasena,
+                salt,
+                Iteraciones,
+                HashAlgorithmName.SHA256,
+                HashSize);
+
+            return $"PBKDF2-SHA256${Iteraciones}${Convert.ToBase64String(salt)}${Convert.ToBase64String(hash)}";
+        }
+
+        public static bool Verificar(
+            string contrasena,
+            string hashGuardado)
+        {
+            if (string.IsNullOrEmpty(contrasena) ||
+                string.IsNullOrEmpty(hashGuardado))
+                return false;
+
+            string[] partes = hashGuardado.Split('$');
+
+            if (partes.Length != 4 ||
+                partes[0] != "PBKDF2-SHA256" ||
+                !int.TryParse(partes[1], out int iteraciones) ||
+                iteraciones < 100000 ||
+                iteraciones > 2000000)
+                return false;
+
+            try
+            {
+                byte[] salt = Convert.FromBase64String(partes[2]);
+                byte[] hashOriginal = Convert.FromBase64String(partes[3]);
+
+                if (salt.Length != SaltSize ||
+                    hashOriginal.Length != HashSize)
+                    return false;
+
+                byte[] hashNuevo = Rfc2898DeriveBytes.Pbkdf2(
+                    contrasena,
+                    salt,
+                    iteraciones,
+                    HashAlgorithmName.SHA256,
+                    HashSize);
+
+                return CryptographicOperations.FixedTimeEquals(
+                    hashNuevo,
+                    hashOriginal);
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
+    }
+}
+
+using System;
+
+namespace AutoParts.BusinessLogic
+{
+    public static class PermisosSistema
+    {
+        // Rol administrador de AutoParts.
+        // Según los registros actuales, Administrador = RolId 1.
+        public const int RolAdministrador = 1;
+
+        public static bool EsAdministrador(
+            SesionUsuario? sesion)
+        {
+            return sesion != null &&
+                   sesion.RolId == RolAdministrador;
+        }
+
+        public static bool PuedeAcceder(
+            SesionUsuario? sesion,
+            string modulo)
+        {
+            if (sesion == null)
+                return false;
+
+            // Por ahora solo habilitamos al administrador.
+            return EsAdministrador(sesion);
+        }
+
+        public static bool PuedeRealizar(
+            SesionUsuario? sesion,
+            string modulo,
+            string accion)
+        {
+            if (sesion == null)
+                return false;
+
+            // El administrador dispone de todos los permisos.
+            return EsAdministrador(sesion);
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class ProductoBL
+    {
+        private readonly ProductoRepository _repository;
+
+        public ProductoBL(ProductoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Producto> SelectAll()
+        {
+            List<Producto> result = new List<Producto>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Producto entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Update(Producto entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Producto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.ProductoId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un Producto válido.");
+
+            return _repository.Delete(entity);
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class ProveedorBL
+    {
+        private readonly ProveedorRepository _repository;
+
+        public ProveedorBL(ProveedorRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Proveedor> SelectAll()
+        {
+            List<Proveedor> result = new List<Proveedor>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Proveedor entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Update(Proveedor entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Proveedor entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.ProveedorId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un Proveedor válido.");
+
+            return _repository.Delete(entity);
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class PuestoBL
+    {
+        private readonly PuestoRepository _repository;
+
+        public PuestoBL(PuestoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Puesto> SelectAll()
+        {
+            return _repository.SelectAll();
+        }
+
+        public int Insert(Puesto entity)
+        {
+            return _repository.Insert(entity);
+        }
+
+        public int Update(Puesto entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Puesto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.PuestoId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un Puesto válido.");
+
+            return _repository.Delete(entity);
+        }
+    }
+}
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class ReemplazoGarantiaBL
+    {
+        private readonly ReemplazoGarantiaRepository _repository;
+
+        public ReemplazoGarantiaBL(ReemplazoGarantiaRepository repository)
+        {
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        }
+
+        // Conserva el listado de reemplazos ya registrados.
+        public List<ReemplazoGarantia> SelectAll()
+        {
+            return _repository.SelectAll();
+        }
+
+        // Flujo nuevo y seguro: SQL verifica que la garantía esté aprobada,
+        // que no exista otra entrega y que haya stock disponible.
+        // Registra la entrega y descuenta el inventario en una sola transacción.
+        // Si no hay stock, retorna PENDIENTE_REEMPLAZO sin crear una entrega.
+        public ReemplazoEntregaResultado EntregarReemplazo(
+            int garantiaId,
+            int empleadoId,
+            string? observaciones = null)
+        {
+            if (garantiaId <= 0)
+                throw new ArgumentException("Selecciona una garantía válida.", nameof(garantiaId));
+
+            if (empleadoId <= 0)
+                throw new ArgumentException("Selecciona un empleado válido.", nameof(empleadoId));
+
+            observaciones = string.IsNullOrWhiteSpace(observaciones)
+                ? null
+                : observaciones.Trim();
+
+            if (observaciones != null && observaciones.Length > 1000)
+                throw new ArgumentException(
+                    "Las observaciones no pueden superar 1000 caracteres.",
+                    nameof(observaciones));
+
+            ReemplazoEntregaResultado resultado =
+                _repository.EntregarReemplazo(garantiaId, empleadoId, observaciones);
+
+            if (resultado == null)
+                throw new InvalidOperationException(
+                    "No se recibió confirmación del estado del reemplazo.");
+
+            if (resultado.EstadoGarantia != "REEMPLAZADA" &&
+                resultado.EstadoGarantia != "PENDIENTE_REEMPLAZO")
+                throw new InvalidOperationException(
+                    "SQL Server devolvió un estado de reemplazo no esperado.");
+
+            return resultado;
+        }
+
+        // LEGADO: se mantiene para no romper las referencias existentes.
+        // NO usar en el Dashboard para entregas reales: el procedimiento
+        // spReemplazoGarantiaInsert no descuenta inventario.
+        public int Insert(ReemplazoGarantia entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            return _repository.Insert(entity);
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class RolBL
+    {
+        private readonly RolRepository _repository;
+
+        public RolBL(RolRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Rol> SelectAll()
+        {
+            List<Rol> result = null;
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Rol entity)
+        {
+            int result;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Update(Rol entity)
+        {
+            int result;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Rol entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.RolId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un Rol válido.");
+
+            return _repository.Delete(entity);
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using AutoParts.Entity.Productos;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class SubcategoriaBL
+    {
+        private readonly SubcategoriaRepository _repository;
+
+        public SubcategoriaBL(SubcategoriaRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Subcategoria> SelectAll()
+        {
+            List<Subcategoria> result = new List<Subcategoria>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Subcategoria entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Update(Subcategoria entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Subcategoria entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.SubcategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una SubCategoria válida.");
+
+            return _repository.Delete(entity);
+        }
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.BusinessLogic
+{
+    public class UsuarioBL
+    {
+        private readonly UsuarioRepository _repository;
+
+        public UsuarioBL(UsuarioRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Usuario> SelectAll()
+        {
+            return _repository.SelectAll();
+        }
+
+        public int Insert(Usuario entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (string.IsNullOrWhiteSpace(entity.NombreUsuario))
+                throw new ArgumentException(
+                    "Debe ingresar un nombre de usuario.");
+
+            if (string.IsNullOrWhiteSpace(entity.Contrasena))
+                throw new ArgumentException(
+                    "Debe ingresar una contraseña.");
+
+            // El repositorio almacena un hash, nunca texto plano.
+            Usuario nuevo = new Usuario(
+                entity.UsuarioId,
+                entity.EmpleadoId,
+                entity.RolId,
+                entity.NombreUsuario.Trim(),
+                PasswordHelper.CrearHash(entity.Contrasena),
+                entity.EstadoId
+            );
+
+            return _repository.Insert(nuevo);
+        }
+        /////
+        public int Update(Usuario entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.UsuarioId <= 0)
+                throw new ArgumentException("El ID de usuario no es válido.");
+
+            if (string.IsNullOrWhiteSpace(entity.NombreUsuario))
+                throw new ArgumentException("Debe ingresar un nombre de usuario.");
+
+            // Si viene una contraseña nueva se genera el hash, si no, se conserva según tu lógica de negocio
+            string contrasenaHash = string.IsNullOrWhiteSpace(entity.Contrasena)
+                ? entity.Contrasena
+                : PasswordHelper.CrearHash(entity.Contrasena);
+
+            Usuario usuarioModificado = new Usuario(
+                entity.UsuarioId,
+                entity.EmpleadoId,
+                entity.RolId,
+                entity.NombreUsuario.Trim(),
+                contrasenaHash,
+                entity.EstadoId
+            );
+
+            return _repository.Update(usuarioModificado);
+        }
+
+        public int Delete(Usuario entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.UsuarioId <= 0)
+                throw new ArgumentException("El ID de usuario no es válido.");
+
+            return _repository.Delete(entity);
+        }
+        ///
+        public SesionUsuario? IniciarSesion(
+            string nombreUsuario,
+            string contrasena)
+        {
+            if (string.IsNullOrWhiteSpace(nombreUsuario) ||
+                string.IsNullOrEmpty(contrasena))
+            {
+                return null;
+            }
+
+            Usuario? usuario = _repository.SelectByNombreUsuario(
+                nombreUsuario.Trim());
+
+            if (usuario == null)
+                return null;
+
+            if (!PasswordHelper.Verificar(
+                contrasena, usuario.Contrasena))
+            {
+                return null;
+            }
+
+            return new SesionUsuario
+            {
+                UsuarioId = usuario.UsuarioId,
+                EmpleadoId = usuario.EmpleadoId,
+                RolId = usuario.RolId,
+                NombreUsuario = usuario.NombreUsuario
+            };
+        }
+    }
+
+    public class SesionUsuario
+    {
+        public int UsuarioId { get; set; }
+        public int EmpleadoId { get; set; }
+        public int RolId { get; set; }
+        public string NombreUsuario { get; set; } = "";
+    }
+}
+
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class VehiculoBL
+    {
+        private readonly VehiculoRepository _repository;
+
+        public VehiculoBL(VehiculoRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Vehiculo> SelectAll()
+        {
+            List<Vehiculo> result = new List<Vehiculo>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Insert(Vehiculo entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Update(Vehiculo entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public int Delete(Vehiculo entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.VehiculoId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un Vehiculo válido.");
+
+            return _repository.Delete(entity);
+        }
+    }
+}
+using AutoParts.DataAccess;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+
+namespace AutoParts.BusinessLogic
+{
+    public class VentaBL
+    {
+        private readonly VentaRepository _repository;
+
+        public VentaBL(VentaRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public List<Venta> SelectAll()
+        {
+            List<Venta> result = new List<Venta>();
+
+            try
+            {
+                result = _repository.SelectAll();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+
+        public VentaRegistroResultado RegistrarCompleta(VentaRegistroCompleto solicitud)
+        {
+            if (solicitud == null)
+                throw new ArgumentNullException(nameof(solicitud));
+            if (solicitud.ClienteId <= 0 || solicitud.EmpleadoId <= 0 || solicitud.EstadoId <= 0)
+                throw new ArgumentException("Selecciona un cliente, empleado y estado válidos.");
+            // Número vacío: SQL Server genera FAC-AAAA-NNNNNN al confirmar.
+            // Normalizar a cadena vacía mantiene compatible el repositorio actual.
+            solicitud.NumeroFactura = (solicitud.NumeroFactura ?? string.Empty).Trim();
+            if (solicitud.NumeroFactura.Length > 50)
+                throw new ArgumentException("El número de factura no puede superar 50 caracteres.");
+            if (solicitud.Lineas == null || solicitud.Lineas.Count == 0)
+                throw new ArgumentException("Agrega por lo menos un producto al carrito.");
+            if (solicitud.Lineas.Count > 200)
+                throw new ArgumentException("La venta supera el máximo de 200 productos diferentes.");
+
+            HashSet<int> ids = new HashSet<int>();
+            foreach (VentaLineaRegistro linea in solicitud.Lineas)
+            {
+                if (linea == null || linea.ProductoId <= 0 || linea.Cantidad <= 0)
+                    throw new ArgumentException("El carrito contiene un producto o cantidad inválida.");
+                if (!ids.Add(linea.ProductoId))
+                    throw new ArgumentException("El carrito contiene productos repetidos.");
+            }
+            return _repository.RegistrarCompleta(solicitud);
+        }
+
+        public int Insert(Venta entity)
+        {
+            int result = 0;
+
+            try
+            {
+                result = _repository.Insert(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return result;
+        }
+    }
+}

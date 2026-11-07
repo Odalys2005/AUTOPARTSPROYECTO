@@ -16,31 +16,35 @@ namespace AutoParts.DataAccess
             _connectionFactory = connectionFactory;
         }
 
+        
         public List<Rol> SelectAll()
         {
             List<Rol> result = new List<Rol>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spRolSelectAll", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spRolSelectAll", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(
+                    CommandBehavior.SingleResult))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    int colRolId = dr.GetOrdinal("RolId");
+                    int colNombre = dr.GetOrdinal("Nombre");
+                    int colEstadoId = dr.GetOrdinal("EstadoId");
 
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    while (dr.Read())
                     {
-                        while (dr.Read())
+                        Rol entity = new Rol
                         {
-                            Rol entity = new Rol();
+                            RolId = dr.GetInt32(colRolId),
+                            Nombre = dr.GetString(colNombre),
+                            EstadoId = dr.GetInt32(colEstadoId)
+                        };
 
-                            entity.RolId = dr.GetInt32(0);
-                            entity.Nombre = dr.GetString(1);
-                            entity.EstadoId = dr.GetInt32(2);
-
-
-                            result.Add(entity);
-                        }
+                        result.Add(entity);
                     }
                 }
             }
@@ -48,90 +52,94 @@ namespace AutoParts.DataAccess
             return result;
         }
 
+        
         public int Insert(Rol entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spRolInsert", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spRolInsert", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
-                        .Value = entity.Nombre;
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                    .Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.VarChar, 100)
-                        .Value = entity.EstadoId;
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                    .Value = entity.EstadoId;
 
-                    conn.Open();
+                conn.Open();
 
-                    result = cmd.ExecuteNonQuery();
-                }
+                cmd.ExecuteNonQuery();
+
+                return 1;
             }
-
-            return result;
         }
 
+        
         public int Update(Rol entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spRolUpdate", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spRolUpdate", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
-                        .Value = entity.RolId;
+                cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                    .Value = entity.RolId;
 
-                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
-                        .Value = entity.Nombre;
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                    .Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
+                conn.Open();
 
-                    conn.Open();
+                cmd.ExecuteNonQuery();
 
-                    result = cmd.ExecuteNonQuery();
-                }
+                return 1;
             }
-
-            return result;
         }
+
+
 
         public int Delete(Rol entity)
         {
-            using (SqlConnection conn =
-                _connectionFactory.CreateConnection())
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.RolId <= 0)
+                throw new ArgumentException("Selecciona un rol válido.");
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spRolDelete", conn))
             {
-                using (SqlCommand cmd =
-                    new SqlCommand("spRolDelete", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                    .Value = entity.RolId;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(
+                    CommandBehavior.SingleRow))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (!dr.Read())
+                        throw new InvalidOperationException(
+                            "SQL Server no confirmó el cambio de estado.");
 
-                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
-                        .Value = entity.RolId;
+                    int estadoId = dr.GetInt32(
+                        dr.GetOrdinal("EstadoId"));
 
-                    conn.Open();
+                    if (estadoId != 1 && estadoId != 2)
+                        throw new InvalidOperationException(
+                            "SQL Server devolvió un estado no válido.");
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (!dr.Read())
-                            throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
-
-                        int estadoId = dr.GetInt32(
-                            dr.GetOrdinal("EstadoId"));
-
-                        if (estadoId != 2)
-                            throw new InvalidOperationException(
-                                "El Rol no quedó inactivo.");
-                        return estadoId;
-                    }
+                    return estadoId;
                 }
             }
         }
+
     }
 }

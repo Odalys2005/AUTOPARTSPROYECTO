@@ -30,17 +30,26 @@ namespace AutoParts.DataAccess
 
                     using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                     {
+                        int id = dr.GetOrdinal("ProveedorId");
+                        int nombre = dr.GetOrdinal("NombreEmpresa");
+                        int nit = dr.GetOrdinal("NIT");
+                        int telefono = dr.GetOrdinal("Telefono");
+                        int correo = dr.GetOrdinal("Correo");
+                        int contacto = dr.GetOrdinal("Contacto");
+                        int estado = dr.GetOrdinal("EstadoId");
+
                         while (dr.Read())
                         {
                             Proveedor entity = new Proveedor();
 
-                            entity.ProveedorId = dr.GetInt32(0);
-                            entity.NombreEmpresa = dr.GetString(1);
-                            entity.NIT = dr.GetString(2);
-                            entity.Telefono = dr.GetString(3);
-                            entity.Correo = dr.GetString(4);
-                            entity.Contacto = dr.GetString(5);
-                            entity.EstadoId = dr.GetInt32(6);
+                            entity.ProveedorId = dr.GetInt32(id);
+                            entity.NombreEmpresa = dr.GetString(nombre);
+                            entity.NIT = dr.GetString(nit);
+                            entity.Telefono = dr.GetString(telefono);
+                            entity.Correo = dr.GetString(correo);
+                            entity.Contacto = dr.GetString(contacto);
+                            entity.EstadoId = dr.GetInt32(estado);
+
                             result.Add(entity);
                         }
                     }
@@ -52,8 +61,6 @@ namespace AutoParts.DataAccess
 
         public int Insert(Proveedor entity)
         {
-            int result = 0;
-
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
                 using (SqlCommand cmd = new SqlCommand("spProveedorInsert", conn))
@@ -75,23 +82,15 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.Add("@Contacto", SqlDbType.VarChar, 100)
                         .Value = entity.Contacto;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-
                     conn.Open();
 
-                    result = cmd.ExecuteNonQuery();
+                    return cmd.ExecuteNonQuery();
                 }
             }
-
-            return result;
         }
 
         public int Update(Proveedor entity)
         {
-            int result = 0;
-
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
                 using (SqlCommand cmd = new SqlCommand("spProveedorUpdate", conn))
@@ -116,26 +115,18 @@ namespace AutoParts.DataAccess
                     cmd.Parameters.Add("@Contacto", SqlDbType.VarChar, 100)
                         .Value = entity.Contacto;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-
                     conn.Open();
 
-                    result = cmd.ExecuteNonQuery();
+                    return cmd.ExecuteNonQuery();
                 }
             }
-
-            return result;
         }
 
         public int Delete(Proveedor entity)
         {
-            using (SqlConnection conn =
-                _connectionFactory.CreateConnection())
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
             {
-                using (SqlCommand cmd =
-                    new SqlCommand("spProveedorDelete", conn))
+                using (SqlCommand cmd = new SqlCommand("spProveedorDelete", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -147,15 +138,20 @@ namespace AutoParts.DataAccess
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         if (!dr.Read())
+                        {
                             throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
+                                "No se encontró el proveedor o su estado no es válido.");
+                        }
 
                         int estadoId = dr.GetInt32(
                             dr.GetOrdinal("EstadoId"));
 
-                        if (estadoId != 2)
+                        if (estadoId != 1 && estadoId != 2)
+                        {
                             throw new InvalidOperationException(
-                                "El Proveedor no quedó inactivo.");
+                                "SQL Server devolvió un estado no válido.");
+                        }
+
                         return estadoId;
                     }
                 }

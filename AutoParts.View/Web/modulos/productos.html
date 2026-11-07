@@ -19,20 +19,21 @@
 					.subtitulo { color:#a9aab3; font-size:13px; margin-top:9px; line-height:1.6; }
 					.btn-nueva { display:flex; align-items:center; justify-content:center; gap:10px; padding:14px 20px; border:1px solid #ff6053; border-radius:10px; background:linear-gradient(110deg,#b10b1f,#e52a37,#ffac28); color:#fff; font-size:13px; font-weight:750; box-shadow:0 0 18px rgba(233,31,48,.27),inset 0 1px 1px #ffffff30; transition:transform .2s,filter .2s; }
 					.btn-nueva:hover { transform:translateY(-2px); filter:brightness(1.12); }
+					#btnNuevoProducto[hidden] { display:none!important; }
 					.panel { border:1px solid #4d3038; border-radius:15px; background:linear-gradient(140deg,#171519,#0d0e11 65%,#140f12); box-shadow:0 12px 35px #0005,inset 0 0 18px #0004; overflow:hidden; }
 					.panel-superior { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; padding:23px 25px; border-bottom:1px solid #34292e; }
 					.panel-titulo h2 { font-size:18px; margin:0 0 7px; }
 					.panel-titulo p { color:#9798a1; font-size:12px; margin:0; }
-					.herramientas { display:flex; align-items:center; flex-wrap:wrap; gap:11px; }
-					.buscador { display:flex; align-items:center; border:1px solid #51454c; border-radius:9px; background:#111216; width:min(340px,100%); height:44px; padding:0 13px; }
+					.herramientas { display:flex; align-items:center; flex-wrap:nowrap; gap:9px; }
+					.buscador { display:flex; align-items:center; border:1px solid #51454c; border-radius:9px; background:#111216; width:min(340px,100%); min-width:0; flex:1 1 240px; height:44px; padding:0 13px; }
 					.buscador:focus-within { border-color:#ff414e; box-shadow:0 0 12px #ff334020; }
 					.buscador svg { flex-shrink:0; color:#a7a7b0; }
 					.buscador input { width:100%; background:transparent; border:0; outline:0; color:#fff; padding:0 10px; font-size:12px; }
 					.buscador input::placeholder { color:#898992; }
-					.btn-actualizar { display:flex; align-items:center; gap:8px; height:44px; border:1px solid #60444d; border-radius:9px; background:#211a1f; padding:0 14px; color:#e8e8eb; font-size:12px; transition:.2s; }
+					.btn-actualizar { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; flex:0 0 44px; border:1px solid #60444d; border-radius:9px; background:#211a1f; padding:0; color:#e8e8eb; transition:.2s; }
 					.btn-actualizar:hover { background:#3a2027; border-color:#ed4247; }
 					.tabla-contenedor { overflow-x:auto; min-height:245px; }
-					table { border-collapse:collapse; width:100%; min-width:1130px; font-size:12px; }
+					table { border-collapse:collapse; width:100%; min-width:1250px; font-size:12px; }
 					thead { background:#1b1b21; }
 					th { padding:16px 16px; text-align:left; color:#babac4; font-size:11px; font-weight:700; letter-spacing:.4px; white-space:nowrap; border-bottom:1px solid #373035; }
 					td { padding:15px 16px; border-bottom:1px solid #2c2a30; color:#e4e4e9; vertical-align:middle; }
@@ -63,7 +64,7 @@
 					.total strong { color:#ffbd31; }
 					.indicador { display:flex; align-items:center; gap:8px; }
 					.punto { width:7px; height:7px; border-radius:50%; background:#ffbd35; box-shadow:0 0 10px #ffbd35; }
-					@media(max-width:850px) { .contenedor{padding:20px;} .panel-superior{padding:18px;} .herramientas{width:100%;} .buscador{flex:1; min-width:190px;} .panel-inferior{padding:16px;} }
+					@media(max-width:850px) { .contenedor{padding:20px;} .panel-superior{padding:18px;} .herramientas{width:100%;} .buscador{flex:1; min-width:0;} .panel-inferior{padding:16px;} }
 
 					.barcode-id { font-weight:700; color:#ffcc65; white-space:nowrap; font-variant-numeric:tabular-nums; }
 					.etiqueta-btn { padding:8px 10px; border:1px solid #e43b48; border-radius:8px; background:#31141b; color:#fff; font-size:11px; white-space:nowrap; }
@@ -91,7 +92,57 @@
 					.etiqueta-papel { width:52mm!important; padding:2mm 1mm!important; }
 					.etiqueta-papel svg { max-height:none!important; }
 					}
-				</style>
+
+					.acciones-producto{display:flex;align-items:center;gap:9px;flex-wrap:nowrap}
+					.boton-producto{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:10px;transition:background .2s,border-color .2s,transform .2s;border:1px solid #65444c;background:#241a20;color:#f4f4f5;cursor:pointer}
+					.boton-producto svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+					.boton-producto:hover:not(:disabled){transform:translateY(-2px)}
+					.boton-producto.ver{color:#62b9ff;border-color:#285f91;background:#0e2234}
+					.boton-producto.ver:hover{color:#94d2ff;background:#18374f;border-color:#419cdb}
+					.boton-producto.editar{color:#75e4a4;border-color:#276546;background:#10291d}
+					.boton-producto.editar:hover{color:#a2f5c1;background:#173d2a;border-color:#43b878}
+					.boton-producto.desactivar{color:#ff818d;border-color:#81333e;background:#31151d}
+					.boton-producto.desactivar:hover{color:#ffb0b9;background:#4c1d27;border-color:#ef5366}
+					.boton-producto.habilitar{color:#74e8ad;border-color:#297d55;background:#102d20}
+					.boton-producto.habilitar:hover{color:#adffd0;background:#19432e;border-color:#4ac587}
+					.boton-producto:disabled{opacity:.4;cursor:not-allowed}
+					.aviso-producto{padding:12px 25px;color:#ffbd69;font-size:12px;min-height:38px}
+					.modal-producto[hidden]{display:none!important}
+					.modal-producto{position:fixed;inset:0;z-index:900;background:#000b;display:grid;place-items:center;padding:18px}
+					.modal-panel-producto{width:min(100%,560px);max-height:90vh;overflow-y:auto;background:linear-gradient(145deg,#21161b,#111115);border:1px solid #81424a;border-radius:16px;padding:26px;box-shadow:0 25px 80px #000a}
+					.modal-panel-producto h2{margin:0 0 18px;color:#fff}
+					.modal-panel-producto label{display:block;font-size:13px;margin:13px 0 8px}
+					.modal-panel-producto input,.modal-panel-producto select,.modal-panel-producto textarea{width:100%;padding:12px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none;font:inherit}
+					.modal-panel-producto textarea{resize:vertical;min-height:90px}
+					.modal-acciones-producto{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+					.modal-acciones-producto button{border-radius:9px;padding:11px 17px;font-weight:700;cursor:pointer}
+					.modal-guardar-producto{background:linear-gradient(105deg,#e42739,#ffbd2b);border:0;color:#140b0d}
+					.modal-cancelar-producto{border:1px solid #65444c;background:#241a20;color:#fff}
+					.modal-descripcion-producto{color:#c1b8bf;font-size:13px;line-height:1.7;margin:0}
+					.modal-confirmar-producto{background:#9e2533;border:1px solid #f15d69;color:#fff}
+					.modal-confirmar-producto.habilitar{background:#155a3b;border-color:#48c78b;color:#e3ffef}
+					.modal-resultado-producto{text-align:center;width:min(100%,430px)}
+					.icono-resultado-producto{width:65px;height:65px;border-radius:50%;display:grid;place-items:center;margin:0 auto 17px;border:1px solid #318d61;background:#113925;color:#8cf0af;font-size:33px;font-weight:800}
+					.modal-resultado-producto p{color:#c6c3c9;font-size:14px;line-height:1.6;margin:0 0 23px}
+					.detalle-fila-producto{padding:12px 0;border-bottom:1px solid #3d2b33}
+					.detalle-etiqueta-producto{display:block;color:#a8a3ac;font-size:12px;margin-bottom:6px}
+					.detalle-valor-producto{color:#fff;font-size:15px;font-weight:650;overflow-wrap:anywhere;white-space:pre-wrap}
+					.modal-grid-producto{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+					.foto-edicion-producto{display:flex;align-items:center;gap:16px;padding:13px;border:1px dashed #79505a;border-radius:12px;background:#131116;flex-wrap:wrap}
+					.foto-edicion-vista{width:148px;height:128px;flex:0 0 148px;display:grid;place-items:center;overflow:hidden;border:1px solid #4d353c;border-radius:10px;background:#1c1a20;color:#a9a1a9;font-size:12px}
+					.foto-edicion-vista img{width:100%;height:100%;object-fit:contain}
+					.foto-edicion-vista img[hidden],.foto-edicion-vista span[hidden]{display:none}
+					.foto-edicion-botones{display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+					.foto-edicion-botones button{padding:10px 13px}
+					.foto-edicion-botones button:disabled{opacity:.45;cursor:not-allowed}
+					@media(max-width:600px){.modal-grid-producto{grid-template-columns:1fr}.foto-edicion-vista{flex:1 1 100%;width:100%}}
+
+				
+                    .foto-ver-producto { width:100%; height:230px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:20px; background:#19171c; border:1px solid #65444c; border-radius:12px; }
+                    .foto-ver-producto img { display:block; width:100%; height:100%; object-fit:contain; }
+                    .foto-ver-sin-imagen { color:#ffbd35; font-size:13px; font-weight:600; }
+                    @media(max-width:600px) { .foto-ver-producto { height:190px; } }
+                </style>
 			</head>
 	<body>
 		<main class="contenedor">
@@ -101,7 +152,7 @@
 					<h1>
 						Gestión de <span>Productos</span>
 					</h1>
-					<p class="subtitulo">Consulta los repuestos registrados, sus precios, clasificación y garantía.</p>
+
 				</div>
 				<button class="btn-nueva" id="btnNuevoProducto" type="button">
 					<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
@@ -115,7 +166,7 @@
 				<div class="panel-superior">
 					<div class="panel-titulo">
 						<h2>Listado de productos</h2>
-						<p>Información del catálogo de repuestos de AutoParts.</p>
+
 					</div>
 					<div class="herramientas">
 						<div class="buscador">
@@ -125,12 +176,11 @@
 							</svg>
 							<input id="buscarProducto" type="search" autocomplete="off" placeholder="Buscar nombre, OEM o código de barras..." aria-label="Buscar productos">
                     </div>
-						<button class="btn-actualizar" id="btnActualizar" type="button">
+						<button class="btn-actualizar" id="btnActualizar" type="button" title="Actualizar productos" aria-label="Actualizar productos">
 							<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 								<path d="M20 11a8 8 0 1 0-2 6"/>
 								<path d="M20 4v7h-7"/>
 							</svg>
-							Actualizar
 						</button>
 					</div>
 				</div>
@@ -148,11 +198,12 @@
 								<th>Garantía</th>
 								<th>Estado</th>
 								<th>Etiqueta</th>
+								<th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody id="productoRows">
 							<tr>
-								<td colspan="10">
+								<td colspan="11">
 									<div class="vacio">Cargando productos...</div>
 								</td>
 							</tr>
@@ -186,12 +237,104 @@
 				</div>
 			</div>
 		</div>
+
+		<div id="avisoProducto" class="aviso-producto" role="status" aria-live="polite" hidden=""></div>
+		<div class="modal-producto" id="modalVerProducto" hidden="">
+			<div class="modal-panel-producto" role="dialog" aria-modal="true" aria-labelledby="tituloVerProducto">
+				<h2 id="tituloVerProducto">Detalles del producto</h2>
+				<div id="detallesProducto"></div>
+				<div class="modal-acciones-producto">
+					<button class="modal-guardar-producto" type="button" id="cerrarVerProducto">Cerrar</button>
+				</div>
+			</div>
+		</div>
+		<div class="modal-producto" id="modalEditarProducto" hidden="">
+			<div class="modal-panel-producto" role="dialog" aria-modal="true" aria-labelledby="tituloEditarProducto">
+				<h2 id="tituloEditarProducto">Editar producto</h2>
+				<form id="formEditarProducto">
+					<div class="modal-grid-producto">
+						<div>
+							<label for="editarSubcategoriaProducto">Subcategoría</label>
+							<select id="editarSubcategoriaProducto" required=""></select>
+						</div>
+						<div>
+							<label for="editarCodigoOEMProducto">Código OEM</label>
+							<input id="editarCodigoOEMProducto" maxlength="50" required="">
+						</div>
+					</div>
+					<label for="editarNombreProducto">Nombre del producto</label>
+					<input id="editarNombreProducto" maxlength="100" required="">
+						<label for="editarDescripcionProducto">Descripción</label>
+						<textarea id="editarDescripcionProducto" maxlength="500" required=""></textarea>
+						<div class="modal-grid-producto">
+							<div>
+								<label for="editarPrecioProducto">Precio de venta</label>
+								<input id="editarPrecioProducto" type="number" min="0.01" max="9999999999999999" step="0.01" required="">
+							</div>
+							<div>
+								<label for="editarGarantiaProducto">Días de garantía</label>
+								<input id="editarGarantiaProducto" type="number" min="0" max="36500" step="1" required="">
+							</div>
+						</div>
+						<label for="editarImagenArchivoProducto">Fotografía del producto</label>
+						<div class="foto-edicion-producto">
+							<div class="foto-edicion-vista"><img id="vistaEditarImagenProducto" alt="Fotografía del producto" hidden><span id="sinEditarImagenProducto">Sin fotografía</span></div>
+							<div class="foto-edicion-botones">
+								<input type="file" id="editarImagenArchivoProducto" accept="image/jpeg,image/png,image/webp" hidden>
+								<button type="button" id="elegirEditarImagenProducto" class="modal-cancelar-producto">Seleccionar fotografía</button>
+								<button type="button" id="revertirEditarImagenProducto" class="modal-cancelar-producto" disabled>Conservar fotografía original</button>
+							</div>
+						</div>
+						<div id="errorEditarProducto" role="alert" style="color:#ff9b9b;font-size:12px;margin-top:12px"></div>
+						<div class="modal-acciones-producto">
+							<button type="button" class="modal-cancelar-producto" id="cancelarEditarProducto">Cancelar</button>
+							<button type="submit" class="modal-guardar-producto" id="guardarEditarProducto">Guardar cambios</button>
+						</div>
+					</form>
+			</div>
+		</div>
+		<div class="modal-producto" id="modalConfirmarProducto" hidden="">
+			<div class="modal-panel-producto" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmarProducto">
+				<h2 id="tituloConfirmarProducto">Confirmar cambio</h2>
+				<p id="descripcionConfirmarProducto" class="modal-descripcion-producto"></p>
+				<div class="modal-acciones-producto">
+					<button type="button" class="modal-cancelar-producto" id="cancelarCambioProducto">Cancelar</button>
+					<button type="button" class="modal-confirmar-producto" id="confirmarCambioProducto">Confirmar</button>
+				</div>
+			</div>
+		</div>
+		<div class="modal-producto" id="modalResultadoProducto" hidden="">
+			<div class="modal-panel-producto modal-resultado-producto" role="dialog" aria-modal="true" aria-labelledby="tituloResultadoProducto">
+				<div class="icono-resultado-producto" aria-hidden="true">✓</div>
+				<h2 id="tituloResultadoProducto">Operación realizada</h2>
+				<p id="textoResultadoProducto"></p>
+				<div class="modal-acciones-producto">
+					<button type="button" class="modal-guardar-producto" id="aceptarResultadoProducto">Aceptar</button>
+				</div>
+			</div>
+		</div>
+
 		<script>
+			let rolActualProductos = null;
+			const esAdministradorProducto = () => rolActualProductos === 1;
+			function aplicarPermisosProducto() {
+				document.getElementById("btnNuevoProducto").hidden = !esAdministradorProducto();
+				if (!esAdministradorProducto()) document.querySelectorAll("#productoRows [data-editar], #productoRows [data-cambiar-estado]").forEach(boton => boton.remove());
+			}
 			let productos = [];
 			let subcategorias = [];
 			let categorias = [];
 			let estados = [];
 			let productosCargados = false;
+			let productoEditandoId = 0;
+			let productoCambioId = 0;
+			let productoCambioConfirmadoId = 0;
+			let datosEditadosProducto = null;
+			let ultimaAccionProducto = "";
+			let operacionProductoPendiente = false;
+			let nuevaFotoEditarProducto = null;
+			let nuevaFotoBase64EditarProducto = null;
+			let leyendoFotoEditarProducto = false;
 
 			function obtener(objeto, ...nombres) {
 			for (const nombre of nombres) {
@@ -262,7 +405,7 @@
         function mostrarMensaje(texto) {
             document.getElementById("productoRows").innerHTML = `
                 <tr>
-				<td colspan="10">
+				<td colspan="11">
 					<div class="vacio">
 						<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
 							<path d="m12 2 9 5-9 5-9-5 9-5Zm-9 5v10l9 5 9-5V7M12 12v10"/>
@@ -274,9 +417,6 @@
 			</tr>`;
 			}
 
-			// Las fotos se sirven desde una carpeta controlada por C#.
-			// MainForm.cs debe registrar el host virtual "autoparts-imagenes.local"
-			// apuntando a la carpeta local de fotografías.
 			function celdaImagen(producto) {
 			const valor = String(obtener(producto, "Imagen", "imagen") || "").trim();
 			const valido = /^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(valor);
@@ -348,8 +488,28 @@
 				<td>
 					<button type="button" class="etiqueta-btn" data-producto-id="${escapar(id)}" ${barras ? "" : "disabled"}>Ver / Imprimir</button>
 				</td>
+				<td>
+					<div class="acciones-producto">
+						<button type="button" class="boton-producto ver" data-ver="${escapar(id)}" title="Ver detalles" aria-label="Ver ${escapar(nombre)}">
+							<svg viewBox="0 0 24 24">
+								<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
+								<circle cx="12" cy="12" r="3"/>
+							</svg>
+						</button>
+						<button type="button" class="boton-producto editar" data-editar="${escapar(id)}" title="Editar producto" aria-label="Editar ${escapar(nombre)}">
+							<svg viewBox="0 0 24 24">
+								<path d="M12 20h9"/>
+								<path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/>
+							</svg>
+						</button>
+						<button type="button" class="boton-producto ${cssEstado === 'activo' ? 'desactivar' : 'habilitar'}" data-cambiar-estado="${escapar(id)}" title="${cssEstado === 'activo' ? 'Desactivar' : 'Habilitar'}" aria-label="${cssEstado === 'activo' ? 'Desactivar' : 'Habilitar'} ${escapar(nombre)}">
+							${cssEstado === 'activo' ? `<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6"/><path d="M10 10v7M14 10v7"/></svg>` : `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>`}
+						</button>
+					</div>
+				</td>
 			</tr>`;
 			}).join("");
+			aplicarPermisosProducto();
 			}
 
 			function recibir(evento) {
@@ -359,6 +519,12 @@
 			try { respuesta = JSON.parse(respuesta); } catch { return; }
 			}
 			if (!respuesta || typeof respuesta !== "object") return;
+			if (respuesta.type === "autoparts:rolActual") {
+				rolActualProductos = Number(respuesta.rolId);
+				aplicarPermisosProducto();
+				if (productosCargados) pintarProductos();
+				return;
+			}
 			if (respuesta.type === "productos:list") {
 			productos = Array.isArray(respuesta.data) ? respuesta.data : [];
 			productosCargados = true;
@@ -372,26 +538,289 @@
 			} else if (respuesta.type === "estados") {
 			estados = Array.isArray(respuesta.data) ? respuesta.data : [];
 			pintarProductos();
+			} else if (respuesta.type === "productos:actualizada" || respuesta.type === "productos:desactivada") {
+			const actualizada = respuesta.type === "productos:actualizada";
+			const accion = actualizada ? "actualizar" : ultimaAccionProducto;
+			if (actualizada && datosEditadosProducto) {
+			const registro = productoPorId(datosEditadosProducto.ProductoId);
+			if (registro) { const { ImagenArchivo, ...camposActualizados } = datosEditadosProducto; Object.assign(registro, camposActualizados); }
+			}
+			if (!actualizada && productoCambioConfirmadoId > 0) {
+			const registro = productoPorId(productoCambioConfirmadoId);
+			if (registro) {
+			const estadoNuevo = Number(obtener(registro, "EstadoId", "estadoId")) === 1 ? 2 : 1;
+			if (Object.prototype.hasOwnProperty.call(registro, "EstadoId")) registro.EstadoId = estadoNuevo;
+			else registro.estadoId = estadoNuevo;
+			if (Object.prototype.hasOwnProperty.call(registro, "EstadoNombre")) registro.EstadoNombre = estadoNuevo === 1 ? "Activo" : "Inactivo";
+			if (Object.prototype.hasOwnProperty.call(registro, "estadoNombre")) registro.estadoNombre = estadoNuevo === 1 ? "Activo" : "Inactivo";
+			}
+			}
+			productoCambioConfirmadoId = 0;
+			datosEditadosProducto = null;
+			operacionProductoPendiente = false;
+			ultimaAccionProducto = "";
+			document.getElementById("guardarEditarProducto").disabled = false;
+			document.getElementById("modalEditarProducto").hidden = true;
+			productoEditandoId = 0;
+			pintarProductos();
+			const titulo = accion === "actualizar" ? "Producto actualizado" : accion === "habilitar" ? "Producto habilitado" : "Producto desactivado";
+			const texto = accion === "actualizar" ? "El producto se actualizó correctamente." : accion === "habilitar" ? "El producto y su inventario se habilitaron correctamente." : "El producto y su inventario se desactivaron correctamente.";
+			document.getElementById("tituloResultadoProducto").textContent = titulo;
+			document.getElementById("textoResultadoProducto").textContent = texto;
+			document.getElementById("modalResultadoProducto").hidden = false;
+			enviar({ type: "productos:selectAll" });
+			} else if (respuesta.type === "productos:error") {
+			operacionProductoPendiente = false;
+			datosEditadosProducto = null;
+			productoCambioConfirmadoId = 0;
+			document.getElementById("guardarEditarProducto").disabled = false;
+			const error = respuesta.message || "No se pudo completar la operación.";
+			if (!document.getElementById("modalEditarProducto").hidden) {
+			document.getElementById("errorEditarProducto").textContent = error;
+			} else {
+			document.getElementById("avisoProducto").textContent = error;
+			document.getElementById("avisoProducto").hidden = false;
+			}
 			} else if (respuesta.type === "error") {
 			if (!productosCargados) mostrarMensaje(respuesta.message || "No fue posible cargar los productos.");
 			}
 			}
 
 
-			// Code 128, conjunto B. Incluye Start B, checksum módulo 103 y Stop.
-			// Sin fuentes ni librerías web externas: funciona sin conexión.
+
+			function productoPorId(id) {
+			return productos.find(p => Number(obtener(p,"ProductoId","productoId")) === Number(id));
+			}
+			function filaDetalle(etiqueta, valor) {
+			return `<div class="detalle-fila-producto">
+				<span class="detalle-etiqueta-producto">${escapar(etiqueta)}</span>
+				<div class="detalle-valor-producto">${escapar(valor ?? "—")}</div>
+			</div>`;
+			}
+			document.getElementById("productoRows").addEventListener("click", evento => {
+			const ver = evento.target.closest("[data-ver]");
+			const editar = evento.target.closest("[data-editar]");
+			const cambiar = evento.target.closest("[data-cambiar-estado]");
+			if (ver) abrirVerProducto(Number(ver.dataset.ver));
+			if (editar && esAdministradorProducto()) abrirEditarProducto(Number(editar.dataset.editar));
+			if (cambiar && esAdministradorProducto()) abrirConfirmarProducto(Number(cambiar.dataset.cambiarEstado));
+			});
+			function abrirVerProducto(id) {
+                const p = productoPorId(id);
+                if (!p || operacionProductoPendiente) return;
+                const c = clasificacion(p);
+                const nombre = obtener(p, "Nombre", "nombre");
+                const imagen = String(obtener(p, "Imagen", "imagen") || "").trim();
+                const imagenValida = /^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(imagen);
+                const foto = imagenValida
+                    ? `<div class="foto-ver-producto">
+                           <img src="https://autoparts-imagenes.local/${encodeURIComponent(imagen)}"
+                                alt="Fotografía de ${escapar(nombre)}"
+                                onerror="this.parentElement.classList.add('foto-ver-sin-imagen');this.parentElement.textContent='Sin fotografía disponible';">
+                       </div>`
+                    : `<div class="foto-ver-producto foto-ver-sin-imagen">Sin fotografía disponible</div>`;
+                const detalles = [
+                    ["Nombre", nombre],
+                    ["Código OEM", obtener(p,"CodigoOEM","codigoOEM","codigoOem")],
+                    ["Código de barras", obtener(p,"CodigoBarras","codigoBarras")],
+                    ["Categoría",c.nombreCat],
+                    ["Subcategoría",c.nombreSub],
+                    ["Descripción",obtener(p,"Descripcion","descripcion")],
+                    ["Precio de venta",formatPrecio(obtener(p,"PrecioVenta","precioVenta"))],
+                    ["Garantía",formatoGarantia(obtener(p,"DiasGarantia","diasGarantia"))],
+                    ["Estado",nombreEstado(p)]
+                ];
+                document.getElementById("detallesProducto").innerHTML =
+                    foto + detalles.map(([a,b]) => filaDetalle(a,b)).join("");
+                document.getElementById("modalVerProducto").hidden = false;
+                document.getElementById("cerrarVerProducto").focus();
+            }
+
+			const inputEditarImagenProducto = document.getElementById("editarImagenArchivoProducto");
+			const vistaEditarImagenProducto = document.getElementById("vistaEditarImagenProducto");
+			const sinEditarImagenProducto = document.getElementById("sinEditarImagenProducto");
+			const botonRevertirEditarImagenProducto = document.getElementById("revertirEditarImagenProducto");
+			function restablecerEditarImagenProducto(producto) {
+				nuevaFotoEditarProducto = null;
+				nuevaFotoBase64EditarProducto = null;
+				leyendoFotoEditarProducto = false;
+				inputEditarImagenProducto.value = "";
+				botonRevertirEditarImagenProducto.disabled = true;
+				const nombreImagen = String(obtener(producto,"Imagen","imagen") || "").trim();
+				const imagenValida = /^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(nombreImagen);
+				if (imagenValida) {
+					vistaEditarImagenProducto.src = `https://autoparts-imagenes.local/${encodeURIComponent(nombreImagen)}`;
+					vistaEditarImagenProducto.hidden = false;
+					sinEditarImagenProducto.hidden = true;
+				} else {
+					vistaEditarImagenProducto.removeAttribute("src");
+					vistaEditarImagenProducto.hidden = true;
+					sinEditarImagenProducto.hidden = false;
+				}
+			}
+			vistaEditarImagenProducto.addEventListener("error", () => {
+				vistaEditarImagenProducto.hidden = true;
+				sinEditarImagenProducto.hidden = false;
+			});
+			document.getElementById("elegirEditarImagenProducto").addEventListener("click", () => inputEditarImagenProducto.click());
+			botonRevertirEditarImagenProducto.addEventListener("click", () => {
+				const producto = productoPorId(productoEditandoId);
+				if (producto) restablecerEditarImagenProducto(producto);
+				document.getElementById("errorEditarProducto").textContent = "";
+			});
+			inputEditarImagenProducto.addEventListener("change", async () => {
+				const archivo = inputEditarImagenProducto.files?.[0];
+				if (!archivo) return;
+				const error = document.getElementById("errorEditarProducto");
+				if (!["image/jpeg","image/png","image/webp"].includes(archivo.type) || archivo.size === 0 || archivo.size > 5 * 1024 * 1024) {
+					error.textContent = "Selecciona una fotografía JPG, PNG o WebP de hasta 5 MB.";
+					inputEditarImagenProducto.value = "";
+					return;
+				}
+				leyendoFotoEditarProducto = true;
+				const idSeleccionado = productoEditandoId;
+				try {
+					const dataUrl = await new Promise((resolve,reject) => {
+						const lector = new FileReader();
+						lector.onload = () => resolve(String(lector.result));
+						lector.onerror = () => reject(new Error("No se pudo leer la fotografía."));
+						lector.readAsDataURL(archivo);
+					});
+					if (productoEditandoId !== idSeleccionado || inputEditarImagenProducto.files?.[0] !== archivo) return;
+					nuevaFotoEditarProducto = archivo;
+					nuevaFotoBase64EditarProducto = dataUrl.slice(dataUrl.indexOf(",") + 1);
+					vistaEditarImagenProducto.src = dataUrl;
+					vistaEditarImagenProducto.hidden = false;
+					sinEditarImagenProducto.hidden = true;
+					botonRevertirEditarImagenProducto.disabled = false;
+					error.textContent = "";
+				} catch {
+					error.textContent = "No se pudo leer la fotografía seleccionada.";
+				} finally {
+					leyendoFotoEditarProducto = false;
+				}
+			});
+			function abrirEditarProducto(id) {
+			if (!esAdministradorProducto()) return;
+			const p = productoPorId(id);
+			if (!p || operacionProductoPendiente) return;
+			productoEditandoId = id;
+			restablecerEditarImagenProducto(p);
+			document.getElementById("errorEditarProducto").textContent = "";
+			const selector = document.getElementById("editarSubcategoriaProducto");
+			const subId = Number(obtener(p,"SubcategoriaId","subcategoriaId"));
+			selector.innerHTML = "";
+			for (const sub of subcategorias) {
+			const idSub = Number(obtener(sub,"SubcategoriaId","subcategoriaId"));
+			const estadoSub = Number(obtener(sub,"EstadoId","estadoId"));
+			if (estadoSub !== 1 && idSub !== subId) continue;
+			const opcion = document.createElement("option");
+			opcion.value = String(idSub);
+			opcion.textContent = String(obtener(sub,"Nombre","nombre"));
+			selector.appendChild(opcion);
+			}
+			if (!Array.from(selector.options).some(x => Number(x.value) === subId)) {
+			const opcion = document.createElement("option");
+			opcion.value = String(subId);
+			opcion.textContent = `Subcategoría #${subId}`;
+			selector.appendChild(opcion);
+			}
+			selector.value = String(subId);
+			document.getElementById("editarCodigoOEMProducto").value = obtener(p,"CodigoOEM","codigoOEM","codigoOem");
+			document.getElementById("editarNombreProducto").value = obtener(p,"Nombre","nombre");
+			document.getElementById("editarDescripcionProducto").value = obtener(p,"Descripcion","descripcion");
+			document.getElementById("editarPrecioProducto").value = obtener(p,"PrecioVenta","precioVenta");
+			document.getElementById("editarGarantiaProducto").value = obtener(p,"DiasGarantia","diasGarantia");
+			document.getElementById("modalEditarProducto").hidden = false;
+			document.getElementById("editarNombreProducto").focus();
+			}
+			document.getElementById("formEditarProducto").addEventListener("submit", evento => {
+			evento.preventDefault();
+			if (!esAdministradorProducto() || operacionProductoPendiente || productoEditandoId <= 0 || leyendoFotoEditarProducto) return;
+			const p = productoPorId(productoEditandoId);
+			if (!p) return;
+			const datos = {
+			ProductoId: productoEditandoId,
+			SubcategoriaId: Number(document.getElementById("editarSubcategoriaProducto").value),
+			CodigoOEM: document.getElementById("editarCodigoOEMProducto").value.trim(),
+			Nombre: document.getElementById("editarNombreProducto").value.trim(),
+			Descripcion: document.getElementById("editarDescripcionProducto").value.trim(),
+			PrecioVenta: Number(document.getElementById("editarPrecioProducto").value),
+			DiasGarantia: Number(document.getElementById("editarGarantiaProducto").value),
+			EstadoId: Number(obtener(p,"EstadoId","estadoId")),
+			Imagen: obtener(p,"Imagen","imagen") || null,
+			ImagenArchivo: nuevaFotoEditarProducto ? { TipoMime:nuevaFotoEditarProducto.type, Base64:nuevaFotoBase64EditarProducto } : null,
+			CodigoBarras: obtener(p,"CodigoBarras","codigoBarras") || null
+			};
+			if (!Number.isInteger(datos.SubcategoriaId) || datos.SubcategoriaId <= 0 ||
+			!datos.CodigoOEM || datos.CodigoOEM.length > 50 || !datos.Nombre || datos.Nombre.length > 100 ||
+			!datos.Descripcion || datos.Descripcion.length > 500 ||
+			!Number.isFinite(datos.PrecioVenta) || datos.PrecioVenta <= 0 ||
+			Math.round(datos.PrecioVenta * 100) !== datos.PrecioVenta * 100 &&
+			Math.abs(Math.round(datos.PrecioVenta * 100) - datos.PrecioVenta * 100) > 0.000001 ||
+			!Number.isInteger(datos.DiasGarantia) || datos.DiasGarantia < 0 || datos.DiasGarantia > 36500) {
+                    document.getElementById("errorEditarProducto").textContent = "Revisa los datos del producto.";
+                    return;
+                }
+                if (!document.getElementById("formEditarProducto").reportValidity()) return;
+                operacionProductoPendiente = true;
+                datosEditadosProducto = datos;
+                ultimaAccionProducto = "actualizar";
+                document.getElementById("guardarEditarProducto").disabled = true;
+                document.getElementById("avisoProducto").hidden = true;
+                if (!enviar({ type:"productos:actualizarIntegrado", data:datos })) {
+                    operacionProductoPendiente = false;
+                    document.getElementById("guardarEditarProducto").disabled = false;
+                }
+            });
+            function abrirConfirmarProducto(id) {
+                if (!esAdministradorProducto()) return;
+                const p = productoPorId(id);
+                if (!p || operacionProductoPendiente) return;
+                productoCambioId = id;
+                const activo = Number(obtener(p,"EstadoId","estadoId")) === 1;
+                document.getElementById("tituloConfirmarProducto").textContent = activo ? "¿Desactivar producto?" : "¿Habilitar producto?";
+                document.getElementById("descripcionConfirmarProducto").textContent = activo
+                    ? `¿Seguro que deseas desactivar el producto "${obtener(p,"Nombre","nombre")}"? También se desactivará su inventario.`
+                    : `¿Seguro que deseas habilitar el producto "${obtener(p,"Nombre","nombre")}"? También se habilitará su inventario.`;
+                document.getElementById("confirmarCambioProducto").textContent = activo ? "Sí, desactivar" : "Sí, habilitar";
+                document.getElementById("confirmarCambioProducto").classList.toggle("habilitar",!activo);
+                document.getElementById("modalConfirmarProducto").hidden = false;
+            }
+            document.getElementById("confirmarCambioProducto").addEventListener("click", () => {
+                if (!esAdministradorProducto() || operacionProductoPendiente || productoCambioId <= 0) return;
+			const p = productoPorId(productoCambioId);
+			if (!p) return;
+			const id = productoCambioId;
+			productoCambioConfirmadoId = id;
+			ultimaAccionProducto = Number(obtener(p,"EstadoId","estadoId")) === 1 ? "desactivar" : "habilitar";
+			productoCambioId = 0;
+			document.getElementById("modalConfirmarProducto").hidden = true;
+			operacionProductoPendiente = true;
+			document.getElementById("avisoProducto").hidden = true;
+			if (!enviar({type:"productos:desactivarIntegrado",data:{ProductoId:id}})) operacionProductoPendiente = false;
+			});
+			document.getElementById("cerrarVerProducto").addEventListener("click", () => document.getElementById("modalVerProducto").hidden = true);
+			document.getElementById("cancelarEditarProducto").addEventListener("click", () => {
+			if (!operacionProductoPendiente) document.getElementById("modalEditarProducto").hidden = true;
+			});
+			document.getElementById("cancelarCambioProducto").addEventListener("click", () => {
+			if (!operacionProductoPendiente) document.getElementById("modalConfirmarProducto").hidden = true;
+			});
+			document.getElementById("aceptarResultadoProducto").addEventListener("click", () => document.getElementById("modalResultadoProducto").hidden = true);
+
 			const CODE128_PATTERNS = ["BaBbBb","BbBaBb","BbBbBa","AbAbBc","AbAcBb","AcAbBb","AbBbAc","AbBcAb","AcBbAb","BbAbAc","BbAcAb","BcAbAb","AaBbCb","AbBaCb","AbBbCa","AaCbBb","AbCaBb","AbCbBa","BbCbAa","BbAaCb","BbAbCa","BaCbAb","BbCaAb","CaBaCa","CaAbBb","CbAaBb","CbAbBa","CaBbAb","CbBaAb","CbBbAa","BaBaBc","BaBcBa","BcBaBa","AaAcBc","AcAaBc","AcAcBa","AaBcAc","AcBaAc","AcBcAa","BaAcAc","BcAaAc","BcAcAa","AaBaCc","AaBcCa","AcBaCa","AaCaBc","AaCcBa","AcCaBa","CaCaBa","BaAcCa","BcAaCa","BaCaAc","BaCcAa","BaCaCa","CaAaBc","CaAcBa","CcAaBa","CaBaAc","CaBcAa","CcBaAa","CaDaAa","BbAdAa","DcAaAa","AaAbBd","AaAdBb","AbAaBd","AbAdBa","AdAaBb","AdAbBa","AaBbAd","AaBdAb","AbBaAd","AbBdAa","AdBaAb","AdBbAa","BdAbAa","BbAaAd","DaCaAa","BdAaAb","AcDaAa","AaAbDb","AbAaDb","AbAbDa","AaDbAb","AbDaAb","AbDbAa","DaAbAb","DbAaAb","DbAbAa","BaBaDa","BaDaBa","DaBaBa","AaAaDc","AaAcDa","AcAaDa","AaDaAc","AaDcAa","DaAaAc","DaAcAa","AaCaDa","AaDaCa","CaAaDa","DaAaCa","BaAdAb","BaAbAd","BaAbCb","BcCaAaB"];
 
 			function crearCodigo128(codigo) {
 			if (!/^[ -~]{1,30}$/.test(codigo)) throw new Error("El código debe contener caracteres ASCII imprimibles.");
-			const valores = [104]; // START B
+			const valores = [104];
 			for (const caracter of codigo) valores.push(caracter.charCodeAt(0) - 32);
 			let suma = 104;
 			for (let i = 1; i < valores.length; i++) suma += valores[i] * i;
-            valores.push(suma % 103, 106); // checksum, STOP
+            valores.push(suma % 103, 106);
             const namespace = "http://www.w3.org/2000/svg";
             const svg = document.createElementNS(namespace, "svg");
-            let cursor = 10; // zona tranquila antes del código
+            let cursor = 10;
             const barras = [];
             for (const v of valores) {
                 const patron = CODE128_PATTERNS[v];
@@ -401,7 +830,7 @@
                     cursor += ancho;
                 }
             }
-            const total = cursor + 10; // zona tranquila después del código
+            const total = cursor + 10;
             svg.setAttribute("viewBox", `0 0 ${total} 75`);
             svg.setAttribute("width", String(total));
             svg.setAttribute("height", "75");
@@ -456,19 +885,21 @@
 			window.addEventListener("message", recibir);
 
 			document.getElementById("btnNuevoProducto").addEventListener("click", () => {
+			if (!esAdministradorProducto()) return;
 			enviar({ type: "productos:abrirNuevo" });
 			});
 			document.getElementById("btnActualizar").addEventListener("click", solicitar);
 			document.getElementById("buscarProducto").addEventListener("input", pintarProductos);
 
 			function solicitar() {
-			productosCargados = false;
-			mostrarMensaje("Cargando productos...");
+			if (!productosCargados) mostrarMensaje("Cargando productos...");
 			enviar({ type: "productos:selectAll" });
 			enviar({ type: "subcategorias:selectAll" });
 			enviar({ type: "categorias:selectAll" });
 			enviar({ type: "obtenerEstados" });
 			}
+			aplicarPermisosProducto();
+			if (window.parent !== window) window.parent.postMessage({ type: "autoparts:solicitarRol" }, "*");
 			solicitar();
 		</script>
 	</body>

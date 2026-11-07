@@ -44,16 +44,23 @@
 					.guardar:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-2px); }
 					.guardar:disabled { opacity:.55; cursor:not-allowed; }
 					@media(max-width:650px) { .contenedor{padding:17px;} .panel{padding:18px;} .campos{grid-template-columns:1fr;} .campo.ancho{grid-column:auto;} .acciones{flex-wrap:wrap;} }
-				</style>
+				
+                    .modal-exito[hidden] { display:none; }
+                    .modal-exito { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; background:rgba(0,0,0,.8); padding:20px; }
+                    .modal-exito-panel { width:min(100%,420px); text-align:center; padding:32px 26px; background:linear-gradient(145deg,#22161b,#101115); border:1px solid #79404a; border-radius:16px; box-shadow:0 20px 65px #000b; }
+                    .exito-simbolo { display:grid; place-items:center; margin:0 auto 18px; width:62px; height:62px; border-radius:50%; background:#113d29; border:1px solid #34855d; color:#83edab; font-size:32px; font-weight:800; }
+                    .modal-exito-panel h2 { margin:0 0 10px; font-size:23px; }
+                    .modal-exito-panel p { color:#c9c5cb; font-size:13px; margin:0 0 24px; }
+                    .modal-exito-panel button { min-width:124px; }
+
+</style>
 			</head>
 	<body>
 		<main class="contenedor">
 			<header class="encabezado">
 				<div>
-					<div class="subtitulo">AUTOPARTS · CATÁLOGO DE REPUESTOS</div>
 					<h1>Nuevo producto</h1>
 				</div>
-				<div class="icono" aria-hidden="true">+</div>
 			</header>
 
 			<section class="panel">
@@ -64,19 +71,19 @@
 							<label for="codigoOEM">
 								Código OEM <span class="requerido">*</span>
 							</label>
-							<input id="codigoOEM" type="text" maxlength="50" placeholder="Ej. OEM-12345" autocomplete="off" required="">
+							<input id="codigoOEM" type="text" maxlength="50"  autocomplete="off" required="">
                     </div>
 						<div class="campo">
 							<label for="nombre">
 								Nombre del producto <span class="requerido">*</span>
 							</label>
-							<input id="nombre" type="text" maxlength="100" placeholder="Ej. Pastillas de freno delanteras" autocomplete="off" required="">
+							<input id="nombre" type="text" maxlength="100"  autocomplete="off" required="">
                     </div>
 						<div class="campo ancho">
 							<label for="descripcion">
 								Descripción <span class="requerido">*</span>
 							</label>
-							<textarea id="descripcion" maxlength="500" placeholder="Describe el repuesto, sus características y especificaciones..."></textarea>
+							<textarea id="descripcion" maxlength="500" ></textarea>
 						</div>
 					</div>
 
@@ -100,13 +107,13 @@
 						</div>
 					</div>
 
-					<p class="seccion">PRECIO, GARANTÍA Y ESTADO</p>
+					<p class="seccion">PRECIO Y GARANTÍA</p>
 					<div class="campos">
 						<div class="campo">
 							<label for="precioVenta">
 								Precio de venta (USD) <span class="requerido">*</span>
 							</label>
-							<input id="precioVenta" type="number" min="0.01" max="999999999" step="0.01" inputmode="decimal" placeholder="Ej. 25.50" required="">
+							<input id="precioVenta" type="number" min="0.01" max="999999999" step="0.01" inputmode="decimal"  required="">
                     </div>
 						<div class="campo">
 							<label for="diasGarantia">
@@ -114,14 +121,6 @@
 							</label>
 							<input id="diasGarantia" type="number" min="0" max="36500" step="1" value="0" required="">
                     </div>
-						<div class="campo ancho">
-							<label for="estado">
-								Estado <span class="requerido">*</span>
-							</label>
-							<select id="estado" disabled="" required="">
-								<option value="">Cargando estados...</option>
-							</select>
-						</div>
 					</div>
 					<p class="seccion">FOTOGRAFÍA DEL PRODUCTO</p>
 					<div class="campo ancho">
@@ -148,7 +147,17 @@
 			</section>
 		</main>
 
-		<script>
+		
+        <div id="modalExito" class="modal-exito" hidden>
+            <div class="modal-exito-panel" role="dialog" aria-modal="true" aria-labelledby="tituloExito">
+                <div class="exito-simbolo" aria-hidden="true">✓</div>
+                <h2 id="tituloExito">¡Producto guardado!</h2>
+                <p>El producto se registró correctamente.</p>
+                <button type="button" class="guardar" id="aceptarExito">Aceptar</button>
+            </div>
+        </div>
+
+<script>
 			const formulario = document.getElementById("formProducto");
 			const campoOEM = document.getElementById("codigoOEM");
 			const campoNombre = document.getElementById("nombre");
@@ -157,8 +166,7 @@
 			const campoSubcategoria = document.getElementById("subcategoria");
 			const campoPrecio = document.getElementById("precioVenta");
 			const campoGarantia = document.getElementById("diasGarantia");
-			const campoEstado = document.getElementById("estado");
-			const botonGuardar = document.getElementById("guardar");
+						const botonGuardar = document.getElementById("guardar");
 			const mensaje = document.getElementById("mensaje");
 			const campoImagen = document.getElementById("imagenProducto");
 			const fotoImagen = document.getElementById("fotoImagen");
@@ -214,7 +222,7 @@
 			function actualizarSubcategorias() {
 			const idCategoria = Number(campoCategoria.value);
 			const opciones = subcategorias.filter(sub =>
-			Number(obtener(sub, "CategoriaId", "categoriaId")) === idCategoria
+			Number(obtener(sub, "CategoriaId", "categoriaId")) === idCategoria && Number(obtener(sub, "EstadoId", "estadoId")) === 1
 			);
 			llenarSelect(
 			campoSubcategoria,
@@ -225,10 +233,9 @@
 			}
 
 			function actualizarGuardar() {
-			botonGuardar.disabled = guardando || campoCategoria.disabled || campoSubcategoria.disabled || campoEstado.disabled;
+			botonGuardar.disabled = guardando || campoCategoria.disabled || campoSubcategoria.disabled;
 			}
 
-			// Selección y vista previa de fotografía (JPG, PNG o WebP, hasta 5 MB).
 			document.getElementById("seleccionarFoto").addEventListener("click", () => campoImagen.click());
 			quitarFoto.addEventListener("click", () => {
 			archivoImagen = null;
@@ -251,7 +258,7 @@
 			return;
 			}
 			try {
-			// El contenido se entrega a C# como Base64, no como ruta local del usuario.
+
 			const dataUrl = await new Promise((resolve, reject) => {
 			const lector = new FileReader();
 			lector.onload = () => resolve(String(lector.result));
@@ -276,6 +283,8 @@
 			actualizarSubcategorias();
 			});
 
+			document.getElementById("aceptarExito").addEventListener("click", () => enviar({ type: "cancelar" }));
+
 			document.getElementById("cancelar").addEventListener("click", () => {
 			enviar({ type: "cancelar" });
 			});
@@ -290,7 +299,7 @@
 			const precio = Number(campoPrecio.value);
 			const diasGarantia = Number(campoGarantia.value);
 			const subcategoriaId = Number(campoSubcategoria.value);
-			const estadoId = Number(campoEstado.value);
+			const estadoId = 1;
 			const categoriaId = Number(campoCategoria.value);
 			const registroSub = subcategorias.find(sub =>
 			Number(obtener(sub, "SubcategoriaId", "subcategoriaId")) === subcategoriaId
@@ -326,17 +335,6 @@
                 mensaje.textContent = "Ingresa días de garantía válidos (0 significa sin garantía).";
                 campoGarantia.focus(); return;
             }
-            if (!Number.isInteger(estadoId) || estadoId <= 0) {
-			mensaje.textContent = "Selecciona un estado válido.";
-			campoEstado.focus(); return;
-			}
-
-			if (archivoImagen) {
-			// Por seguridad no se permite confirmar una foto si MainForm.cs aún
-			// no guarda físicamente ImagenArchivo; así no se pierde silenciosamente.
-			mensaje.textContent = "La vista previa funciona. Falta conectar el guardado de fotografías en MainForm.cs; por ahora quita la foto para registrar el producto.";
-			return;
-			}
 
 			guardando = true;
 			actualizarGuardar();
@@ -353,7 +351,8 @@
 			DiasGarantia: diasGarantia,
 			SubcategoriaId: subcategoriaId,
 			EstadoId: estadoId,
-			Imagen: null
+			Imagen: null,
+			ImagenArchivo: archivoImagen ? { TipoMime: archivoImagen.type, Base64: imagenBase64 } : null
 			}
 			});
 
@@ -372,17 +371,18 @@
 			}
 			if (!respuesta || typeof respuesta !== "object") return;
 
-			if (respuesta.type === "categorias:list") {
+			if (respuesta.type === "productos:guardado") {
+                document.getElementById("modalExito").hidden = false;
+                document.getElementById("aceptarExito").focus();
+                return;
+            } else if (respuesta.type === "categorias:list") {
 			categorias = Array.isArray(respuesta.data) ? respuesta.data : [];
-			llenarSelect(campoCategoria, categorias, "CategoriaId", "Selecciona una categoría");
+			llenarSelect(campoCategoria, categorias.filter(cat => Number(obtener(cat, "EstadoId", "estadoId")) === 1), "CategoriaId", "Selecciona una categoría");
 			actualizarSubcategorias();
 			} else if (respuesta.type === "subcategorias:list") {
 			subcategorias = Array.isArray(respuesta.data) ? respuesta.data : [];
 			actualizarSubcategorias();
-			} else if (respuesta.type === "estados") {
-			const estados = Array.isArray(respuesta.data) ? respuesta.data : [];
-			llenarSelect(campoEstado, estados, "EstadoId", "Selecciona un estado");
-			} else if (respuesta.type === "error") {
+			} else if (respuesta.type === "error" || respuesta.type === "productos:error") {
 			guardando = false;
 			actualizarGuardar();
 			botonGuardar.textContent = "Guardar producto";
@@ -397,7 +397,7 @@
 
 			enviar({ type: "categorias:selectAll" });
 			enviar({ type: "subcategorias:selectAll" });
-			enviar({ type: "obtenerEstados" });
+			
 		</script>
 	</body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoParts | Subcategorías</title>
-    <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoParts | Subcategorías</title>
+<style>
 					:root { color-scheme: dark; }
 					* { box-sizing: border-box; }
 					body {
@@ -38,14 +38,6 @@
 					font-weight: 700;
 					letter-spacing: 3px;
 					margin-bottom: 12px;
-					}
-					.etiqueta::before {
-					content: "";
-					width: 22px;
-					height: 3px;
-					border-radius: 10px;
-					background: #ff3844;
-					box-shadow: 0 0 12px #ff243a;
 					}
 					h1 {
 					margin: 0;
@@ -107,8 +99,8 @@
 					.herramientas {
 					display: flex;
 					align-items: center;
-					flex-wrap: wrap;
-					gap: 11px;
+					flex-wrap: nowrap;
+					gap: 9px;
 					}
 					.buscador {
 					display: flex;
@@ -117,6 +109,8 @@
 					border: 1px solid #51454c;
 					border-radius: 9px;
 					width: min(340px, 100%);
+					min-width: 0;
+					flex: 1 1 240px;
 					height: 44px;
 					padding: 0 13px;
 					}
@@ -139,16 +133,17 @@
 					}
 					.buscador input::placeholder { color: #898992; }
 					.btn-actualizar {
+					width: 44px;
 					height: 44px;
-					padding: 0 14px;
-					display: flex;
+					padding: 0;
+					display: inline-flex;
 					align-items: center;
-					gap: 8px;
+					justify-content: center;
+					flex: 0 0 44px;
 					color: #e8e8eb;
 					background: #211a1f;
 					border: 1px solid #60444d;
 					border-radius: 9px;
-					font-size: 12px;
 					transition: .2s;
 					}
 					.btn-actualizar:hover {
@@ -270,249 +265,429 @@
 					.herramientas { width: 100%; }
 					.buscador {
 					flex: 1;
-					min-width: 190px;
+					min-width: 0;
 					}
 					th, td { padding: 14px 13px; }
 					.panel-inferior { padding: 16px; }
 					}
-				</style>
+				
+.acciones-subcategoria{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.boton-subcategoria{border:1px solid #65444c;background:#241a20;border-radius:8px;padding:8px 12px;color:#f4f4f5;font-size:12px;font-weight:700}
+.boton-subcategoria:hover{border-color:#ffbd35;background:#35212a}
+.boton-subcategoria.desactivar{border-color:#91434c;color:#ff9ca2}
+.boton-subcategoria:disabled{opacity:.4;cursor:not-allowed}
+.mensaje-subcategoria{padding:12px 25px;color:#ffbd69;font-size:12px;min-height:38px}
+.modal-subcategoria[hidden]{display:none!important}
+.modal-subcategoria{position:fixed;inset:0;z-index:50;background:#000b;display:grid;place-items:center;padding:18px}
+.modal-panel-subcategoria{width:min(100%,480px);background:linear-gradient(145deg,#21161b,#111115);border:1px solid #81424a;border-radius:16px;padding:26px;box-shadow:0 25px 80px #000a}
+.modal-panel-subcategoria h2{margin:0 0 18px;color:#fff}
+.modal-panel-subcategoria label{display:block;font-size:13px;margin-bottom:8px}
+.modal-panel-subcategoria input{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none}
+.modal-acciones-subcategoria{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+.modal-acciones-subcategoria button{border-radius:9px;padding:11px 17px;font-weight:700}
+.modal-guardar-subcategoria{background:linear-gradient(105deg,#e42739,#ffbd2b);border:0;color:#140b0d}
+
+.boton-subcategoria.habilitar{border-color:#247e54;color:#91f2bb;background:#11291e}
+.boton-subcategoria.habilitar:hover{border-color:#5fd39a;background:#173b29}
+.modal-descripcion-subcategoria{color:#c1b8bf;font-size:13px;line-height:1.7;margin:0}
+.modal-nombre-subcategoria{color:#ffbd35;font-weight:800}
+.modal-confirmar-subcategoria{background:#9e2533;border:1px solid #f15d69;color:#fff}
+.modal-confirmar-subcategoria.habilitar{background:#155a3b;border-color:#48c78b;color:#e3ffef}
+
+.modal-resultado-subcategoria{text-align:center;width:min(100%,430px)}
+.icono-resultado-subcategoria{width:65px;height:65px;border-radius:50%;display:grid;place-items:center;margin:0 auto 17px;border:1px solid #318d61;background:#113925;color:#8cf0af;font-size:33px;font-weight:800}
+.modal-resultado-subcategoria h2{margin:0 0 10px}
+.modal-resultado-subcategoria p{color:#c6c3c9;font-size:14px;line-height:1.6;margin:0 0 23px}
+.modal-resultado-subcategoria .modal-acciones-subcategoria{justify-content:center}
+.modal-resultado-subcategoria .modal-guardar-subcategoria{min-width:120px;cursor:pointer}
+
+.modal-detalles-subcategoria{width:min(100%,460px)}
+.modal-detalles-subcategoria h2{margin-bottom:24px}
+.detalle-fila-subcategoria{padding:15px 0;border-bottom:1px solid #3d2b33}
+.detalle-fila-subcategoria:first-of-type{padding-top:0}
+.detalle-etiqueta-subcategoria{display:block;color:#a8a3ac;font-size:12px;margin-bottom:8px}
+.detalle-valor-subcategoria{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.modal-detalles-subcategoria .modal-acciones-subcategoria{margin-top:24px}
+.modal-detalles-subcategoria .modal-guardar-subcategoria{min-width:110px;cursor:pointer}
+.boton-subcategoria.ver{border-color:#675277;color:#e4c8ff}
+.boton-subcategoria.ver:hover{background:#30213b;border-color:#ab75d1}
+.acciones-subcategoria{gap:9px;flex-wrap:nowrap}
+.acciones-subcategoria .boton-subcategoria{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:10px;transition:background .2s,border-color .2s,transform .2s}
+.acciones-subcategoria .boton-subcategoria svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.acciones-subcategoria .boton-subcategoria:hover:not(:disabled){transform:translateY(-2px)}
+.acciones-subcategoria .boton-subcategoria.ver{color:#62b9ff;border-color:#285f91;background:#0e2234}
+.acciones-subcategoria .boton-subcategoria.ver:hover{color:#94d2ff;background:#18374f;border-color:#419cdb}
+.acciones-subcategoria .boton-subcategoria.editar{color:#75e4a4;border-color:#276546;background:#10291d}
+.acciones-subcategoria .boton-subcategoria.editar:hover{color:#a2f5c1;background:#173d2a;border-color:#43b878}
+.acciones-subcategoria .boton-subcategoria.desactivar{color:#ff818d;border-color:#81333e;background:#31151d}
+.acciones-subcategoria .boton-subcategoria.desactivar:hover{color:#ffb0b9;background:#4c1d27;border-color:#ef5366}
+.acciones-subcategoria .boton-subcategoria.habilitar{color:#74e8ad;border-color:#297d55;background:#102d20}
+.acciones-subcategoria .boton-subcategoria.habilitar:hover{color:#adffd0;background:#19432e;border-color:#4ac587}
+
+.modal-panel-subcategoria select{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none;font:inherit}
+.modal-panel-subcategoria select:focus{border-color:#ffbd35}
+.modal-panel-subcategoria .campo-edicion{margin-bottom:18px}
+.modal-panel-subcategoria .campo-edicion label{display:block;font-size:13px;margin-bottom:8px}
+.modal-panel-subcategoria .campo-edicion input{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none}
+.modal-panel-subcategoria .campo-edicion input:focus{border-color:#ffbd35}
+.modal-panel-subcategoria .texto-categoria{color:#e8d6ac}
+.modal-detalles-subcategoria .detalle-fila-subcategoria:last-of-type{border-bottom:0}
+</style>
 </head>
 <body>
-    <main class="contenedor">
-        <header class="encabezado">
-            <div>
-                <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
-                <h1>Gestión de <span>Subcategorías</span></h1>
-                <p class="subtitulo">Organiza las subcategorías y relaciónalas con las categorías de repuestos.</p>
+<main class="contenedor">
+    <header class="encabezado">
+        <div>
+            <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
+            <h1>Gestión de <span>Subcategorías</span></h1>
+        </div>
+        <button class="btn-nueva" type="button" id="btnNuevaSubcategoria">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Nueva subcategoría
+        </button>
+    </header>
+    <section class="panel">
+        <div class="panel-superior">
+            <div class="panel-titulo"><h2>Listado de subcategorías</h2></div>
+            <div class="herramientas">
+                <div class="buscador">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+                    <input id="buscarSubcategoria" type="search" autocomplete="off" placeholder="Buscar subcategorías..." aria-label="Buscar subcategorías">
+                </div>
+                <button class="btn-actualizar" type="button" id="btnActualizar" title="Actualizar subcategorías" aria-label="Actualizar subcategorías">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2 6"/><path d="M20 4v7h-7"/></svg>
+                </button>
             </div>
-            <button class="btn-nueva" type="button" id="btnNuevaSubcategoria">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
-                    <path d="M12 5v14M5 12h14"/>
-                </svg>
-                Nueva subcategoría
-            </button>
-        </header>
-
-        <section class="panel">
-            <div class="panel-superior">
-                <div class="panel-titulo">
-                    <h2>Listado de subcategorías</h2>
-                    <p>Consulta las subcategorías registradas en el sistema.</p>
-                </div>
-                <div class="herramientas">
-                    <div class="buscador">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                            <circle cx="11" cy="11" r="7"/>
-                            <path d="m16 16 5 5"/>
-                        </svg>
-                        <input id="buscarSubcategoria" type="search" autocomplete="off"
-                               placeholder="Buscar subcategorías..." aria-label="Buscar subcategorías">
-                    </div>
-                    <button class="btn-actualizar" type="button" id="btnActualizar">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M20 11a8 8 0 1 0-2 6"/>
-                            <path d="M20 4v7h-7"/>
-                        </svg>
-                        Actualizar
-                    </button>
-                </div>
+        </div>
+        <div id="avisoSubcategoria" class="mensaje-subcategoria" role="status" aria-live="polite"></div>
+        <div class="tabla-contenedor">
+            <table>
+                <thead><tr><th>ID</th><th>Nombre</th><th>Categoría</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="subcategoriaRows"><tr><td colspan="5"><div class="vacio">Cargando subcategorías...</div></td></tr></tbody>
+            </table>
+        </div>
+        <footer class="panel-inferior">
+            <div class="total">Total de subcategorías: <strong id="totalSubcategorias">0</strong></div>
+            <div class="indicador"><span class="punto"></span>AutoParts · Gestión de subcategorías</div>
+        </footer>
+    </section>
+</main>
+<div id="modalEditarSubcategoria" class="modal-subcategoria" hidden>
+    <div class="modal-panel-subcategoria" role="dialog" aria-modal="true" aria-labelledby="tituloEditarSubcategoria">
+        <h2 id="tituloEditarSubcategoria">Editar subcategoría</h2>
+        <form id="formEditarSubcategoria">
+            <div class="campo-edicion">
+                <label for="nombreEditarSubcategoria">Nombre de la subcategoría</label>
+                <input id="nombreEditarSubcategoria" type="text" maxlength="120" required autocomplete="off">
             </div>
-
-            <div class="tabla-contenedor">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Categoría</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="subcategoriaRows">
-                        <tr>
-                            <td colspan="4"><div class="vacio">Cargando subcategorías...</div></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="campo-edicion">
+                <label for="categoriaEditarSubcategoria">Categoría</label>
+                <select id="categoriaEditarSubcategoria" required></select>
             </div>
+            <div class="modal-acciones-subcategoria">
+                <button type="button" class="boton-subcategoria" id="cancelarEditarSubcategoria">Cancelar</button>
+                <button type="submit" class="modal-guardar-subcategoria" id="guardarEditarSubcategoria">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="modalConfirmarSubcategoria" class="modal-subcategoria" hidden>
+    <div class="modal-panel-subcategoria" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmarSubcategoria" aria-describedby="descripcionConfirmarSubcategoria">
+        <h2 id="tituloConfirmarSubcategoria">Confirmar cambio</h2>
+        <p id="descripcionConfirmarSubcategoria" class="modal-descripcion-subcategoria"></p>
+        <div class="modal-acciones-subcategoria">
+            <button type="button" class="boton-subcategoria" id="cancelarCambioSubcategoria">Cancelar</button>
+            <button type="button" class="modal-confirmar-subcategoria" id="confirmarCambioSubcategoria">Confirmar</button>
+        </div>
+    </div>
+</div>
+<div id="modalVerSubcategoria" class="modal-subcategoria" hidden>
+    <div class="modal-panel-subcategoria modal-detalles-subcategoria" role="dialog" aria-modal="true" aria-labelledby="tituloVerSubcategoria">
+        <h2 id="tituloVerSubcategoria">Detalles de la subcategoría</h2>
+        <div class="detalle-fila-subcategoria"><span class="detalle-etiqueta-subcategoria">Nombre de la subcategoría</span><div id="verNombreSubcategoria" class="detalle-valor-subcategoria"></div></div>
+        <div class="detalle-fila-subcategoria"><span class="detalle-etiqueta-subcategoria">Categoría</span><div id="verCategoriaSubcategoria" class="detalle-valor-subcategoria"></div></div>
+        <div class="detalle-fila-subcategoria"><span class="detalle-etiqueta-subcategoria">Estado</span><span id="verEstadoSubcategoria" class="estado"></span></div>
+        <div class="modal-acciones-subcategoria"><button type="button" class="modal-guardar-subcategoria" id="cerrarVerSubcategoria">Cerrar</button></div>
+    </div>
+</div>
+<div id="modalResultadoSubcategoria" class="modal-subcategoria" hidden>
+    <div class="modal-panel-subcategoria modal-resultado-subcategoria" role="dialog" aria-modal="true" aria-labelledby="tituloResultadoSubcategoria" aria-describedby="textoResultadoSubcategoria">
+        <div class="icono-resultado-subcategoria" aria-hidden="true">✓</div>
+        <h2 id="tituloResultadoSubcategoria">Operación realizada</h2>
+        <p id="textoResultadoSubcategoria"></p>
+        <div class="modal-acciones-subcategoria"><button type="button" class="modal-guardar-subcategoria" id="aceptarResultadoSubcategoria">Aceptar</button></div>
+    </div>
+</div>
+<script>
+'use strict';
+let subcategorias = [];
+let categoriasDisponibles = [];
+let subcategoriaEditandoId = 0;
+let subcategoriaCambioId = 0;
+let ultimaAccionSubcategoria = '';
+let operacionPendiente = false;
+const $ = id => document.getElementById(id);
 
-            <footer class="panel-inferior">
-                <div class="total">
-                    Total de subcategorías: <strong id="totalSubcategorias">0</strong>
-                </div>
-                <div class="indicador">
-                    <span class="punto"></span>
-                    AutoParts · Gestión de subcategorías
-                </div>
-            </footer>
-        </section>
-    </main>
+function escapar(valor) {
+    return String(valor ?? '').replace(/[&<>"']/g, caracter => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[caracter]));
+}
 
-    <script>
-        let subcategorias = [];
-        let categoriasDisponibles = [];
+function obtener(objeto, ...nombres) {
+    for (const nombre of nombres) {
+        if (objeto && objeto[nombre] !== undefined && objeto[nombre] !== null) return objeto[nombre];
+    }
+    return '';
+}
 
-        function escapar(valor) {
-            return String(valor ?? "").replace(/[&<>"']/g, c => ({
-                "&": "&amp;", "<": "&lt;", ">": "&gt;",
-                '"': "&quot;", "'": "&#39;"
-            }[c]));
-        }
+function idSubcategoria(s) { return Number(obtener(s, 'SubcategoriaId', 'subcategoriaId')); }
+function idCategoria(s) { return Number(obtener(s, 'CategoriaId', 'categoriaId')); }
+function estadoSubcategoria(s) { return Number(obtener(s, 'EstadoId', 'estadoId')); }
+function buscarSubcategoria(id) { return subcategorias.find(s => idSubcategoria(s) === id); }
+function buscarCategoria(id) { return categoriasDisponibles.find(c => Number(obtener(c, 'CategoriaId', 'categoriaId')) === id); }
+function nombreCategoria(s) {
+    const propio = obtener(s, 'CategoriaNombre', 'categoriaNombre');
+    if (propio) return String(propio);
+    const categoria = buscarCategoria(idCategoria(s));
+    return categoria ? String(obtener(categoria, 'Nombre', 'nombre')) : '#' + idCategoria(s);
+}
 
-        function obtener(objeto, ...nombres) {
-            for (const nombre of nombres) {
-                if (objeto?.[nombre] !== undefined && objeto[nombre] !== null) {
-                    return objeto[nombre];
-                }
-            }
-            return "";
-        }
+function enviarACSharp(mensaje) {
+    if (window.parent !== window) {
+        window.parent.postMessage(mensaje, '*');
+        return true;
+    }
+    if (window.chrome?.webview?.postMessage) {
+        window.chrome.webview.postMessage(mensaje);
+        return true;
+    }
+    aviso('Esta pantalla requiere el Dashboard de AutoParts o WebView2.');
+    return false;
+}
 
-        // Convierte el CategoriaId de una subcategoría en el nombre real
-        // que corresponde a la tabla Categoria de SQL Server.
-        function obtenerNombreCategoria(subcategoria) {
-            const nombreEnRegistro = obtener(
-                subcategoria, "CategoriaNombre", "categoriaNombre"
-            );
-            if (String(nombreEnRegistro).trim()) {
-                return String(nombreEnRegistro);
-            }
+function aviso(texto) { $('avisoSubcategoria').textContent = texto || ''; }
+function mostrarMensaje(texto) {
+    $('subcategoriaRows').innerHTML = '<tr><td colspan="5"><div class="vacio"><strong>' + escapar(texto) + '</strong></div></td></tr>';
+}
+function mostrarResultado(titulo, texto) {
+    $('tituloResultadoSubcategoria').textContent = titulo;
+    $('textoResultadoSubcategoria').textContent = texto;
+    $('modalResultadoSubcategoria').hidden = false;
+    $('aceptarResultadoSubcategoria').focus();
+}
 
-            const id = Number(obtener(subcategoria, "CategoriaId", "categoriaId"));
-            const categoria = categoriasDisponibles.find(c =>
-                Number(obtener(c, "CategoriaId", "categoriaId")) === id
-            );
+const iconoVer = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const iconoEditar = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></svg>';
+const iconoDesactivar = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6"/><path d="M10 10v7M14 10v7"/></svg>';
+const iconoHabilitar = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>';
 
-            if (categoria) {
-                return obtener(categoria, "Nombre", "nombre") || `#${id}`;
-            }
+function pintarSubcategorias() {
+    const texto = $('buscarSubcategoria').value.trim().toLocaleLowerCase('es');
+    const filtradas = subcategorias.filter(s => {
+        const estado = estadoSubcategoria(s);
+        return [idSubcategoria(s), obtener(s, 'Nombre', 'nombre'), idCategoria(s), nombreCategoria(s), estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'desconocido']
+            .some(v => String(v).toLocaleLowerCase('es').includes(texto));
+    });
+    $('totalSubcategorias').textContent = String(filtradas.length);
+    if (!filtradas.length) {
+        mostrarMensaje(texto ? 'No se encontraron coincidencias.' : 'No hay subcategorías registradas.');
+        return;
+    }
+    $('subcategoriaRows').innerHTML = filtradas.map(s => {
+        const id = idSubcategoria(s);
+        const nombre = String(obtener(s, 'Nombre', 'nombre'));
+        const categoria = nombreCategoria(s);
+        const estado = estadoSubcategoria(s);
+        const activo = estado === 1;
+        const valido = estado === 1 || estado === 2;
+        const nombreEstado = activo ? 'Activo' : estado === 2 ? 'Inactivo' : 'Desconocido';
+        const claseEstado = activo ? 'activo' : estado === 2 ? 'inactivo' : 'otro';
+        return `<tr>
+            <td class="codigo">#${escapar(id)}</td>
+            <td class="nombre">${escapar(nombre)}</td>
+            <td class="texto-categoria">${escapar(categoria)}</td>
+            <td><span class="estado ${claseEstado}">${nombreEstado}</span></td>
+            <td><div class="acciones-subcategoria">
+                <button type="button" class="boton-subcategoria ver" data-ver="${id}" title="Ver detalles" aria-label="Ver ${escapar(nombre)}">${iconoVer}</button>
+                <button type="button" class="boton-subcategoria editar" data-editar="${id}" title="Editar subcategoría" aria-label="Editar ${escapar(nombre)}">${iconoEditar}</button>
+                <button type="button" class="boton-subcategoria ${activo ? 'desactivar' : 'habilitar'}" data-cambiar-estado="${id}" title="${activo ? 'Eliminar (desactivar)' : 'Habilitar'}" aria-label="${activo ? 'Eliminar' : 'Habilitar'} ${escapar(nombre)}" ${valido ? '' : 'disabled'}>${activo ? iconoDesactivar : iconoHabilitar}</button>
+            </div></td>
+        </tr>`;
+    }).join('');
+}
 
-            return id > 0 ? `#${id}` : "Sin categoría";
-        }
+function solicitarSubcategorias() {
+    aviso('');
+    if (!subcategorias.length) mostrarMensaje('Cargando subcategorías...');
+    enviarACSharp({ type: 'subcategorias:selectAll' });
+    enviarACSharp({ type: 'categorias:selectAll' });
+}
 
-        function enviarACSharp(mensaje) {
-            // Integración actual: iframe dentro del Dashboard.
-            if (window.parent !== window) {
-                window.parent.postMessage(mensaje, "*");
-                return true;
-            }
-            // Permite abrir la página directamente en WebView2.
-            if (window.chrome?.webview?.postMessage) {
-                window.chrome.webview.postMessage(mensaje);
-                return true;
-            }
-            mostrarMensaje("No hay conexión con Windows Forms.");
-            return false;
-        }
+function abrirVer(id) {
+    const s = buscarSubcategoria(id);
+    if (!s || operacionPendiente) return;
+    const estado = estadoSubcategoria(s);
+    $('verNombreSubcategoria').textContent = String(obtener(s, 'Nombre', 'nombre'));
+    $('verCategoriaSubcategoria').textContent = nombreCategoria(s);
+    $('verEstadoSubcategoria').textContent = estado === 1 ? 'Activo' : estado === 2 ? 'Inactivo' : 'Desconocido';
+    $('verEstadoSubcategoria').className = 'estado ' + (estado === 1 ? 'activo' : estado === 2 ? 'inactivo' : 'otro');
+    $('modalVerSubcategoria').hidden = false;
+    $('cerrarVerSubcategoria').focus();
+}
 
-        function mostrarMensaje(texto) {
-            document.getElementById("subcategoriaRows").innerHTML = `
-                <tr>
-                    <td colspan="4">
-                        <div class="vacio">
-                            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                <rect x="14" y="14" width="7" height="7" rx="1"/>
-                            </svg>
-                            <strong>${escapar(texto)}</strong>
-                            <p>Los registros se mostrarán aquí cuando estén disponibles.</p>
-                        </div>
-                    </td>
-                </tr>`;
-        }
+function abrirEditar(id) {
+    const s = buscarSubcategoria(id);
+    if (!s || operacionPendiente) return;
+    subcategoriaEditandoId = id;
+    $('nombreEditarSubcategoria').value = String(obtener(s, 'Nombre', 'nombre'));
+    const categoriaId = idCategoria(s);
+    const combo = $('categoriaEditarSubcategoria');
+    combo.replaceChildren();
+    for (const c of categoriasDisponibles) {
+        const cid = Number(obtener(c, 'CategoriaId', 'categoriaId'));
+        if (Number(obtener(c, 'EstadoId', 'estadoId')) !== 1) continue;
+        const opcion = document.createElement('option');
+        opcion.value = String(cid);
+        opcion.textContent = String(obtener(c, 'Nombre', 'nombre'));
+        combo.append(opcion);
+    }
+    if (![...combo.options].some(o => Number(o.value) === categoriaId)) {
+        const opcion = document.createElement('option');
+        opcion.value = '';
+        opcion.textContent = 'Selecciona una categoría activa';
+        opcion.disabled = true;
+        opcion.selected = true;
+        combo.prepend(opcion);
+    } else combo.value = String(categoriaId);
+    $('modalEditarSubcategoria').hidden = false;
+    $('nombreEditarSubcategoria').focus();
+}
 
-        function pintarSubcategorias() {
-            const texto = document.getElementById("buscarSubcategoria")
-                .value.trim().toLocaleLowerCase("es");
+function cerrarEditar() {
+    if (operacionPendiente) return;
+    $('modalEditarSubcategoria').hidden = true;
+    subcategoriaEditandoId = 0;
+}
 
-            const filtradas = subcategorias.filter(s => {
-                const id = obtener(s, "SubcategoriaId", "subcategoriaId");
-                const nombre = obtener(s, "Nombre", "nombre");
-                const categoriaId = obtener(s, "CategoriaId", "categoriaId");
-                const categoriaNombre = obtenerNombreCategoria(s);
-                return [id, nombre, categoriaId, categoriaNombre].some(valor =>
-                    String(valor).toLocaleLowerCase("es").includes(texto)
-                );
-            });
+function abrirConfirmacion(id) {
+    const s = buscarSubcategoria(id);
+    if (!s || operacionPendiente) return;
+    const activo = estadoSubcategoria(s) === 1;
+    if (estadoSubcategoria(s) !== 1 && estadoSubcategoria(s) !== 2) return;
+    subcategoriaCambioId = id;
+    const nombre = String(obtener(s, 'Nombre', 'nombre'));
+    $('tituloConfirmarSubcategoria').textContent = activo ? '¿Eliminar subcategoría?' : '¿Habilitar subcategoría?';
+    $('descripcionConfirmarSubcategoria').textContent = activo
+        ? `¿Seguro que deseas desactivar la subcategoría "${nombre}"?`
+        : `¿Seguro que deseas habilitar la subcategoría "${nombre}"?`;
+    $('confirmarCambioSubcategoria').textContent = activo ? 'Sí, desactivar' : 'Sí, habilitar';
+    $('confirmarCambioSubcategoria').classList.toggle('habilitar', !activo);
+    $('modalConfirmarSubcategoria').hidden = false;
+    $('cancelarCambioSubcategoria').focus();
+}
 
-            document.getElementById("totalSubcategorias").textContent = String(filtradas.length);
+function cerrarConfirmacion() {
+    if (operacionPendiente) return;
+    $('modalConfirmarSubcategoria').hidden = true;
+    subcategoriaCambioId = 0;
+}
 
-            if (filtradas.length === 0) {
-                mostrarMensaje(texto
-                    ? "No se encontraron coincidencias."
-                    : "No hay subcategorías registradas.");
-                return;
-            }
+function cambiarEstado() {
+    if (operacionPendiente || subcategoriaCambioId <= 0) return;
+    const s = buscarSubcategoria(subcategoriaCambioId);
+    if (!s) return;
+    const id = subcategoriaCambioId;
+    ultimaAccionSubcategoria = estadoSubcategoria(s) === 1 ? 'desactivar' : 'habilitar';
+    $('modalConfirmarSubcategoria').hidden = true;
+    subcategoriaCambioId = 0;
+    operacionPendiente = true;
+    aviso(ultimaAccionSubcategoria === 'desactivar' ? 'Desactivando subcategoría...' : 'Habilitando subcategoría...');
+    if (!enviarACSharp({ type: 'subcategorias:desactivarIntegrado', data: { SubcategoriaId: id } })) {
+        operacionPendiente = false;
+    }
+}
 
-            document.getElementById("subcategoriaRows").innerHTML = filtradas.map(s => {
-                const id = obtener(s, "SubcategoriaId", "subcategoriaId");
-                const nombre = obtener(s, "Nombre", "nombre");
-                const categoriaId = obtener(s, "CategoriaId", "categoriaId");
-                const estadoId = obtener(s, "EstadoId", "estadoId");
-                const estadoNombre = obtener(s, "EstadoNombre", "estadoNombre");
-
-                // Muestra el nombre de la categoría asociada a la subcategoría.
-                const categoriaTexto = obtenerNombreCategoria(s);
-
-                const estadoTexto = String(estadoNombre || (
-                    Number(estadoId) === 1 ? "Activo" :
-                    Number(estadoId) === 2 ? "Inactivo" : (estadoId || "Sin estado")
-                ));
-                const claseEstado =
-                    estadoTexto.toLowerCase() === "activo" ? "activo" :
-                    estadoTexto.toLowerCase() === "inactivo" ? "inactivo" : "otro";
-
-                return `
-                    <tr>
-                        <td class="codigo">#${escapar(id)}</td>
-                        <td class="nombre">${escapar(nombre)}</td>
-                        <td>${escapar(categoriaTexto)}</td>
-                        <td><span class="estado ${claseEstado}">${escapar(estadoTexto)}</span></td>
-                    </tr>`;
-            }).join("");
-        }
-
-        function recibirMensajeSubcategorias(evento) {
-            let mensaje = evento.data;
-            if (typeof mensaje === "string") {
-                try { mensaje = JSON.parse(mensaje); }
-                catch { return; }
-            }
-            if (!mensaje || typeof mensaje !== "object") return;
-
-            if (mensaje.type === "subcategorias:list") {
-                subcategorias = Array.isArray(mensaje.data) ? mensaje.data : [];
-                pintarSubcategorias();
-            } else if (mensaje.type === "categorias:list") {
-                categoriasDisponibles = Array.isArray(mensaje.data) ? mensaje.data : [];
-                // Redibuja la tabla aunque las subcategorías hayan llegado primero.
-                pintarSubcategorias();
-            } else if (mensaje.type === "error") {
-                document.getElementById("totalSubcategorias").textContent = "0";
-                mostrarMensaje(mensaje.message || "No se pudieron cargar las subcategorías.");
-            }
-        }
-
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", recibirMensajeSubcategorias);
-        }
-        window.addEventListener("message", recibirMensajeSubcategorias);
-
-        document.getElementById("btnNuevaSubcategoria").addEventListener("click", () => {
-            enviarACSharp({ type: "subcategorias:abrirNuevo" });
-        });
-        document.getElementById("btnActualizar").addEventListener("click", solicitarSubcategorias);
-        document.getElementById("buscarSubcategoria").addEventListener("input", pintarSubcategorias);
-
-        function solicitarSubcategorias() {
-            mostrarMensaje("Cargando subcategorías...");
-            enviarACSharp({ type: "subcategorias:selectAll" });
-            enviarACSharp({ type: "categorias:selectAll" });
-        }
-
+function recibirRespuesta(evento) {
+    if (evento.source && window.parent !== window && evento.source !== window.parent) return;
+    let mensaje = evento.data;
+    if (typeof mensaje === 'string') {
+        try { mensaje = JSON.parse(mensaje); } catch { return; }
+    }
+    if (!mensaje || typeof mensaje !== 'object' || typeof mensaje.type !== 'string') return;
+    if (mensaje.type === 'subcategorias:list') {
+        subcategorias = Array.isArray(mensaje.data) ? mensaje.data : [];
+        pintarSubcategorias();
+        return;
+    }
+    if (mensaje.type === 'categorias:list') {
+        categoriasDisponibles = Array.isArray(mensaje.data) ? mensaje.data : [];
+        pintarSubcategorias();
+        return;
+    }
+    if (mensaje.type === 'subcategorias:actualizada' || mensaje.type === 'subcategorias:desactivada') {
+        const accion = mensaje.type === 'subcategorias:actualizada' ? 'actualizar' : ultimaAccionSubcategoria;
+        operacionPendiente = false;
+        ultimaAccionSubcategoria = '';
+        $('guardarEditarSubcategoria').disabled = false;
+        $('modalEditarSubcategoria').hidden = true;
+        subcategoriaEditandoId = 0;
         solicitarSubcategorias();
-    </script>
+        mostrarResultado(accion === 'actualizar' ? 'Subcategoría actualizada' : accion === 'habilitar' ? 'Subcategoría habilitada' : 'Subcategoría desactivada',
+            accion === 'actualizar' ? 'La subcategoría se actualizó correctamente.' : accion === 'habilitar' ? 'La subcategoría se habilitó correctamente.' : 'La subcategoría se desactivó correctamente.');
+        return;
+    }
+    if (mensaje.type === 'subcategorias:error' || mensaje.type === 'error') {
+        operacionPendiente = false;
+        $('guardarEditarSubcategoria').disabled = false;
+        aviso(mensaje.message || 'No se pudo completar la operación.');
+    }
+}
+
+$('subcategoriaRows').addEventListener('click', evento => {
+    const ver = evento.target.closest('[data-ver]');
+    const editar = evento.target.closest('[data-editar]');
+    const cambiar = evento.target.closest('[data-cambiar-estado]');
+    if (ver) abrirVer(Number(ver.dataset.ver));
+    if (editar) abrirEditar(Number(editar.dataset.editar));
+    if (cambiar) abrirConfirmacion(Number(cambiar.dataset.cambiarEstado));
+});
+$('formEditarSubcategoria').addEventListener('submit', evento => {
+    evento.preventDefault();
+    if (operacionPendiente || subcategoriaEditandoId <= 0) return;
+    const nombre = $('nombreEditarSubcategoria').value.trim();
+    const categoriaId = Number($('categoriaEditarSubcategoria').value);
+    if (!nombre || nombre.length > 120 || !Number.isInteger(categoriaId) || categoriaId <= 0) {
+        aviso('Ingresa un nombre válido y selecciona una categoría activa.');
+        return;
+    }
+    if (!buscarCategoria(categoriaId) || Number(obtener(buscarCategoria(categoriaId), 'EstadoId', 'estadoId')) !== 1) {
+        aviso('Selecciona una categoría activa.');
+        return;
+    }
+    operacionPendiente = true;
+    ultimaAccionSubcategoria = 'actualizar';
+    $('guardarEditarSubcategoria').disabled = true;
+    aviso('Guardando cambios...');
+    if (!enviarACSharp({
+        type: 'subcategorias:actualizarIntegrado',
+        data: { SubcategoriaId: subcategoriaEditandoId, CategoriaId: categoriaId, Nombre: nombre }
+    })) {
+        operacionPendiente = false;
+        $('guardarEditarSubcategoria').disabled = false;
+    }
+});
+$('cerrarVerSubcategoria').addEventListener('click', () => { $('modalVerSubcategoria').hidden = true; });
+$('cancelarEditarSubcategoria').addEventListener('click', cerrarEditar);
+$('aceptarResultadoSubcategoria').addEventListener('click', () => { $('modalResultadoSubcategoria').hidden = true; });
+$('cancelarCambioSubcategoria').addEventListener('click', cerrarConfirmacion);
+$('confirmarCambioSubcategoria').addEventListener('click', cambiarEstado);
+$('btnNuevaSubcategoria').addEventListener('click', () => enviarACSharp({ type: 'subcategorias:abrirNuevo' }));
+$('btnActualizar').addEventListener('click', solicitarSubcategorias);
+$('buscarSubcategoria').addEventListener('input', pintarSubcategorias);
+window.addEventListener('message', recibirRespuesta);
+if (window.chrome?.webview?.addEventListener) window.chrome.webview.addEventListener('message', recibirRespuesta);
+solicitarSubcategorias();
+</script>
 </body>
 </html>

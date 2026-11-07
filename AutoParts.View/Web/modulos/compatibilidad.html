@@ -1,207 +1,397 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AutoParts | Compatibilidad de Repuestos</title>
-<style>
-        :root{color-scheme:dark}
-        *{box-sizing:border-box}
-        body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 95% 0%,rgba(136,16,25,.20),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
-        button,input,select{font:inherit}
-        button{cursor:pointer}
-        .contenedor{max-width:1520px;margin:0 auto;padding:34px}
-        .etiqueta{display:flex;align-items:center;gap:9px;color:#ffbd37;font-size:11px;font-weight:750;letter-spacing:2.7px;margin-bottom:12px}
-        .etiqueta:before{content:'';width:22px;height:3px;background:#ff3543;border-radius:10px;box-shadow:0 0 12px #ff243a}
-        h1{margin:0;font-size:clamp(27px,3vw,38px);letter-spacing:-.8px;font-weight:800}
-        h1 span{color:#ffbd2e}
-        .subtitulo{margin-top:9px;color:#adaeb8;font-size:13px;line-height:1.6;max-width:710px}
-        .encabezado{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;margin-bottom:27px}
-        .btn-principal{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid #ff6053;border-radius:10px;padding:14px 20px;background:linear-gradient(110deg,#b10b1f,#e52a37,#ffac28);color:#fff;font-size:13px;font-weight:750;box-shadow:0 0 18px rgba(233,31,48,.27);transition:filter .2s,transform .2s;white-space:nowrap}
-        .btn-principal:hover:not(:disabled){filter:brightness(1.13);transform:translateY(-2px)}
-        .btn-principal:disabled{opacity:.5;cursor:not-allowed}
-        .panel{border:1px solid #4d3038;border-radius:15px;background:linear-gradient(140deg,#171519,#0d0e11 65%,#140f12);box-shadow:0 12px 35px #0005;overflow:hidden}
-        .panel-cabecera{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:17px;padding:24px 25px;border-bottom:1px solid #352c32}
-        .panel-cabecera h2{font-size:18px;margin:0 0 7px}
-        .panel-cabecera p{font-size:12px;color:#9a9aa4;margin:0}
-        .herramientas{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
-        .buscador{display:flex;align-items:center;gap:10px;height:44px;border:1px solid #51454c;background:#111216;border-radius:9px;padding:0 13px;width:min(360px,100%)}
-        .buscador:focus-within{border-color:#ff3d46;box-shadow:0 0 12px #ff334022}
-        .buscador svg{color:#aba9b0;flex-shrink:0}
-        .buscador input{width:100%;border:0;outline:0;background:transparent;color:white;font-size:12px}
-        .buscador input::placeholder{color:#898992}
-        .btn-actualizar{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0 15px;color:#eee;font-size:12px;transition:.2s}
-        .btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
-        .aviso{min-height:19px;padding:0 25px;color:#ffb85d;font-size:12px;line-height:1.5}
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AutoParts | Compatibilidad de Repuestos</title><style>
+					:root { color-scheme: dark; }
+					* { box-sizing: border-box; }
+					body {
+					margin: 0;
+					min-height: 100vh;
+					color: #f5f5f7;
+					font-family: 'Segoe UI', Arial, sans-serif;
+					background: radial-gradient(ellipse at 95% 0%, rgba(136, 16, 25, 0.18), transparent 38%), #090a0d;
+					}
+					button, input { font: inherit; }
+					button { cursor: pointer; }
+					.contenedor {
+					max-width: 1500px;
+					margin: auto;
+					padding: 35px;
+					}
+					.encabezado {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					flex-wrap: wrap;
+					gap: 20px;
+					margin-bottom: 30px;
+					}
+					.etiqueta {
+					display: flex;
+					align-items: center;
+					gap: 9px;
+					color: #ffbd37;
+					font-size: 11px;
+					font-weight: 700;
+					letter-spacing: 3px;
+					margin-bottom: 12px;
+					}
+					h1 {
+					margin: 0;
+					font-size: clamp(28px, 3vw, 39px);
+					font-weight: 800;
+					letter-spacing: -1px;
+					}
+					h1 span { color: #ffbd2e; }
+					.subtitulo {
+					color: #a9aab3;
+					font-size: 13px;
+					margin-top: 9px;
+					line-height: 1.6;
+					}
+					.btn-nueva {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					gap: 10px;
+					padding: 14px 20px;
+					border: 1px solid #ff6053;
+					border-radius: 10px;
+					background: linear-gradient(110deg, #b10b1f, #e52a37, #ffac28);
+					color: #fff;
+					font-size: 13px;
+					font-weight: 750;
+					box-shadow: 0 0 18px rgba(233, 31, 48, 0.27), inset 0 1px 1px #ffffff30;
+					transition: transform .2s, filter .2s;
+					}
+					.btn-nueva:hover {
+					transform: translateY(-2px);
+					filter: brightness(1.12);
+					}
+					.panel {
+					border: 1px solid #4d3038;
+					border-radius: 15px;
+					background: linear-gradient(140deg, #171519, #0d0e11 65%, #140f12);
+					box-shadow: 0 12px 35px #0005, inset 0 0 18px #0004;
+					overflow: hidden;
+					}
+					.panel-superior {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					flex-wrap: wrap;
+					gap: 16px;
+					padding: 23px 25px;
+					border-bottom: 1px solid #34292e;
+					}
+					.panel-titulo h2 {
+					font-size: 18px;
+					margin: 0 0 7px;
+					}
+					.panel-titulo p {
+					font-size: 12px;
+					color: #9798a1;
+					margin: 0;
+					}
+					.herramientas {
+					display: flex;
+					align-items: center;
+					flex-wrap: nowrap;
+					gap: 9px;
+					}
+					.buscador {
+					display: flex;
+					align-items: center;
+					background: #111216;
+					border: 1px solid #51454c;
+					border-radius: 9px;
+					width: min(340px, 100%);
+					min-width: 0;
+					flex: 1 1 240px;
+					height: 44px;
+					padding: 0 13px;
+					}
+					.buscador:focus-within {
+					border-color: #ff414e;
+					box-shadow: 0 0 12px #ff334020;
+					}
+					.buscador svg {
+					flex-shrink: 0;
+					color: #a7a7b0;
+					}
+					.buscador input {
+					border: none;
+					background: transparent;
+					color: white;
+					outline: none;
+					width: 100%;
+					padding: 0 10px;
+					font-size: 12px;
+					}
+					.buscador input::placeholder { color: #898992; }
+					.btn-actualizar {
+					width: 44px;
+					height: 44px;
+					padding: 0;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					flex: 0 0 44px;
+					color: #e8e8eb;
+					background: #211a1f;
+					border: 1px solid #60444d;
+					border-radius: 9px;
+					transition: .2s;
+					}
+					.btn-actualizar:hover {
+					background: #3a2027;
+					border-color: #ed4247;
+					}
+					.tabla-contenedor {
+					overflow-x: auto;
+					min-height: 240px;
+					}
+					table {
+					border-collapse: collapse;
+					width: 100%;
+					font-size: 13px;
+					}
+					thead { background: #1b1b21; }
+					th {
+					padding: 16px 23px;
+					color: #babac4;
+					font-size: 11px;
+					font-weight: 700;
+					letter-spacing: .5px;
+					text-align: left;
+					white-space: nowrap;
+					border-bottom: 1px solid #373035;
+					}
+					td {
+					padding: 16px 23px;
+					border-bottom: 1px solid #2c2a30;
+					color: #e4e4e9;
+					}
+					tbody tr { transition: background .15s; }
+					tbody tr:hover { background: #25181e; }
+					.codigo {
+					color: #ffbe42;
+					font-weight: 700;
+					}
+					.nombre {
+					color: #fff;
+					font-weight: 650;
+					}
+					.estado {
+					display: inline-flex;
+					align-items: center;
+					gap: 8px;
+					border-radius: 30px;
+					padding: 6px 12px;
+					font-size: 11px;
+					font-weight: 700;
+					}
+					.estado::before {
+					content: "";
+					width: 6px;
+					height: 6px;
+					border-radius: 50%;
+					background: currentColor;
+					}
+					.estado.activo {
+					background: #103d29;
+					border: 1px solid #17643e;
+					color: #78ecaa;
+					}
+					.estado.inactivo {
+					background: #40272a;
+					border: 1px solid #704147;
+					color: #ff8e94;
+					}
+					.estado.otro {
+					background: #403514;
+					border: 1px solid #746027;
+					color: #ffd274;
+					}
+					.vacio {
+					text-align: center;
+					padding: 65px 20px;
+					color: #9ea0ab;
+					}
+					.vacio svg {
+					color: #ffb92e;
+					margin-bottom: 12px;
+					opacity: .8;
+					}
+					.vacio strong {
+					display: block;
+					color: #e6e6eb;
+					margin-bottom: 7px;
+					}
+					.vacio p {
+					font-size: 12px;
+					margin: 0;
+					}
+					.panel-inferior {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					flex-wrap: wrap;
+					gap: 10px;
+					padding: 16px 25px;
+					border-top: 1px solid #34292e;
+					font-size: 12px;
+					color: #9999a3;
+					}
+					.total strong { color: #ffbd31; }
+					.indicador {
+					display: flex;
+					align-items: center;
+					gap: 8px;
+					}
+					.punto {
+					width: 7px;
+					height: 7px;
+					background: #ffbd35;
+					border-radius: 50%;
+					box-shadow: 0 0 10px #ffbd35;
+					}
+					@media (max-width: 850px) {
+					.contenedor { padding: 20px; }
+					.panel-superior { padding: 18px; }
+					.herramientas { width: 100%; }
+					.buscador {
+					flex: 1;
+					min-width: 0;
+					}
+					th, td { padding: 14px 13px; }
+					.panel-inferior { padding: 16px; }
+					}
+				
+.acciones-rol{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.boton-rol{border:1px solid #65444c;background:#241a20;border-radius:8px;padding:8px 12px;color:#f4f4f5;font-size:12px;font-weight:700}
+.boton-rol:hover{border-color:#ffbd35;background:#35212a}
+.boton-rol.desactivar{border-color:#91434c;color:#ff9ca2}
+.boton-rol:disabled{opacity:.4;cursor:not-allowed}
+.mensaje-rol{padding:12px 25px;color:#ffbd69;font-size:12px;min-height:38px}
+.modal-rol[hidden]{display:none!important}
+.modal-rol{position:fixed;inset:0;z-index:50;background:#000b;display:grid;place-items:center;padding:18px}
+.modal-panel-rol{width:min(100%,480px);background:linear-gradient(145deg,#21161b,#111115);border:1px solid #81424a;border-radius:16px;padding:26px;box-shadow:0 25px 80px #000a}
+.modal-panel-rol h2{margin:0 0 18px;color:#fff}
+.modal-panel-rol label{display:block;font-size:13px;margin-bottom:8px}
+.modal-panel-rol input{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none}
+.modal-acciones-rol{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}
+.modal-acciones-rol button{border-radius:9px;padding:11px 17px;font-weight:700}
+.modal-guardar-rol{background:linear-gradient(105deg,#e42739,#ffbd2b);border:0;color:#140b0d}
 
-        .tabla-wrap{overflow-x:auto;min-height:250px}
-        table{width:100%;min-width:920px;border-collapse:collapse;font-size:12px}
-        thead{background:#1b1b21}
-        th{text-align:left;color:#bcbcc6;border-bottom:1px solid #373035;padding:16px 18px;font-size:11px;font-weight:750;letter-spacing:.3px;white-space:nowrap}
-        td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-align:middle}
-        tbody tr:hover{background:#25181e}
-        .codigo{color:#ffbd35;font-weight:750;font-variant-numeric:tabular-nums}
-        .principal{font-weight:700;color:white;font-size:13px}
-        .secundario{display:block;color:#a8a7ae;font-size:11px;margin-top:5px}
-        .chip{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:750}
-        .chip.ok{color:#79eaaa;border:1px solid #17643e;background:#103d29}
-        .chip.sin{color:#ffd274;border:1px solid #746027;background:#403514}
-        .chip:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
-        .vacio{text-align:center;padding:63px 20px;color:#9ea0ab}
-        .vacio svg{color:#ffbd35;margin-bottom:11px}
-        .vacio strong{display:block;color:#e8e8ee;margin-bottom:7px;font-size:14px}
-        .vacio p{font-size:12px;margin:0}
-        .pie{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;padding:16px 25px;border-top:1px solid #34292e;color:#9999a3;font-size:12px}
-        .pie strong{color:#ffbd35}
-        .punto{display:inline-block;width:7px;height:7px;background:#ffbd35;box-shadow:0 0 10px #ffbd35;border-radius:50%;margin-right:6px}
-        @media(max-width:960px){.contenedor{padding:22px}}
-        @media(max-width:600px){.encabezado{align-items:flex-start}.panel-cabecera{padding:18px}.herramientas{width:100%}.buscador{flex:1;min-width:180px}.pie{padding:16px 18px}}
+.boton-rol.habilitar{border-color:#247e54;color:#91f2bb;background:#11291e}
+.boton-rol.habilitar:hover{border-color:#5fd39a;background:#173b29}
+.modal-descripcion-rol{color:#c1b8bf;font-size:13px;line-height:1.7;margin:0}
+.modal-nombre-rol{color:#ffbd35;font-weight:800}
+.modal-confirmar-rol{background:#9e2533;border:1px solid #f15d69;color:#fff}
+.modal-confirmar-rol.habilitar{background:#155a3b;border-color:#48c78b;color:#e3ffef}
 
-</style>
-</head>
-<body>
-<main class="contenedor">
-    <header class="encabezado">
-        <div>
-            <div class="etiqueta">AUTOPARTS · CATÁLOGO AUTOMOTRIZ</div>
-            <h1>Compatibilidad de <span>Repuestos</span></h1>
-            <p class="subtitulo">Relaciona tus productos con los vehículos que pueden utilizarlos. Identifica fácilmente marcas, modelos y características del motor.</p>
-        </div>
-        <button class="btn-principal" id="btnNueva" type="button">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-            Nueva compatibilidad
-        </button>
-    </header>
+.modal-resultado-rol{text-align:center;width:min(100%,430px)}
+.icono-resultado-rol{width:65px;height:65px;border-radius:50%;display:grid;place-items:center;margin:0 auto 17px;border:1px solid #318d61;background:#113925;color:#8cf0af;font-size:33px;font-weight:800}
+.modal-resultado-rol h2{margin:0 0 10px}
+.modal-resultado-rol p{color:#c6c3c9;font-size:14px;line-height:1.6;margin:0 0 23px}
+.modal-resultado-rol .modal-acciones-rol{justify-content:center}
+.modal-resultado-rol .modal-guardar-rol{min-width:120px;cursor:pointer}
 
-    <section class="panel">
-        <div class="panel-cabecera">
-            <div><h2>Listado de compatibilidades</h2><p>Consulta qué repuestos corresponden a cada vehículo.</p></div>
-            <div class="herramientas">
-                <label class="buscador" aria-label="Buscar compatibilidad">
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
-                    <input id="buscar" type="search" autocomplete="off" placeholder="Buscar producto, OEM, marca, modelo...">
-                </label>
-                <button type="button" id="btnActualizar" class="btn-actualizar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>Actualizar</button>
-            </div>
-        </div>
-        <div class="aviso" id="aviso" role="alert" aria-live="polite"></div>
-        <div class="tabla-wrap">
-            <table>
-                <thead><tr><th>ID</th><th>Código OEM</th><th>Repuesto</th><th>Marca</th><th>Modelo</th><th>Año / Motor</th><th>Relación</th></tr></thead>
-                <tbody id="filas"><tr><td colspan="7"><div class="vacio"><strong>Cargando compatibilidades...</strong></div></td></tr></tbody>
-            </table>
-        </div>
-        <div class="pie"><span>Mostrando <strong id="totalFiltrado">0</strong> relaciones</span><span><i class="punto"></i>Datos consultados desde AutoParts</span></div>
-    </section>
-</main>
-<script>
-"use strict";
-const filas = document.getElementById('filas');
-const filtro = document.getElementById('buscar');
-const aviso = document.getElementById('aviso');
-const totalFiltrado = document.getElementById('totalFiltrado');
-let relaciones=[], productos=[], vehiculos=[], modelos=[], marcas=[];
-let compatibilidadCargada=false;
-let temporizadorCarga;
+.modal-detalles-rol{width:min(100%,460px)}
+.modal-detalles-rol h2{margin-bottom:24px}
+.detalle-fila-rol{padding:15px 0;border-bottom:1px solid #3d2b33}
+.detalle-fila-rol:first-of-type{padding-top:0}
+.detalle-etiqueta-rol{display:block;color:#a8a3ac;font-size:12px;margin-bottom:8px}
+.detalle-valor-rol{color:#fff;font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.modal-detalles-rol .modal-acciones-rol{margin-top:24px}
+.modal-detalles-rol .modal-guardar-rol{min-width:110px;cursor:pointer}
+.boton-rol.ver{border-color:#675277;color:#e4c8ff}
+.boton-rol.ver:hover{background:#30213b;border-color:#ab75d1}
+.acciones-rol{gap:9px;flex-wrap:nowrap}
+.acciones-rol .boton-rol{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:10px;transition:background .2s,border-color .2s,transform .2s}
+.acciones-rol .boton-rol svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.acciones-rol .boton-rol:hover:not(:disabled){transform:translateY(-2px)}
+.acciones-rol .boton-rol.ver{color:#62b9ff;border-color:#285f91;background:#0e2234}
+.acciones-rol .boton-rol.ver:hover{color:#94d2ff;background:#18374f;border-color:#419cdb}
+.acciones-rol .boton-rol.editar{color:#75e4a4;border-color:#276546;background:#10291d}
+.acciones-rol .boton-rol.editar:hover{color:#a2f5c1;background:#173d2a;border-color:#43b878}
+.acciones-rol .boton-rol.desactivar{color:#ff818d;border-color:#81333e;background:#31151d}
+.acciones-rol .boton-rol.desactivar:hover{color:#ffb0b9;background:#4c1d27;border-color:#ef5366}
+.acciones-rol .boton-rol.habilitar{color:#74e8ad;border-color:#297d55;background:#102d20}
+.acciones-rol .boton-rol.habilitar:hover{color:#adffd0;background:#19432e;border-color:#4ac587}
 
-function valor(obj, ...claves) {
-    for (const clave of claves) if (obj && obj[clave] !== undefined && obj[clave] !== null) return obj[clave];
-    return '';
+select{width:100%;padding:13px;background:#101115;border:1px solid #6b444d;border-radius:9px;color:#fff;outline:none;font:inherit}
+select:focus{border-color:#ff3d46}
+.modal-panel-rol .campo{margin-bottom:16px}
+</style></head><body><main class="contenedor">
+<header class="encabezado"><div><div class="etiqueta">AUTOPARTS · CATÁLOGO AUTOMOTRIZ</div><h1>Compatibilidad de <span>Repuestos</span></h1></div>
+<button class="btn-nueva" type="button" id="btnNuevoRol"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nueva compatibilidad</button></header>
+<section class="panel"><div class="panel-superior"><div class="panel-titulo"><h2>Listado de compatibilidades</h2></div><div class="herramientas"><div class="buscador"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="buscarRol" type="search" autocomplete="off" placeholder="Buscar compatibilidades..." aria-label="Buscar compatibilidades"></div><button class="btn-actualizar" type="button" id="btnActualizar" title="Actualizar compatibilidades" aria-label="Actualizar compatibilidades"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2 6"/><path d="M20 4v7h-7"/></svg></button></div></div>
+<div id="avisoRol" class="mensaje-rol" role="status" aria-live="polite"></div>
+<div class="tabla-contenedor"><table><thead><tr><th>ID</th><th>Código OEM</th><th>Repuesto</th><th>Marca</th><th>Modelo</th><th>Año / Motor</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="rolRows"><tr><td colspan="8"><div class="vacio">Cargando compatibilidades...</div></td></tr></tbody></table></div>
+<footer class="panel-inferior"><div class="total">Total de compatibilidades: <strong id="totalRoles">0</strong></div><div class="indicador"><span class="punto"></span>AutoParts · Compatibilidad de repuestos</div></footer></section></main><div id="modalEditarRol" class="modal-rol" hidden><div class="modal-panel-rol" role="dialog" aria-modal="true" aria-labelledby="tituloEditarRol"><h2 id="tituloEditarRol">Editar compatibilidad</h2><form id="formEditarRol"><div class="campo"><label for="productoEditarRol">Repuesto</label><select id="productoEditarRol" required></select></div><div class="campo"><label for="vehiculoEditarRol">Vehículo</label><select id="vehiculoEditarRol" required></select></div><div class="modal-acciones-rol"><button type="button" class="boton-rol" id="cancelarEditarRol">Cancelar</button><button type="submit" class="modal-guardar-rol" id="guardarEditarRol">Guardar cambios</button></div></form></div></div>
+<div id="modalConfirmarRol" class="modal-rol" hidden><div class="modal-panel-rol" role="dialog" aria-modal="true" aria-labelledby="tituloConfirmarRol" aria-describedby="descripcionConfirmarRol"><h2 id="tituloConfirmarRol">Confirmar cambio</h2><p id="descripcionConfirmarRol" class="modal-descripcion-rol"></p><div class="modal-acciones-rol"><button type="button" class="boton-rol" id="cancelarCambioRol">Cancelar</button><button type="button" class="modal-confirmar-rol" id="confirmarCambioRol">Confirmar</button></div></div></div>
+<div id="modalVerRol" class="modal-rol" hidden><div class="modal-panel-rol modal-detalles-rol" role="dialog" aria-modal="true" aria-labelledby="tituloVerRol"><h2 id="tituloVerRol">Detalles de compatibilidad</h2>
+<div class="detalle-fila-rol"><span class="detalle-etiqueta-rol">Código OEM</span><div class="detalle-valor-rol" id="verOem"></div></div>
+<div class="detalle-fila-rol"><span class="detalle-etiqueta-rol">Repuesto</span><div class="detalle-valor-rol" id="verProducto"></div></div>
+<div class="detalle-fila-rol"><span class="detalle-etiqueta-rol">Marca</span><div class="detalle-valor-rol" id="verMarca"></div></div>
+<div class="detalle-fila-rol"><span class="detalle-etiqueta-rol">Modelo</span><div class="detalle-valor-rol" id="verModelo"></div></div>
+<div class="detalle-fila-rol"><span class="detalle-etiqueta-rol">Año / Motor</span><div class="detalle-valor-rol" id="verMotor"></div></div>
+<div class="detalle-fila-rol"><span class="detalle-etiqueta-rol">Estado</span><span id="verEstadoRol" class="estado"></span></div>
+<div class="modal-acciones-rol"><button type="button" class="modal-guardar-rol" id="cerrarVerRol">Cerrar</button></div></div></div>
+<div id="modalResultadoRol" class="modal-rol" hidden><div class="modal-panel-rol modal-resultado-rol" role="dialog" aria-modal="true" aria-labelledby="tituloResultadoRol" aria-describedby="textoResultadoRol"><div class="icono-resultado-rol" aria-hidden="true">✓</div><h2 id="tituloResultadoRol">Operación realizada</h2><p id="textoResultadoRol"></p><div class="modal-acciones-rol"><button type="button" class="modal-guardar-rol" id="aceptarResultadoRol">Aceptar</button></div></div></div><script>
+ 'use strict';
+const $=id=>document.getElementById(id);
+const obtener=(obj,...nombres)=>{for(const nombre of nombres){if(obj&&obj[nombre]!==undefined&&obj[nombre]!==null)return obj[nombre];}return '';};
+const numero=(obj,nombre)=>Number(obtener(obj,nombre,nombre[0].toLowerCase()+nombre.slice(1)))||0;
+const escapar=valor=>String(valor??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let relaciones=[],productos=[],vehiculos=[],modelos=[],marcas=[];
+let rolEditandoId=0,rolCambioId=0,ultimaAccionRol='',operacionPendiente=false;
+function enviarACSharp(mensaje){if(window.parent!==window){window.parent.postMessage(mensaje,'*');return true;}if(window.chrome?.webview?.postMessage){window.chrome.webview.postMessage(mensaje);return true;}$('avisoRol').textContent='Esta pantalla requiere el Dashboard de AutoParts o WebView2.';return false;}
+function porId(lista,id,nombre){return lista.find(x=>numero(x,nombre)===Number(id));}
+function info(r){
+ const productoId=numero(r,'ProductoId'),vehiculoId=numero(r,'VehiculoId');
+ const p=porId(productos,productoId,'ProductoId'),v=porId(vehiculos,vehiculoId,'VehiculoId');
+ const m=porId(modelos,numero(v,'ModeloId'),'ModeloId'),marca=porId(marcas,numero(m,'MarcaId'),'MarcaId');
+ return {id:numero(r,'CompatibilidadId'),productoId,vehiculoId,estado:numero(r,'EstadoId'),
+  producto:String(obtener(p,'Nombre','nombre')||`Producto #${productoId}`),
+  oem:String(obtener(p,'CodigoOEM','codigoOEM','codigoOem')||'—'),
+  marca:String(obtener(marca,'Nombre','nombre')||'—'),modelo:String(obtener(m,'Nombre','nombre')||'—'),
+  motor:[obtener(v,'Anio','anio'),obtener(v,'TipoMotor','tipoMotor'),obtener(v,'Cilindrada','cilindrada')].filter(x=>x!==''&&x!==null).join(' · ')||'—'};
 }
-function numeroId(obj, nombre) { return Number(valor(obj,nombre,nombre[0].toLowerCase()+nombre.slice(1))) || 0; }
-function escapar(dato) { return String(dato ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function enviar(mensaje) {
-    if (window.parent !== window) { window.parent.postMessage(mensaje,'*'); return true; }
-    if (window.chrome?.webview?.postMessage) { window.chrome.webview.postMessage(mensaje); return true; }
-    aviso.textContent='Abre Compatibilidad dentro del Dashboard de AutoParts (WebView2).';
-    return false;
+function icono(tipo){const comun='viewBox="0 0 24 24" aria-hidden="true"';if(tipo==='ver')return `<svg ${comun}><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`;if(tipo==='editar')return `<svg ${comun}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></svg>`;if(tipo==='desactivar')return `<svg ${comun}><path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6"/><path d="M10 10v7M14 10v7"/></svg>`;return `<svg ${comun}><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>`;}
+function mostrarMensaje(texto){$('rolRows').innerHTML=`<tr><td colspan="8"><div class="vacio"><strong>${escapar(texto)}</strong></div></td></tr>`;}
+function pintarRoles(){
+ const texto=$('buscarRol').value.trim().toLocaleLowerCase('es');
+ const filtrados=relaciones.map(info).filter(d=>[d.id,d.producto,d.oem,d.marca,d.modelo,d.motor,d.estado===1?'activo':'inactivo'].some(x=>String(x).toLocaleLowerCase('es').includes(texto)));
+ $('totalRoles').textContent=String(filtrados.length);
+ if(!filtrados.length){mostrarMensaje(texto?'No se encontraron coincidencias.':'No hay compatibilidades registradas.');return;}
+ $('rolRows').innerHTML=filtrados.map(d=>{const activo=d.estado===1;const nombre=d.producto;return `<tr>
+ <td class="codigo">#${escapar(d.id)}</td><td class="codigo">${escapar(d.oem)}</td><td class="nombre">${escapar(d.producto)}</td><td>${escapar(d.marca)}</td><td>${escapar(d.modelo)}</td><td>${escapar(d.motor)}</td>
+ <td><span class="estado ${activo?'activo':'inactivo'}">${activo?'Activo':'Inactivo'}</span></td>
+ <td><div class="acciones-rol">
+ <button type="button" class="boton-rol ver" data-ver="${d.id}" title="Ver detalles" aria-label="Ver detalles de ${escapar(nombre)}">${icono('ver')}</button>
+ <button type="button" class="boton-rol editar" data-editar="${d.id}" title="Editar compatibilidad" aria-label="Editar ${escapar(nombre)}">${icono('editar')}</button>
+ <button type="button" class="boton-rol ${activo?'desactivar':'habilitar'}" data-cambiar-estado="${d.id}" title="${activo?'Eliminar (desactivar)':'Habilitar'}" aria-label="${activo?'Eliminar':'Habilitar'} ${escapar(nombre)}">${icono(activo?'desactivar':'habilitar')}</button>
+ </div></td></tr>`;}).join('');
 }
-function buscarPorId(lista, id, clave) { return lista.find(item=>numeroId(item,clave)===Number(id)); }
-function productoDe(r) { return buscarPorId(productos, numeroId(r,'ProductoId'), 'ProductoId'); }
-function vehiculoDe(r) { return buscarPorId(vehiculos, numeroId(r,'VehiculoId'), 'VehiculoId'); }
-function modeloDe(v) { return buscarPorId(modelos, numeroId(v,'ModeloId'), 'ModeloId'); }
-function marcaDe(m) { return buscarPorId(marcas, numeroId(m,'MarcaId'), 'MarcaId'); }
-function datosRelacion(r) {
-    const p=productoDe(r),v=vehiculoDe(r),m=modeloDe(v),marca=marcaDe(m);
-    const pid=numeroId(r,'ProductoId'), vid=numeroId(r,'VehiculoId');
-    return {
-        id:numeroId(r,'CompatibilidadId'),productoId:pid,vehiculoId:vid,
-        producto:String(valor(p,'Nombre','nombre')||`Producto #${pid}`),
-        oem:String(valor(p,'CodigoOEM','codigoOEM','codigoOem')||'—'),
-        marca:vid ? String(valor(marca,'Nombre','nombre')|| (m ? 'Marca sin nombre':'Marca no disponible')):'—',
-        modelo:vid ? String(valor(m,'Nombre','nombre')||`Modelo #${numeroId(v,'ModeloId')||'?'}`):'—',
-        anio:vid ? String(valor(v,'Anio','anio')||'—'):'—',
-        motor:vid ? String(valor(v,'TipoMotor','tipoMotor')||'—'):'—',
-        cilindrada:vid ? String(valor(v,'Cilindrada','cilindrada')||'—'):'—'
-    };
+function solicitarRoles(){mostrarMensaje('Cargando compatibilidades...');enviarACSharp({type:'compatibilidad:selectAll'});enviarACSharp({type:'productos:selectAll'});enviarACSharp({type:'vehiculos:selectAll'});enviarACSharp({type:'modelos:selectAll'});enviarACSharp({type:'marcas:selectAll'});}
+function mostrarResultadoRol(titulo,texto){$('tituloResultadoRol').textContent=titulo;$('textoResultadoRol').textContent=texto;$('modalResultadoRol').hidden=false;$('aceptarResultadoRol').focus();}
+function estadoTexto(estado){return estado===1?'Activo':estado===2?'Inactivo':'Desconocido';}
+function abrirVerRol(id){const relacion=relaciones.find(r=>numero(r,'CompatibilidadId')===id);if(!relacion||operacionPendiente)return;const d=info(relacion);$('verOem').textContent=d.oem;$('verProducto').textContent=d.producto;$('verMarca').textContent=d.marca;$('verModelo').textContent=d.modelo;$('verMotor').textContent=d.motor;const etiqueta=$('verEstadoRol');etiqueta.textContent=estadoTexto(d.estado);etiqueta.className='estado '+(d.estado===1?'activo':d.estado===2?'inactivo':'otro');$('modalVerRol').hidden=false;$('cerrarVerRol').focus();}
+function opciones(select,lista,idClave,texto,actual){select.innerHTML='<option value="">Selecciona una opción</option>'+lista.map(x=>`<option value="${numero(x,idClave)}">${escapar(texto(x))}</option>`).join('');select.value=String(actual);}
+function nombreVehiculo(v){const m=porId(modelos,numero(v,'ModeloId'),'ModeloId');const ma=porId(marcas,numero(m,'MarcaId'),'MarcaId');return `${obtener(ma,'Nombre','nombre')||'Marca'} ${obtener(m,'Nombre','nombre')||'Modelo'} · ${obtener(v,'Anio','anio')||'—'} · ${obtener(v,'TipoMotor','tipoMotor')||'—'} (#${numero(v,'VehiculoId')})`;}
+function abrirEditor(id){const r=relaciones.find(x=>numero(x,'CompatibilidadId')===id);if(!r||operacionPendiente)return;rolEditandoId=id;const productoId=numero(r,'ProductoId'),vehiculoId=numero(r,'VehiculoId');opciones($('productoEditarRol'),productos.filter(p=>numero(p,'EstadoId')===1||numero(p,'ProductoId')===productoId),'ProductoId',p=>`${obtener(p,'Nombre','nombre')||'Producto'} · ${obtener(p,'CodigoOEM','codigoOEM')||''}`,productoId);opciones($('vehiculoEditarRol'),vehiculos.filter(v=>numero(v,'EstadoId')===1||numero(v,'VehiculoId')===vehiculoId),'VehiculoId',nombreVehiculo,vehiculoId);$('modalEditarRol').hidden=false;$('productoEditarRol').focus();}
+function cerrarEditor(){$('modalEditarRol').hidden=true;rolEditandoId=0;}
+function abrirConfirmacionRol(id){const r=relaciones.find(x=>numero(x,'CompatibilidadId')===id);if(!r||operacionPendiente)return;const d=info(r),activo=d.estado===1;rolCambioId=id;$('tituloConfirmarRol').textContent=activo?'¿Eliminar compatibilidad?':'¿Habilitar compatibilidad?';$('descripcionConfirmarRol').textContent=activo?`¿Seguro que deseas desactivar la compatibilidad del repuesto "${d.producto}" con el vehículo seleccionado?`:`¿Seguro que deseas habilitar la compatibilidad del repuesto "${d.producto}"?`;$('confirmarCambioRol').textContent=activo?'Sí, desactivar':'Sí, habilitar';$('confirmarCambioRol').classList.toggle('habilitar',!activo);$('modalConfirmarRol').hidden=false;$('cancelarCambioRol').focus();}
+function cerrarConfirmacionRol(){if(operacionPendiente)return;$('modalConfirmarRol').hidden=true;rolCambioId=0;}
+function cambiarEstadoRol(){if(operacionPendiente||rolCambioId<=0)return;const r=relaciones.find(x=>numero(x,'CompatibilidadId')===rolCambioId);if(!r)return;const activo=numero(r,'EstadoId')===1;const id=rolCambioId;$('modalConfirmarRol').hidden=true;rolCambioId=0;operacionPendiente=true;ultimaAccionRol=activo?'desactivar':'habilitar';$('avisoRol').textContent=activo?'Desactivando compatibilidad...':'Habilitando compatibilidad...';if(!enviarACSharp({type:'compatibilidad:desactivarIntegrado',data:{CompatibilidadId:id}}))operacionPendiente=false;}
+function recibirRespuesta(evento){if(evento.source&&window.parent!==window&&evento.source!==window.parent)return;let m=evento.data;if(typeof m==='string'){try{m=JSON.parse(m);}catch{return;}}if(!m||typeof m!=='object')return;
+ const listas={'compatibilidad:list':'relaciones','productos:list':'productos','vehiculos:list':'vehiculos','modelos:list':'modelos','marcas:list':'marcas'};
+ if(listsHas(m.type)){const valores=Array.isArray(m.data)?m.data:[];if(m.type==='compatibilidad:list')relaciones=valores;else if(m.type==='productos:list')productos=valores;else if(m.type==='vehiculos:list')vehiculos=valores;else if(m.type==='modelos:list')modelos=valores;else if(m.type==='marcas:list')marcas=valores;pintarRoles();return;}
+ if(m.type==='compatibilidad:actualizada'||m.type==='compatibilidad:desactivada'){const accion=m.type==='compatibilidad:actualizada'?'actualizar':ultimaAccionRol;operacionPendiente=false;ultimaAccionRol='';$('guardarEditarRol').disabled=false;cerrarEditor();$('avisoRol').textContent='';solicitarRoles();mostrarResultadoRol(accion==='actualizar'?'Compatibilidad actualizada':accion==='habilitar'?'Compatibilidad habilitada':'Compatibilidad desactivada',accion==='actualizar'?'La compatibilidad se actualizó correctamente.':accion==='habilitar'?'La compatibilidad se habilitó correctamente.':'La compatibilidad se desactivó correctamente.');return;}
+ if(m.type==='compatibilidad:error'||m.type==='error'){operacionPendiente=false;$('guardarEditarRol').disabled=false;$('avisoRol').textContent=m.message||'No se pudo completar la operación.';}
 }
-function mostrarVacio(titulo, subtitulo='Los vínculos entre repuestos y vehículos aparecerán aquí.') {
-    filas.innerHTML=`<tr><td colspan="7"><div class="vacio"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13 6 7h12l3 6M2 13h20M5 13v5m14-5v5M8 16h.01M16 16h.01"/><path d="m8 4 2 2 2-2m0 16 2 2 2-2"/></svg><strong>${escapar(titulo)}</strong><p>${escapar(subtitulo)}</p></div></td></tr>`;
-}
-function pintar() {
-    if (!compatibilidadCargada) return;
-    const datos=relaciones.map(datosRelacion);
-    const termino=filtro.value.trim().toLocaleLowerCase('es');
-    const visibles=datos.filter(d=>[d.id,d.productoId,d.producto,d.oem,d.marca,d.modelo,d.anio,d.motor,d.cilindrada,d.vehiculoId]
-        .some(x=>String(x).toLocaleLowerCase('es').includes(termino)));
-    totalFiltrado.textContent=String(visibles.length);
-    if (!visibles.length) { mostrarVacio(termino?'No se encontraron coincidencias.':'No hay compatibilidades registradas.'); return; }
-    filas.innerHTML=visibles.map(d=>`<tr>
-        <td class="codigo">#${escapar(d.id)}</td>
-        <td class="codigo">${escapar(d.oem)}</td>
-        <td><span class="principal">${escapar(d.producto)}</span><span class="secundario">Producto #${escapar(d.productoId)}</span></td>
-        <td>${escapar(d.marca)}</td>
-        <td><span class="principal">${escapar(d.modelo)}</span></td>
-        <td><span class="principal">${escapar(d.anio)}</span><span class="secundario">${escapar(d.motor)} · ${escapar(d.cilindrada)}</span></td>
-        <td><span class="chip ${d.vehiculoId?'ok':'sin'}">${d.vehiculoId?'Vinculado':'Sin vehículo'}</span></td>
-    </tr>`).join('');
-}
-function recibir(evento) {
-    let r=evento.data;
-    if (typeof r==='string') { try{r=JSON.parse(r);}catch{return;} }
-    if (!r||typeof r!=='object') return;
-    if (r.type==='compatibilidad:list') {
-        relaciones=Array.isArray(r.data)?r.data:[];
-        compatibilidadCargada=true;
-        clearTimeout(temporizadorCarga);
-        aviso.textContent='';pintar();
-    } else if (r.type==='productos:list') {
-        productos=Array.isArray(r.data)?r.data:[];pintar();
-    } else if (r.type==='vehiculos:list') {
-        vehiculos=Array.isArray(r.data)?r.data:[];pintar();
-    } else if (r.type==='modelos:list') {
-        modelos=Array.isArray(r.data)?r.data:[];pintar();
-    } else if (r.type==='marcas:list') {
-        marcas=Array.isArray(r.data)?r.data:[];pintar();
-    } else if (r.type==='error') {
-        clearTimeout(temporizadorCarga);
-        aviso.textContent=r.message||'No se pudieron consultar los datos. Revisa SQL Server.';
-        if (!compatibilidadCargada) mostrarVacio('Error al cargar las compatibilidades.','Revisa el mensaje de error que aparece arriba.');
-    }
-}
-window.addEventListener('message',recibir);
-if (window.chrome?.webview?.addEventListener) window.chrome.webview.addEventListener('message',recibir);
-function solicitar() {
-    compatibilidadCargada=false;
-    aviso.textContent='';
-    mostrarVacio('Cargando compatibilidades...','Consultando SQL Server.');
-    clearTimeout(temporizadorCarga);
-    temporizadorCarga=setTimeout(()=>{
-        if (!compatibilidadCargada) {
-            aviso.textContent='AutoParts no respondió a la consulta. Revisa MainForm.cs, las rutas del Dashboard y SQL Server.';
-            mostrarVacio('No se recibió respuesta de C#.');
-        }
-    },10000);
-    enviar({type:'compatibilidad:selectAll'});
-    enviar({type:'productos:selectAll'});
-    enviar({type:'vehiculos:selectAll'});
-    enviar({type:'modelos:selectAll'});
-    enviar({type:'marcas:selectAll'});
-}
-document.getElementById('btnNueva').addEventListener('click',()=>enviar({type:'compatibilidad:abrirNuevo'}));
-document.getElementById('btnActualizar').addEventListener('click',solicitar);
-filtro.addEventListener('input',pintar);
-solicitar();
-</script>
-</body>
-</html>
+function listsHas(t){return ['compatibilidad:list','productos:list','vehiculos:list','modelos:list','marcas:list'].includes(t);}
+$('rolRows').addEventListener('click',e=>{const ver=e.target.closest('[data-ver]'),editar=e.target.closest('[data-editar]'),cambiar=e.target.closest('[data-cambiar-estado]');if(ver)abrirVerRol(Number(ver.dataset.ver));if(editar)abrirEditor(Number(editar.dataset.editar));if(cambiar)abrirConfirmacionRol(Number(cambiar.dataset.cambiarEstado));});
+$('formEditarRol').addEventListener('submit',e=>{e.preventDefault();if(operacionPendiente||rolEditandoId<=0)return;const pid=Number($('productoEditarRol').value),vid=Number($('vehiculoEditarRol').value);if(!pid||!vid){$('avisoRol').textContent='Selecciona un producto y un vehículo.';return;}if(relaciones.some(r=>numero(r,'CompatibilidadId')!==rolEditandoId&&numero(r,'ProductoId')===pid&&numero(r,'VehiculoId')===vid)){$('avisoRol').textContent='Esta compatibilidad ya está registrada.';return;}operacionPendiente=true;ultimaAccionRol='actualizar';$('guardarEditarRol').disabled=true;$('avisoRol').textContent='Guardando cambios...';if(!enviarACSharp({type:'compatibilidad:actualizarIntegrado',data:{CompatibilidadId:rolEditandoId,ProductoId:pid,VehiculoId:vid}})){operacionPendiente=false;$('guardarEditarRol').disabled=false;}});
+$('cerrarVerRol').addEventListener('click',()=>{$('modalVerRol').hidden=true;});$('cancelarEditarRol').addEventListener('click',cerrarEditor);$('aceptarResultadoRol').addEventListener('click',()=>{$('modalResultadoRol').hidden=true;});$('cancelarCambioRol').addEventListener('click',cerrarConfirmacionRol);$('confirmarCambioRol').addEventListener('click',cambiarEstadoRol);$('btnNuevoRol').addEventListener('click',()=>enviarACSharp({type:'compatibilidad:abrirNuevo'}));$('btnActualizar').addEventListener('click',solicitarRoles);$('buscarRol').addEventListener('input',pintarRoles);window.addEventListener('message',recibirRespuesta);if(window.chrome?.webview?.addEventListener)window.chrome.webview.addEventListener('message',recibirRespuesta);solicitarRoles();
+</script></body></html>

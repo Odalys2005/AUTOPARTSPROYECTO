@@ -10,10 +10,11 @@ namespace AutoParts.Entity
         {
         }
 
-        public Rol(int rolId, string nombre)
+        public Rol(int rolId, string nombre, int estadoId)
         {
             RolId = rolId;
             Nombre = nombre;
+            EstadoId = estadoId;
         }
     }
 }

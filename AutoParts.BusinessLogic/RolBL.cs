@@ -12,55 +12,49 @@ namespace AutoParts.BusinessLogic
 
         public RolBL(RolRepository repository)
         {
-            _repository = repository;
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         public List<Rol> SelectAll()
         {
-            List<Rol> result = null;
-
-            try
-            {
-                result = _repository.SelectAll();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            return result;
+            return _repository.SelectAll();
         }
 
         public int Insert(Rol entity)
         {
-            int result;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
-            try
-            {
-                result = _repository.Insert(entity);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            if (string.IsNullOrWhiteSpace(entity.Nombre))
+                throw new ArgumentException("El nombre del rol es obligatorio.");
 
-            return result;
+            entity.Nombre = entity.Nombre.Trim();
+
+            if (entity.Nombre.Length > 100)
+                throw new ArgumentException("El nombre no puede superar los 100 caracteres.");
+
+            entity.EstadoId = 1;
+
+            return _repository.Insert(entity);
         }
 
         public int Update(Rol entity)
         {
-            int result;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
-            try
-            {
-                result = _repository.Update(entity);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            if (entity.RolId <= 0)
+                throw new ArgumentException("Selecciona un rol válido.");
 
-            return result;
+            if (string.IsNullOrWhiteSpace(entity.Nombre))
+                throw new ArgumentException("El nombre del rol es obligatorio.");
+
+            entity.Nombre = entity.Nombre.Trim();
+
+            if (entity.Nombre.Length > 100)
+                throw new ArgumentException("El nombre no puede superar los 100 caracteres.");
+
+            return _repository.Update(entity);
         }
 
         public int Delete(Rol entity)
@@ -69,8 +63,7 @@ namespace AutoParts.BusinessLogic
                 throw new ArgumentNullException(nameof(entity));
 
             if (entity.RolId <= 0)
-                throw new ArgumentException(
-                    "Selecciona un Rol válido.");
+                throw new ArgumentException("Selecciona un rol válido.");
 
             return _repository.Delete(entity);
         }

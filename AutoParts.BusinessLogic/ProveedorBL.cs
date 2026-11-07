@@ -17,62 +17,119 @@ namespace AutoParts.BusinessLogic
 
         public List<Proveedor> SelectAll()
         {
-            List<Proveedor> result = new List<Proveedor>();
-
-            try
-            {
-                result = _repository.SelectAll();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            return result;
+            return _repository.SelectAll();
         }
 
         public int Insert(Proveedor entity)
         {
-            int result = 0;
+            Validar(entity);
 
-            try
-            {
-                result = _repository.Insert(entity);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            entity.EstadoId = 1;
 
-            return result;
+            return _repository.Insert(entity);
         }
 
         public int Update(Proveedor entity)
         {
-            int result = 0;
+            Validar(entity);
 
-            try
+            if (entity.ProveedorId <= 0)
             {
-                result = _repository.Update(entity);
-            }
-            catch (Exception)
-            {
-                throw;
+                throw new ArgumentException(
+                    "Selecciona un proveedor válido.");
             }
 
-            return result;
+            return _repository.Update(entity);
         }
 
         public int Delete(Proveedor entity)
         {
             if (entity == null)
+            {
                 throw new ArgumentNullException(nameof(entity));
+            }
 
             if (entity.ProveedorId <= 0)
+            {
                 throw new ArgumentException(
-                    "Selecciona un Proveedor válido.");
+                    "Selecciona un proveedor válido.");
+            }
 
             return _repository.Delete(entity);
+        }
+
+        private void Validar(Proveedor entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            if (string.IsNullOrWhiteSpace(entity.NombreEmpresa))
+            {
+                throw new ArgumentException(
+                    "El nombre de la empresa es obligatorio.");
+            }
+
+            if (entity.NombreEmpresa.Trim().Length > 100)
+            {
+                throw new ArgumentException(
+                    "El nombre de la empresa no puede superar los 100 caracteres.");
+            }
+
+            if (string.IsNullOrWhiteSpace(entity.NIT))
+            {
+                throw new ArgumentException(
+                    "El NIT es obligatorio.");
+            }
+
+            if (entity.NIT.Trim().Length > 20)
+            {
+                throw new ArgumentException(
+                    "El NIT no puede superar los 20 caracteres.");
+            }
+
+            if (string.IsNullOrWhiteSpace(entity.Telefono))
+            {
+                throw new ArgumentException(
+                    "El teléfono es obligatorio.");
+            }
+
+            if (entity.Telefono.Trim().Length > 25)
+            {
+                throw new ArgumentException(
+                    "El teléfono no puede superar los 25 caracteres.");
+            }
+
+            if (string.IsNullOrWhiteSpace(entity.Correo))
+            {
+                throw new ArgumentException(
+                    "El correo es obligatorio.");
+            }
+
+            if (entity.Correo.Trim().Length > 150)
+            {
+                throw new ArgumentException(
+                    "El correo no puede superar los 150 caracteres.");
+            }
+
+            if (string.IsNullOrWhiteSpace(entity.Contacto))
+            {
+                throw new ArgumentException(
+                    "El contacto es obligatorio.");
+            }
+
+            if (entity.Contacto.Trim().Length > 100)
+            {
+                throw new ArgumentException(
+                    "El contacto no puede superar los 100 caracteres.");
+            }
+
+            entity.NombreEmpresa = entity.NombreEmpresa.Trim();
+            entity.NIT = entity.NIT.Trim();
+            entity.Telefono = entity.Telefono.Trim();
+            entity.Correo = entity.Correo.Trim();
+            entity.Contacto = entity.Contacto.Trim();
         }
     }
 }

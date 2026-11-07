@@ -1,0 +1,2973 @@
+
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class CategoriaRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public CategoriaRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Categoria> SelectAll()
+        {
+            List<Categoria> result = new List<Categoria>();
+
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spCategoriaSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr =
+                        cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Categoria entity = new Categoria();
+
+                            entity.CategoriaId = dr.GetInt32(0);
+                            entity.Nombre = dr.GetString(1);
+                            entity.EstadoId = dr.GetInt32(2);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Categoria entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spCategoriaInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    return 1;
+                }
+            }
+        }
+
+        public int Update(Categoria entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spCategoriaUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@CategoriaId", SqlDbType.Int)
+                        .Value = entity.CategoriaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    cmd.ExecuteNonQuery();
+
+                    return 1;
+                }
+            }
+        }
+
+        public int Delete(Categoria entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spCategoriaDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@CategoriaId", SqlDbType.Int)
+                        .Value = entity.CategoriaId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "La categoría no quedó inactiva.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}
+
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class ClienteRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public ClienteRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Cliente> SelectAll()
+        {
+            List<Cliente> result = new List<Cliente>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spClienteSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Cliente entity = new Cliente();
+
+                            entity.ClienteId = dr.GetInt32(0);
+                            entity.Nombre = dr.IsDBNull(1) ? "" : dr.GetString(1);
+                            entity.Apellido = dr.IsDBNull(2) ? "" : dr.GetString(2);
+                            entity.DUI = dr.IsDBNull(3) ? "" : dr.GetString(3);
+                            entity.NIT = dr.IsDBNull(4) ? "" : dr.GetString(4);
+                            entity.Telefono = dr.IsDBNull(5) ? "" : dr.GetString(5);
+                            entity.Correo = dr.IsDBNull(6) ? "" : dr.GetString(6);
+                            entity.Direccion = dr.IsDBNull(7) ? "" : dr.GetString(7);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Cliente entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spClienteInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
+                    cmd.Parameters.AddWithValue("@Apellido", entity.Apellido);
+                    cmd.Parameters.AddWithValue("@DUI", entity.DUI);
+                    cmd.Parameters.AddWithValue("@NIT",
+                        (object?)entity.NIT ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Telefono",
+                        (object?)entity.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Correo",
+                        (object?)entity.Correo ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Direccion",
+                        (object?)entity.Direccion ?? DBNull.Value);
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Cliente entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spClienteUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@ClienteId", entity.ClienteId);
+                    cmd.Parameters.AddWithValue("@Nombre", entity.Nombre);
+                    cmd.Parameters.AddWithValue("@Apellido", entity.Apellido);
+                    cmd.Parameters.AddWithValue("@DUI", entity.DUI);
+                    cmd.Parameters.AddWithValue("@NIT",
+                        (object?)entity.NIT ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Telefono",
+                        (object?)entity.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Correo",
+                        (object?)entity.Correo ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Direccion",
+                        (object?)entity.Direccion ?? DBNull.Value);
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+    }
+}
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class CompatibilidadRepuestoRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public CompatibilidadRepuestoRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<CompatibilidadRepuesto> SelectAll()
+        {
+            List<CompatibilidadRepuesto> result = new List<CompatibilidadRepuesto>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spCompatibilidadRepuestoSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            CompatibilidadRepuesto entity = new CompatibilidadRepuesto();
+
+                            entity.CompatibilidadId = dr.GetInt32(0);
+                            entity.ProductoId = dr.GetInt32(1);
+                            entity.VehiculoId = dr.IsDBNull(2)
+                                ? null
+                                : dr.GetInt32(2);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(CompatibilidadRepuesto entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spCompatibilidadRepuestoInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                        .Value = entity.ProductoId;
+
+                    cmd.Parameters.Add("@VehiculoId", SqlDbType.Int)
+                        .Value = (object?)entity.VehiculoId ?? DBNull.Value;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+    }
+}using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text.Json;
+
+namespace AutoParts.DataAccess
+{
+    public class CompraRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public CompraRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Compra> SelectAll()
+        {
+            List<Compra> result = new List<Compra>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spCompraSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Compra entity = new Compra();
+
+                            entity.CompraId = dr.GetInt32(0);
+                            entity.ProveedorId = dr.GetInt32(1);
+                            entity.EmpleadoId = dr.GetInt32(2);
+                            entity.NumeroComprobante = dr.GetString(3);
+                            entity.FechaCompra = dr.GetDateTime(4);
+                            entity.TotalCompra = dr.GetDecimal(5);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        // Se conserva para compatibilidad con otras pantallas existentes.
+        // NO utilizar este Insert individual para registrar compras con stock.
+        public int Insert(Compra entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spCompraInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ProveedorId", SqlDbType.Int)
+                        .Value = entity.ProveedorId;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@NumeroComprobante", SqlDbType.VarChar, 50)
+                        .Value = entity.NumeroComprobante;
+
+                    cmd.Parameters.Add("@FechaCompra", SqlDbType.DateTime)
+                        .Value = entity.FechaCompra;
+
+                    SqlParameter totalCompra = cmd.Parameters.Add(
+                        "@TotalCompra", SqlDbType.Decimal);
+
+                    totalCompra.Precision = 18;
+                    totalCompra.Scale = 2;
+                    totalCompra.Value = entity.TotalCompra;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        // Registra cabecera, detalles y aumentos de inventario mediante
+        // UNA transaccion controlada en dbo.spCompraRegistrarCompleta.
+        // No llamar tambien a Insert(Compra) ni a Detalle_CompraRepository.Insert().
+        public CompraRegistroResultado RegistrarCompleta(
+            Compra compra,
+            IReadOnlyCollection<Detalle_Compra> detalles)
+        {
+            if (compra == null)
+                throw new ArgumentNullException(nameof(compra));
+            if (detalles == null)
+                throw new ArgumentNullException(nameof(detalles));
+            if (compra.ProveedorId <= 0 || compra.EmpleadoId <= 0)
+                throw new ArgumentException("Selecciona un proveedor y un empleado válidos.");
+
+            string comprobante = (compra.NumeroComprobante ?? "").Trim();
+            if (comprobante.Length == 0 || comprobante.Length > 50)
+                throw new ArgumentException("Ingresa un número de comprobante de hasta 50 caracteres.");
+            if (compra.FechaCompra == default ||
+                compra.FechaCompra < new DateTime(1753, 1, 1) ||
+                compra.FechaCompra > new DateTime(9999, 12, 31))
+                throw new ArgumentException("Ingresa una fecha de compra válida para SQL Server.");
+            if (detalles.Count == 0)
+                throw new ArgumentException("Agrega al menos un producto a la compra.");
+            if (detalles.Any(d => d == null || d.ProductoId <= 0 || d.Cantidad <= 0 ||
+                                  d.PrecioCosto < 0 || decimal.Round(d.PrecioCosto, 2) != d.PrecioCosto))
+                throw new ArgumentException("Revisa los productos, cantidades y precios de costo.");
+            if (detalles.GroupBy(d => d.ProductoId).Any(g => g.Count() > 1))
+                throw new ArgumentException("Un producto se repite: unifica sus cantidades.");
+
+            // La base de datos recalcula los subtotales y el total; no se
+            // confia en importes enviados por el HTML ni por el llamador.
+            string detallesJson = JsonSerializer.Serialize(detalles.Select(d => new
+            {
+                d.ProductoId,
+                d.Cantidad,
+                d.PrecioCosto
+            }).ToArray());
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spCompraRegistrarCompleta", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 60;
+                cmd.Parameters.Add("@ProveedorId", SqlDbType.Int).Value = compra.ProveedorId;
+                cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int).Value = compra.EmpleadoId;
+                cmd.Parameters.Add("@NumeroComprobante", SqlDbType.VarChar, 50).Value = comprobante;
+                cmd.Parameters.Add("@FechaCompra", SqlDbType.DateTime).Value = compra.FechaCompra;
+                cmd.Parameters.Add("@Detalles", SqlDbType.NVarChar, -1).Value = detallesJson;
+
+                conn.Open();
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (!dr.Read())
+                        throw new InvalidOperationException(
+                            "SQL Server no devolvió la confirmación de la compra. Verifica el estado antes de reintentar.");
+
+                    return new CompraRegistroResultado
+                    {
+                        CompraId = dr.GetInt32(dr.GetOrdinal("CompraId")),
+                        NumeroComprobante = dr.GetString(dr.GetOrdinal("NumeroComprobante")),
+                        TotalCompra = dr.GetDecimal(dr.GetOrdinal("TotalCompra")),
+                        AdvertenciasStockMaximo = dr.IsDBNull(dr.GetOrdinal("AdvertenciasStockMaximo"))
+                            ? ""
+                            : dr.GetString(dr.GetOrdinal("AdvertenciasStockMaximo"))
+                    };
+                }
+            }
+        }
+    }
+
+    // Resultado de la operacion completa, sin exponer el mecanismo SQL al Dashboard.
+    public class CompraRegistroResultado
+    {
+        public int CompraId { get; set; }
+        public string NumeroComprobante { get; set; } = "";
+        public decimal TotalCompra { get; set; }
+        public string AdvertenciasStockMaximo { get; set; } = "";
+    }
+}
+using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.DataAccess
+{
+    public class ConnectionFactory
+    {
+        private readonly string _connectionString;
+
+        public ConnectionFactory(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        public SqlConnection CreateConnection()
+        {
+            return new SqlConnection(_connectionString);
+        }
+    }
+}
+
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class Detalle_CompraRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public Detalle_CompraRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Detalle_Compra> SelectAll()
+        {
+            List<Detalle_Compra> result = new List<Detalle_Compra>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spDetalleCompraSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Detalle_Compra entity = new Detalle_Compra();
+
+                            entity.DetalleCompraId = dr.GetInt32(0);
+                            entity.CompraId = dr.GetInt32(1);
+                            entity.ProductoId = dr.GetInt32(2);
+                            entity.Cantidad = dr.GetInt32(3);
+                            entity.PrecioCosto = dr.GetDecimal(4);
+                            entity.Subtotal = dr.GetDecimal(5);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Detalle_Compra entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spDetalleCompraInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@CompraId", SqlDbType.Int)
+                        .Value = entity.CompraId;
+
+                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                        .Value = entity.ProductoId;
+
+                    cmd.Parameters.Add("@Cantidad", SqlDbType.Int)
+                        .Value = entity.Cantidad;
+
+                    SqlParameter precioCosto = cmd.Parameters.Add(
+                        "@PrecioCosto", SqlDbType.Decimal);
+
+                    precioCosto.Precision = 18;
+                    precioCosto.Scale = 2;
+                    precioCosto.Value = entity.PrecioCosto;
+
+                    SqlParameter subtotal = cmd.Parameters.Add(
+                        "@Subtotal", SqlDbType.Decimal);
+
+                    subtotal.Precision = 18;
+                    subtotal.Scale = 2;
+                    subtotal.Value = entity.Subtotal;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+    }
+}
+
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class Detalle_VentaRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public Detalle_VentaRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Detalle_Venta> SelectAll()
+        {
+            List<Detalle_Venta> result = new List<Detalle_Venta>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spDetalleVentaSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Detalle_Venta entity = new Detalle_Venta();
+
+                            entity.DetalleVentaId = dr.GetInt32(0);
+                            entity.VentaId = dr.GetInt32(1);
+                            entity.ProductoId = dr.GetInt32(2);
+                            entity.Cantidad = dr.GetInt32(3);
+                            entity.PrecioUnitario = dr.GetDecimal(4);
+
+                            entity.Descuento = dr.IsDBNull(5)
+                                ? null
+                                : dr.GetDecimal(5);
+
+                            entity.Subtotal = dr.GetDecimal(6);
+
+                            entity.DiasGarantiaVenta = dr.IsDBNull(7)
+                                ? null
+                                : dr.GetInt32(7);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Detalle_Venta entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spDetalleVentaInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@VentaId", SqlDbType.Int)
+                        .Value = entity.VentaId;
+
+                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                        .Value = entity.ProductoId;
+
+                    cmd.Parameters.Add("@Cantidad", SqlDbType.Int)
+                        .Value = entity.Cantidad;
+
+                    SqlParameter precioUnitario = cmd.Parameters.Add(
+                        "@PrecioUnitario", SqlDbType.Decimal);
+
+                    precioUnitario.Precision = 18;
+                    precioUnitario.Scale = 2;
+                    precioUnitario.Value = entity.PrecioUnitario;
+
+                    SqlParameter descuento = cmd.Parameters.Add(
+                        "@Descuento", SqlDbType.Decimal);
+
+                    descuento.Precision = 18;
+                    descuento.Scale = 2;
+                    descuento.Value = (object?)entity.Descuento ?? DBNull.Value;
+
+                    SqlParameter subtotal = cmd.Parameters.Add(
+                        "@Subtotal", SqlDbType.Decimal);
+
+                    subtotal.Precision = 18;
+                    subtotal.Scale = 2;
+                    subtotal.Value = entity.Subtotal;
+
+                    cmd.Parameters.Add("@DiasGarantiaVenta", SqlDbType.Int)
+                        .Value = (object?)entity.DiasGarantiaVenta ?? DBNull.Value;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+    }
+}
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class EmpleadoRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public EmpleadoRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Empleado> SelectAll()
+        {
+            List<Empleado> result = new List<Empleado>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spEmpleadoSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Empleado entity = new Empleado();
+
+                            entity.EmpleadoId = dr.GetInt32(0);
+                            entity.PuestoId = dr.GetInt32(1);
+                            entity.Nombre = dr.GetString(2);
+                            entity.Apellido = dr.GetString(3);
+                            entity.DUI = dr.GetString(4);
+                            entity.Telefono = dr.GetString(5);
+                            entity.Correo = dr.GetString(6);
+                            entity.EstadoId = dr.GetInt32(7);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Empleado entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spEmpleadoInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@PuestoId", SqlDbType.Int)
+                        .Value = entity.PuestoId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@Apellido", SqlDbType.VarChar, 100)
+                        .Value = entity.Apellido;
+
+                    cmd.Parameters.Add("@DUI", SqlDbType.VarChar, 10)
+                        .Value = entity.DUI;
+
+                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
+                        .Value = entity.Telefono;
+
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
+                        .Value = entity.Correo;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Empleado entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spEmpleadoUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@PuestoId", SqlDbType.Int)
+                        .Value = entity.PuestoId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@Apellido", SqlDbType.VarChar, 100)
+                        .Value = entity.Apellido;
+
+                    cmd.Parameters.Add("@DUI", SqlDbType.VarChar, 10)
+                        .Value = entity.DUI;
+
+                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
+                        .Value = entity.Telefono;
+
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
+                        .Value = entity.Correo;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Empleado entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spEmpleadoDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Empleado no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}using AutoParts.Entity;
+using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class EstadoRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public EstadoRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Estado> SelectAll()
+        {
+            List<Estado> result = new List<Estado>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spEstadoSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Estado entity = new Estado();
+
+                            entity.EstadoId = dr.GetInt32(0);
+                            entity.Nombre = dr.GetString(1);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+    }
+}
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class GarantiaRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public GarantiaRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Garantia> SelectAll()
+        {
+            List<Garantia> result = new List<Garantia>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spGarantiaSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Garantia entity = new Garantia();
+
+                            entity.GarantiaId = dr.GetInt32(0);
+                            entity.DetalleVentaId = dr.GetInt32(1);
+                            entity.EmpleadoId = dr.GetInt32(2);
+                            entity.FechaSolicitud = dr.GetDateTime(3);
+                            entity.CantidadReclamada = dr.GetInt32(4);
+                            entity.DescripcionFalla = dr.GetString(5);
+
+                            entity.ResultadoEvaluacion = dr.IsDBNull(6)
+                                ? null
+                                : dr.GetString(6);
+
+                            entity.FechaResolucion = dr.IsDBNull(7)
+                                ? null
+                                : dr.GetDateTime(7);
+
+                            entity.Observaciones = dr.IsDBNull(8)
+                                ? null
+                                : dr.GetString(8);
+
+                            entity.EstadoId = dr.GetInt32(9);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Garantia entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spGarantiaInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@DetalleVentaId", SqlDbType.Int)
+                        .Value = entity.DetalleVentaId;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@FechaSolicitud", SqlDbType.DateTime)
+                        .Value = entity.FechaSolicitud;
+
+                    cmd.Parameters.Add("@CantidadReclamada", SqlDbType.Int)
+                        .Value = entity.CantidadReclamada;
+
+                    cmd.Parameters.Add("@DescripcionFalla", SqlDbType.VarChar, 1000)
+                        .Value = entity.DescripcionFalla;
+
+                    cmd.Parameters.Add("@ResultadoEvaluacion", SqlDbType.VarChar, 500)
+                        .Value = (object?)entity.ResultadoEvaluacion ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@FechaResolucion", SqlDbType.DateTime)
+                        .Value = (object?)entity.FechaResolucion ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@Observaciones", SqlDbType.VarChar, 1000)
+                        .Value = (object?)entity.Observaciones ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        // Registrar solicitud validada sin descontar inventario.
+        // El procedimiento SQL crea el estado SOLICITADA.
+        public GarantiaSolicitudResultado RegistrarSolicitud(
+            int detalleVentaId,
+            int empleadoId,
+            int cantidadReclamada,
+            string descripcionFalla,
+            string? observaciones = null)
+        {
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spGarantiaRegistrarSolicitud", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 45;
+
+                cmd.Parameters.Add("@DetalleVentaId", SqlDbType.Int).Value = detalleVentaId;
+                cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int).Value = empleadoId;
+                cmd.Parameters.Add("@CantidadReclamada", SqlDbType.Int).Value = cantidadReclamada;
+                cmd.Parameters.Add("@DescripcionFalla", SqlDbType.VarChar, 1000).Value =
+                    descripcionFalla;
+                cmd.Parameters.Add("@Observaciones", SqlDbType.VarChar, 1000).Value =
+                    (object?)observaciones ?? DBNull.Value;
+
+                conn.Open();
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (!dr.Read())
+                        throw new InvalidOperationException(
+                            "SQL Server no devolvió la confirmación de la solicitud.");
+
+                    return new GarantiaSolicitudResultado
+                    {
+                        GarantiaId = dr.GetInt32(dr.GetOrdinal("GarantiaId")),
+                        EstadoGarantia = dr.GetString(dr.GetOrdinal("EstadoGarantia")),
+                        Mensaje = dr.GetString(dr.GetOrdinal("Mensaje"))
+                    };
+                }
+            }
+        }
+
+        // Evaluar una solicitud existente. No registra reemplazo ni descuenta stock.
+        public GarantiaEvaluacionResultado Evaluar(
+            int garantiaId,
+            int empleadoId,
+            string decision,
+            bool defectoFabricacion,
+            string? observaciones = null)
+        {
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spGarantiaEvaluar", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 45;
+
+                cmd.Parameters.Add("@GarantiaId", SqlDbType.Int).Value = garantiaId;
+                cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int).Value = empleadoId;
+                cmd.Parameters.Add("@Decision", SqlDbType.VarChar, 10).Value = decision;
+                cmd.Parameters.Add("@DefectoFabricacion", SqlDbType.Bit).Value = defectoFabricacion;
+                cmd.Parameters.Add("@Observaciones", SqlDbType.VarChar, 1000).Value =
+                    (object?)observaciones ?? DBNull.Value;
+
+                conn.Open();
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (!dr.Read())
+                        throw new InvalidOperationException(
+                            "SQL Server no devolvió el resultado de la evaluación.");
+
+                    return new GarantiaEvaluacionResultado
+                    {
+                        GarantiaId = dr.GetInt32(dr.GetOrdinal("GarantiaId")),
+                        ProductoId = dr.GetInt32(dr.GetOrdinal("ProductoId")),
+                        CantidadReclamada = dr.GetInt32(dr.GetOrdinal("CantidadReclamada")),
+                        EstadoGarantia = dr.GetString(dr.GetOrdinal("EstadoGarantia")),
+                        StockConsultado = dr.GetInt32(dr.GetOrdinal("StockConsultado")),
+                        Mensaje = dr.GetString(dr.GetOrdinal("Mensaje"))
+                    };
+                }
+            }
+        }
+    }
+
+
+    // Resultados que devuelve SQL Server; no son nuevas tablas.
+    public class GarantiaSolicitudResultado
+    {
+        public int GarantiaId { get; set; }
+        public string EstadoGarantia { get; set; } = string.Empty;
+        public string Mensaje { get; set; } = string.Empty;
+    }
+
+    public class GarantiaEvaluacionResultado
+    {
+        public int GarantiaId { get; set; }
+        public int ProductoId { get; set; }
+        public int CantidadReclamada { get; set; }
+        public string EstadoGarantia { get; set; } = string.Empty;
+        public int StockConsultado { get; set; }
+        public string Mensaje { get; set; } = string.Empty;
+    }
+}
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class InventarioRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public InventarioRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Inventario> SelectAll()
+        {
+            List<Inventario> result = new List<Inventario>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spInventarioSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Inventario entity = new Inventario();
+
+                            entity.InventarioId = dr.GetInt32(0);
+                            entity.ProductoId = dr.GetInt32(1);
+                            entity.StockActual = dr.GetInt32(2);
+                            entity.StockMinimo = dr.GetInt32(3);
+                            entity.StockMaximo = dr.GetInt32(4);
+                            entity.EstadoId = dr.GetInt32(5);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Inventario entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spInventarioInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@ProductoId", entity.ProductoId);
+                    cmd.Parameters.AddWithValue("@StockActual", entity.StockActual);
+                    cmd.Parameters.AddWithValue("@StockMinimo", entity.StockMinimo);
+                    cmd.Parameters.AddWithValue("@StockMaximo", entity.StockMaximo);
+                    cmd.Parameters.AddWithValue("@EstadoId", entity.EstadoId);
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+    }
+}
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class MarcaRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public MarcaRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Marca> SelectAll()
+        {
+            List<Marca> result = new List<Marca>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spMarcaSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Marca entity = new Marca();
+
+                            entity.MarcaId = dr.GetInt32(0);
+                            entity.Nombre = dr.GetString(1);
+                            entity.EstadoId = dr.GetInt32(2);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Marca entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spMarcaInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Marca entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spMarcaUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@MarcaId", SqlDbType.VarChar, 100)
+                        .Value = entity.MarcaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        //Cambia de estado, no es que se elimine
+
+        public int Delete(Marca entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spMarcaDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
+                        .Value = entity.MarcaId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "La Marca no quedó inactiva.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class ModeloRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public ModeloRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Modelo> SelectAll()
+        {
+            List<Modelo> result = new List<Modelo>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spModeloSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Modelo entity = new Modelo();
+
+                            entity.ModeloId = dr.GetInt32(0);
+                            entity.MarcaId = dr.GetInt32(1);
+                            entity.Nombre = dr.GetString(2);
+                            entity.EstadoId = dr.GetInt32(3);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Modelo entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spModeloInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
+                        .Value = entity.MarcaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Modelo entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spModeloUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
+                        .Value = entity.ModeloId;
+
+                    cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
+                        .Value = entity.MarcaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Modelo entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spModeloDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
+                        .Value = entity.ModeloId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Modelo no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class ProductoRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public ProductoRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Producto> SelectAll()
+        {
+            List<Producto> result = new List<Producto>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spProductoSelectAll", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                {
+                    int colProductoId = dr.GetOrdinal("ProductoId");
+                    int colSubcategoriaId = dr.GetOrdinal("SubcategoriaId");
+                    int colCodigoOEM = dr.GetOrdinal("CodigoOEM");
+                    int colNombre = dr.GetOrdinal("Nombre");
+                    int colDescripcion = dr.GetOrdinal("Descripcion");
+                    int colPrecioVenta = dr.GetOrdinal("PrecioVenta");
+                    int colDiasGarantia = dr.GetOrdinal("DiasGarantia");
+                    int colEstadoId = dr.GetOrdinal("EstadoId");
+                    int colImagen = dr.GetOrdinal("Imagen");
+                    int colCodigoBarras = dr.GetOrdinal("CodigoBarras");
+
+                    while (dr.Read())
+                    {
+                        Producto entity = new Producto
+                        {
+                            ProductoId = dr.GetInt32(colProductoId),
+                            SubcategoriaId = dr.GetInt32(colSubcategoriaId),
+                            CodigoOEM = dr.GetString(colCodigoOEM),
+                            Nombre = dr.GetString(colNombre),
+                            Descripcion = dr.GetString(colDescripcion),
+                            PrecioVenta = dr.GetDecimal(colPrecioVenta),
+                            DiasGarantia = dr.GetInt32(colDiasGarantia),
+                            EstadoId = dr.GetInt32(colEstadoId),
+                            Imagen = dr.IsDBNull(colImagen)
+                                ? null
+                                : dr.GetString(colImagen),
+                            CodigoBarras = dr.IsDBNull(colCodigoBarras)
+                                ? null
+                                : dr.GetString(colCodigoBarras)
+                        };
+
+                        result.Add(entity);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Producto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spProductoInsert", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@SubcategoriaId", SqlDbType.Int)
+                    .Value = entity.SubcategoriaId;
+
+                cmd.Parameters.Add("@CodigoOEM", SqlDbType.VarChar, 50)
+                    .Value = entity.CodigoOEM;
+
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                    .Value = entity.Nombre;
+
+                cmd.Parameters.Add("@Descripcion", SqlDbType.VarChar, 500)
+                    .Value = entity.Descripcion;
+
+                SqlParameter precioVenta = cmd.Parameters.Add(
+                    "@PrecioVenta", SqlDbType.Decimal);
+
+                precioVenta.Precision = 18;
+                precioVenta.Scale = 2;
+                precioVenta.Value = entity.PrecioVenta;
+
+                cmd.Parameters.Add("@DiasGarantia", SqlDbType.Int)
+                    .Value = entity.DiasGarantia;
+
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                    .Value = entity.EstadoId;
+
+                cmd.Parameters.Add("@Imagen", SqlDbType.NVarChar, 500)
+                    .Value = string.IsNullOrWhiteSpace(entity.Imagen)
+                        ? DBNull.Value
+                        : entity.Imagen;
+
+                // SQL Server genera CodigoBarras automáticamente.
+
+                conn.Open();
+
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
+        public int Update(Producto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spProductoUpdate", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+
+                cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                    .Value = entity.ProductoId;
+
+                cmd.Parameters.Add("@SubcategoriaId", SqlDbType.Int)
+                    .Value = entity.SubcategoriaId;
+
+                cmd.Parameters.Add("@CodigoOEM", SqlDbType.VarChar, 50)
+                    .Value = entity.CodigoOEM;
+
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                    .Value = entity.Nombre;
+
+                cmd.Parameters.Add("@Descripcion", SqlDbType.VarChar, 500)
+                    .Value = entity.Descripcion;
+
+                SqlParameter precioVenta = cmd.Parameters.Add(
+                    "@PrecioVenta", SqlDbType.Decimal);
+
+                precioVenta.Precision = 18;
+                precioVenta.Scale = 2;
+                precioVenta.Value = entity.PrecioVenta;
+
+                cmd.Parameters.Add("@DiasGarantia", SqlDbType.Int)
+                    .Value = entity.DiasGarantia;
+
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                    .Value = entity.EstadoId;
+
+                cmd.Parameters.Add("@Imagen", SqlDbType.NVarChar, 500)
+                    .Value = string.IsNullOrWhiteSpace(entity.Imagen)
+                        ? DBNull.Value
+                        : entity.Imagen;
+
+                // SQL Server genera CodigoBarras automáticamente.
+
+                conn.Open();
+
+                return cmd.ExecuteNonQuery();
+            }
+        }
+
+        public int Delete(Producto entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spProductoDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                        .Value = entity.ProductoId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Producto no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}
+
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class ProveedorRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public ProveedorRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Proveedor> SelectAll()
+        {
+            List<Proveedor> result = new List<Proveedor>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spProveedorSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Proveedor entity = new Proveedor();
+
+                            entity.ProveedorId = dr.GetInt32(0);
+                            entity.NombreEmpresa = dr.GetString(1);
+                            entity.NIT = dr.GetString(2);
+                            entity.Telefono = dr.GetString(3);
+                            entity.Correo = dr.GetString(4);
+                            entity.Contacto = dr.GetString(5);
+                            entity.EstadoId = dr.GetInt32(6);
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Proveedor entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spProveedorInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@NombreEmpresa", SqlDbType.VarChar, 100)
+                        .Value = entity.NombreEmpresa;
+
+                    cmd.Parameters.Add("@NIT", SqlDbType.VarChar, 20)
+                        .Value = entity.NIT;
+
+                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
+                        .Value = entity.Telefono;
+
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
+                        .Value = entity.Correo;
+
+                    cmd.Parameters.Add("@Contacto", SqlDbType.VarChar, 100)
+                        .Value = entity.Contacto;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Proveedor entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spProveedorUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ProveedorId", SqlDbType.Int)
+                        .Value = entity.ProveedorId;
+
+                    cmd.Parameters.Add("@NombreEmpresa", SqlDbType.VarChar, 100)
+                        .Value = entity.NombreEmpresa;
+
+                    cmd.Parameters.Add("@NIT", SqlDbType.VarChar, 20)
+                        .Value = entity.NIT;
+
+                    cmd.Parameters.Add("@Telefono", SqlDbType.VarChar, 25)
+                        .Value = entity.Telefono;
+
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 150)
+                        .Value = entity.Correo;
+
+                    cmd.Parameters.Add("@Contacto", SqlDbType.VarChar, 100)
+                        .Value = entity.Contacto;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Proveedor entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spProveedorDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ProveedorId", SqlDbType.Int)
+                        .Value = entity.ProveedorId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Proveedor no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}
+
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class PuestoRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public PuestoRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Puesto> SelectAll()
+        {
+            List<Puesto> result = new List<Puesto>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spPuestoSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Puesto entity = new Puesto();
+
+                            entity.PuestoId = dr.GetInt32(0);
+                            entity.Nombre = dr.GetString(1);
+                            entity.Descripcion = dr.IsDBNull(2)
+                                ? null
+                                : dr.GetString(2);
+                            entity.EstadoId = dr.GetInt32(3);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Puesto entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spPuestoInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue(
+                        "@Nombre",
+                        entity.Nombre
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Descripcion",
+                        (object?)entity.Descripcion ?? DBNull.Value
+                    );
+
+                    cmd.Parameters.Add(
+                        "@EstadoId",
+                        SqlDbType.Int
+                    ).Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Puesto entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spPuestoUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue(
+                        "@Puesto",
+                        entity.PuestoId
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Nombre",
+                        entity.Nombre
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Descripcion",
+                        (object?)entity.Descripcion ?? DBNull.Value
+                    );
+
+                    cmd.Parameters.Add(
+                        "@EstadoId",
+                        SqlDbType.Int
+                    ).Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Puesto entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spPuestoDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@PuestoId", SqlDbType.Int)
+                        .Value = entity.PuestoId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Puesto no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}
+
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class ReemplazoGarantiaRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public ReemplazoGarantiaRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<ReemplazoGarantia> SelectAll()
+        {
+            List<ReemplazoGarantia> result = new List<ReemplazoGarantia>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spReemplazoGarantiaSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            ReemplazoGarantia entity = new ReemplazoGarantia();
+
+                            entity.ReemplazoId = dr.GetInt32(0);
+                            entity.GarantiaId = dr.GetInt32(1);
+                            entity.EmpleadoId = dr.GetInt32(2);
+                            entity.FechaReemplazo = dr.GetDateTime(3);
+                            entity.Cantidad = dr.GetInt32(4);
+
+                            entity.Observaciones = dr.IsDBNull(5)
+                                ? null
+                                : dr.GetString(5);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        // Registra la entrega real en una transacción SQL y descuenta stock.
+        // Si no hay existencias, el procedimiento devuelve PENDIENTE_REEMPLAZO
+        // sin generar un registro de entrega ni descontar inventario.
+        public ReemplazoEntregaResultado EntregarReemplazo(
+            int garantiaId, int empleadoId, string? observaciones = null)
+        {
+            if (garantiaId <= 0)
+                throw new ArgumentException("Selecciona una garantía válida.", nameof(garantiaId));
+            if (empleadoId <= 0)
+                throw new ArgumentException("Selecciona un empleado válido.", nameof(empleadoId));
+            if (observaciones != null && observaciones.Length > 1000)
+                throw new ArgumentException("Las observaciones superan 1000 caracteres.", nameof(observaciones));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spGarantiaEntregarReemplazo", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 45;
+                cmd.Parameters.Add("@GarantiaId", SqlDbType.Int).Value = garantiaId;
+                cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int).Value = empleadoId;
+                cmd.Parameters.Add("@Observaciones", SqlDbType.VarChar, 1000).Value =
+                    string.IsNullOrWhiteSpace(observaciones)
+                        ? DBNull.Value
+                        : observaciones.Trim();
+
+                conn.Open();
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (!dr.Read())
+                        throw new InvalidOperationException(
+                            "SQL Server no devolvió confirmación del reemplazo. Verifica el estado antes de reintentar.");
+
+                    int colId = dr.GetOrdinal("ReemplazoId");
+                    return new ReemplazoEntregaResultado
+                    {
+                        ReemplazoId = dr.IsDBNull(colId) ? null : dr.GetInt32(colId),
+                        GarantiaId = dr.GetInt32(dr.GetOrdinal("GarantiaId")),
+                        ProductoId = dr.GetInt32(dr.GetOrdinal("ProductoId")),
+                        Cantidad = dr.GetInt32(dr.GetOrdinal("Cantidad")),
+                        StockRestante = dr.GetInt32(dr.GetOrdinal("StockRestante")),
+                        EstadoGarantia = dr.GetString(dr.GetOrdinal("EstadoGarantia")),
+                        Mensaje = dr.GetString(dr.GetOrdinal("Mensaje"))
+                    };
+                }
+            }
+        }
+
+        // LEGADO: este procedimiento NO descuenta inventario.
+        // No usar este método en el flujo integrado de garantías.
+        public int Insert(ReemplazoGarantia entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spReemplazoGarantiaInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@GarantiaId", SqlDbType.Int)
+                        .Value = entity.GarantiaId;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@FechaReemplazo", SqlDbType.DateTime)
+                        .Value = entity.FechaReemplazo;
+
+                    cmd.Parameters.Add("@Cantidad", SqlDbType.Int)
+                        .Value = entity.Cantidad;
+
+                    cmd.Parameters.Add("@Observaciones", SqlDbType.VarChar, 1000)
+                        .Value = (object?)entity.Observaciones ?? DBNull.Value;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+    }
+}
+
+namespace AutoParts.DataAccess
+{
+    public class ReemplazoEntregaResultado
+    {
+        // NULL cuando la garantía permanece pendiente de reemplazo.
+        public int? ReemplazoId { get; set; }
+        public int GarantiaId { get; set; }
+        public int ProductoId { get; set; }
+        public int Cantidad { get; set; }
+        public int StockRestante { get; set; }
+        public string EstadoGarantia { get; set; } = string.Empty;
+        public string Mensaje { get; set; } = string.Empty;
+    }
+}
+
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class RolRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public RolRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Rol> SelectAll()
+        {
+            List<Rol> result = new List<Rol>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spRolSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Rol entity = new Rol();
+
+                            entity.RolId = dr.GetInt32(0);
+                            entity.Nombre = dr.GetString(1);
+                            entity.EstadoId = dr.GetInt32(2);
+
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Rol entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spRolInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.VarChar, 100)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Rol entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spRolUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                        .Value = entity.RolId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Rol entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spRolDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                        .Value = entity.RolId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Rol no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}
+using Microsoft.Data.SqlClient;
+using AutoParts.Entity.Productos;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class SubcategoriaRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public SubcategoriaRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Subcategoria> SelectAll()
+        {
+            List<Subcategoria> result = new List<Subcategoria>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spSubcategoriaSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Subcategoria entity = new Subcategoria();
+
+                            entity.SubcategoriaId = dr.GetInt32(0);
+                            entity.CategoriaId = dr.GetInt32(1);
+                            entity.Nombre = dr.GetString(2);
+                            entity.EstadoId = dr.GetInt32(3);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Subcategoria entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spSubcategoriaInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@CategoriaId", SqlDbType.Int)
+                        .Value = entity.CategoriaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 120)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Subcategoria entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spSubcategoriaUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@SubcategoriaId", SqlDbType.Int)
+                        .Value = entity.SubcategoriaId;
+
+
+                    cmd.Parameters.Add("@CategoriaId", SqlDbType.Int)
+                        .Value = entity.CategoriaId;
+
+                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 120)
+                        .Value = entity.Nombre;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Subcategoria entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spSubCategoriaDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@SubCategoriaId", SqlDbType.Int)
+                        .Value = entity.SubcategoriaId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "La SubCategoria no quedó inactiva.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class UsuarioRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public UsuarioRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Usuario> SelectAll()
+        {
+            List<Usuario> result = new List<Usuario>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spUsuarioSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Usuario entity = new Usuario();
+
+                            entity.UsuarioId = dr.GetInt32(0);
+                            entity.EmpleadoId = dr.GetInt32(1);
+                            entity.RolId = dr.GetInt32(2);
+                            entity.NombreUsuario = dr.GetString(3);
+                            entity.Contrasena = dr.GetString(4);
+                            entity.EstadoId = dr.IsDBNull(5)
+                                ? null
+                                : dr.GetInt32(5);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Usuario entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spUsuarioInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                        .Value = entity.RolId;
+
+                    cmd.Parameters.Add("@NombreUsuario", SqlDbType.VarChar, 50)
+                        .Value = entity.NombreUsuario;
+
+                    cmd.Parameters.Add("@Contraseña", SqlDbType.VarChar, 255)
+                        .Value = entity.Contrasena;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = (object?)entity.EstadoId ?? DBNull.Value;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Usuario entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spUsuarioUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@UsuarioId", SqlDbType.Int)
+                        .Value = entity.UsuarioId;
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@RolId", SqlDbType.Int)
+                        .Value = entity.RolId;
+
+                    cmd.Parameters.Add("@NombreUsuario", SqlDbType.VarChar, 50)
+                        .Value = entity.NombreUsuario;
+
+                    cmd.Parameters.Add("@Contraseña", SqlDbType.VarChar, 255)
+                        .Value = entity.Contrasena;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = (object?)entity.EstadoId ?? DBNull.Value;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+
+        public int Delete(Usuario entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spUsuarioDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@UsuarioId", SqlDbType.Int)
+                        .Value = entity.UsuarioId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Usuario no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+
+
+        public Usuario? SelectByNombreUsuario(string nombreUsuario)
+        {
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand(
+                "dbo.spUsuarioSelectByNombreUsuario", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@NombreUsuario", SqlDbType.VarChar, 50)
+                    .Value = nombreUsuario;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(
+                    CommandBehavior.SingleRow))
+                {
+                    if (!dr.Read())
+                        return null;
+
+                    return new Usuario
+                    {
+                        UsuarioId = dr.GetInt32(0),
+                        EmpleadoId = dr.GetInt32(1),
+                        RolId = dr.GetInt32(2),
+                        NombreUsuario = dr.GetString(3),
+                        Contrasena = dr.GetString(4),
+                        EstadoId = dr.IsDBNull(5)
+                            ? null
+                            : dr.GetInt32(5)
+                    };
+                }
+            }
+        }
+
+    }
+}using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class VehiculoRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public VehiculoRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Vehiculo> SelectAll()
+        {
+            List<Vehiculo> result = new List<Vehiculo>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spVehiculoSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Vehiculo entity = new Vehiculo();
+
+                            entity.VehiculoId = dr.GetInt32(0);
+                            entity.ModeloId = dr.GetInt32(1);
+                            entity.Anio = dr.GetInt16(2);
+                            entity.Cilindrada = dr.GetDecimal(3);
+                            entity.TipoMotor = dr.GetString(4);
+                            entity.EstadoId = dr.GetInt32(5);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int Insert(Vehiculo entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spVehiculoInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
+                        .Value = entity.ModeloId;
+
+                    cmd.Parameters.Add("@Anio", SqlDbType.SmallInt)
+                        .Value = entity.Anio;
+
+                    SqlParameter cilindrada = cmd.Parameters.Add(
+                        "@Cilindrada", SqlDbType.Decimal);
+
+                    cilindrada.Precision = 5;
+                    cilindrada.Scale = 2;
+                    cilindrada.Value = entity.Cilindrada;
+
+                    cmd.Parameters.Add("@TipoMotor", SqlDbType.VarChar, 100)
+                        .Value = entity.TipoMotor;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Update(Vehiculo entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spVehiculoUpdate", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+
+                    cmd.Parameters.Add("@VehiculoId", SqlDbType.Int)
+                        .Value = entity.VehiculoId;
+
+                    cmd.Parameters.Add("@ModeloId", SqlDbType.Int)
+                        .Value = entity.ModeloId;
+
+                    cmd.Parameters.Add("@Anio", SqlDbType.SmallInt)
+                        .Value = entity.Anio;
+
+                    SqlParameter cilindrada = cmd.Parameters.Add(
+                        "@Cilindrada", SqlDbType.Decimal);
+
+                    cilindrada.Precision = 5;
+                    cilindrada.Scale = 2;
+                    cilindrada.Value = entity.Cilindrada;
+
+                    cmd.Parameters.Add("@TipoMotor", SqlDbType.VarChar, 100)
+                        .Value = entity.TipoMotor;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+
+        public int Delete(Vehiculo entity)
+        {
+            using (SqlConnection conn =
+                _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd =
+                    new SqlCommand("spVehiculoDelete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@VehiculoId", SqlDbType.Int)
+                        .Value = entity.VehiculoId;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (!dr.Read())
+                            throw new InvalidOperationException(
+                                "SQL Server no confirmó la desactivación.");
+
+                        int estadoId = dr.GetInt32(
+                            dr.GetOrdinal("EstadoId"));
+
+                        if (estadoId != 2)
+                            throw new InvalidOperationException(
+                                "El Vehiculo no quedó inactivo.");
+                        return estadoId;
+                    }
+                }
+            }
+        }
+    }
+}using Microsoft.Data.SqlClient;
+using AutoParts.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace AutoParts.DataAccess
+{
+    public class VentaRepository
+    {
+        private readonly ConnectionFactory _connectionFactory;
+
+        public VentaRepository(ConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
+
+        public List<Venta> SelectAll()
+        {
+            List<Venta> result = new List<Venta>();
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spVentaSelectAll", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    {
+                        while (dr.Read())
+                        {
+                            Venta entity = new Venta();
+
+                            entity.VentaId = dr.GetInt32(0);
+                            entity.ClienteId = dr.GetInt32(1);
+                            entity.EmpleadoId = dr.GetInt32(2);
+                            entity.NumeroFactura = dr.GetString(3);
+                            entity.FechaVenta = dr.GetDateTime(4);
+                            entity.Total = dr.GetDecimal(5);
+                            entity.EstadoId = dr.GetInt32(6);
+
+                            result.Add(entity);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        // Registra cabecera + detalles + salida de inventario en UNA transacción SQL.
+        public VentaRegistroResultado RegistrarCompleta(VentaRegistroCompleto solicitud)
+        {
+            if (solicitud == null) throw new ArgumentNullException(nameof(solicitud));
+
+            DataTable lineas = new DataTable();
+            lineas.Columns.Add("ProductoId", typeof(int));
+            lineas.Columns.Add("Cantidad", typeof(int));
+            foreach (VentaLineaRegistro linea in solicitud.Lineas)
+                lineas.Rows.Add(linea.ProductoId, linea.Cantidad);
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spVentaRegistrarCompleta", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 45;
+                cmd.Parameters.Add("@ClienteId", SqlDbType.Int).Value = solicitud.ClienteId;
+                cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int).Value = solicitud.EmpleadoId;
+                cmd.Parameters.Add("@NumeroFactura", SqlDbType.VarChar, 50).Value =
+                    string.IsNullOrWhiteSpace(solicitud.NumeroFactura)
+                        ? DBNull.Value
+                        : solicitud.NumeroFactura.Trim();
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int).Value = solicitud.EstadoId;
+
+                SqlParameter carrito = cmd.Parameters.Add("@Lineas", SqlDbType.Structured);
+                carrito.TypeName = "dbo.AutoPartsVentaLinea";
+                carrito.Value = lineas;
+
+                conn.Open();
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                {
+                    if (!dr.Read())
+                        throw new InvalidOperationException("SQL Server no devolvió la confirmación de la venta.");
+
+                    return new VentaRegistroResultado
+                    {
+                        VentaId = dr.GetInt32(dr.GetOrdinal("VentaId")),
+                        Total = dr.GetDecimal(dr.GetOrdinal("Total")),
+                        NumeroFactura = dr.GetString(dr.GetOrdinal("NumeroFactura"))
+                    };
+                }
+            }
+        }
+
+        public int Insert(Venta entity)
+        {
+            int result = 0;
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand("spVentaInsert", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@ClienteId", SqlDbType.Int)
+                        .Value = entity.ClienteId;
+
+                    cmd.Parameters.Add("@EmpleadoId", SqlDbType.Int)
+                        .Value = entity.EmpleadoId;
+
+                    cmd.Parameters.Add("@NumeroFactura", SqlDbType.VarChar, 50)
+                        .Value = entity.NumeroFactura;
+
+                    cmd.Parameters.Add("@FechaVenta", SqlDbType.DateTime)
+                        .Value = entity.FechaVenta;
+
+                    SqlParameter total = cmd.Parameters.Add(
+                        "@Total", SqlDbType.Decimal);
+
+                    total.Precision = 18;
+                    total.Scale = 2;
+                    total.Value = entity.Total;
+
+                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                        .Value = entity.EstadoId;
+
+                    conn.Open();
+
+                    result = cmd.ExecuteNonQuery();
+                }
+            }
+
+            return result;
+        }
+    }
+}

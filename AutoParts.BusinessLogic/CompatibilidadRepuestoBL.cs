@@ -10,41 +10,67 @@ namespace AutoParts.BusinessLogic
     {
         private readonly CompatibilidadRepuestoRepository _repository;
 
-        public CompatibilidadRepuestoBL(CompatibilidadRepuestoRepository repository)
+        public CompatibilidadRepuestoBL(
+            CompatibilidadRepuestoRepository repository)
         {
-            _repository = repository;
+            _repository = repository
+                ?? throw new ArgumentNullException(nameof(repository));
         }
 
         public List<CompatibilidadRepuesto> SelectAll()
         {
-            List<CompatibilidadRepuesto> result = new List<CompatibilidadRepuesto>();
-
-            try
-            {
-                result = _repository.SelectAll();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            return result;
+            return _repository.SelectAll();
         }
 
         public int Insert(CompatibilidadRepuesto entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
-            try
-            {
-                result = _repository.Insert(entity);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            ValidarCompatibilidad(entity);
 
-            return result;
+            entity.EstadoId = 1;
+
+            return _repository.Insert(entity);
+        }
+
+        public int Update(CompatibilidadRepuesto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.CompatibilidadId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una compatibilidad válida.");
+
+            ValidarCompatibilidad(entity);
+
+            return _repository.Update(entity);
+        }
+
+        public int Delete(CompatibilidadRepuesto entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.CompatibilidadId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una compatibilidad válida.");
+
+            return _repository.Delete(entity);
+        }
+
+        private static void ValidarCompatibilidad(
+            CompatibilidadRepuesto entity)
+        {
+            if (entity.ProductoId <= 0)
+                throw new ArgumentException(
+                    "Selecciona un producto válido.");
+
+            if (!entity.VehiculoId.HasValue ||
+                entity.VehiculoId.Value <= 0)
+                throw new ArgumentException(
+                    "Selecciona un vehículo válido.");
         }
     }
 }

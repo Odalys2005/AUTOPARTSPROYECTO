@@ -1,0 +1,652 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Compra
+    {
+        public int CompraId { get; set; }
+        public string NumeroComprobante { get; set; }
+        public DateTime FechaCompra { get; set; }
+        public decimal TotalCompra { get; set; }
+
+        public int ProveedorId { get; set; }
+        public int EmpleadoId { get; set; }
+        public Compra()
+        {
+                
+        }
+        public Compra(int compraId, string numeroComprobante, DateTime fechaCompra, decimal totalCompra, int proveedorId, int empleadoId)
+        {
+            CompraId = compraId;
+            NumeroComprobante = numeroComprobante;
+            FechaCompra = fechaCompra;
+            TotalCompra = totalCompra;
+            ProveedorId = proveedorId;
+            EmpleadoId = empleadoId;
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Detalle_Compra
+    {
+        public int DetalleCompraId { get; set; }
+        public int Cantidad { get; set; }
+        public decimal PrecioCosto { get; set; }
+        public decimal Subtotal { get; set; }
+
+        public int CompraId { get; set; }
+        public int ProductoId { get; set; }
+        public Detalle_Compra()
+        {
+            
+        }
+        public Detalle_Compra(int detalleCompraId, int cantidad, decimal precioCosto, decimal subtotal, int compraId, int productoId)
+        {
+            DetalleCompraId = detalleCompraId;
+            Cantidad = cantidad;
+            PrecioCosto = precioCosto;
+            Subtotal = subtotal;
+            CompraId = compraId;
+            ProductoId = productoId;
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Proveedor
+    {
+        public int ProveedorId { get; set; }
+        public string NombreEmpresa { get; set; }
+        public string NIT { get; set; }
+        public string Telefono { get; set; }
+        public string Correo { get; set; }
+        public string Contacto { get; set; }
+        public int EstadoId { get; set; }
+        public Proveedor()
+        {
+                
+        }
+        public Proveedor(int proveedorId, string nombreEmpresa, string nIT, string telefono, string correo, string contacto, int estadoId)
+        {
+            ProveedorId = proveedorId;
+            NombreEmpresa = nombreEmpresa;
+            NIT = nIT;
+            Telefono = telefono;
+            Correo = correo;
+            Contacto = contacto;
+            EstadoId = estadoId;
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Empleado
+    {
+        public int EmpleadoId { get; set; }
+        public int PuestoId { get; set; }
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string DUI { get; set; }
+        public string Telefono { get; set; }
+        public string Correo { get; set; }
+        public int EstadoId { get; set; }
+
+        public Empleado()
+        {
+
+        }
+
+        public Empleado(int empleadoId, int puestoId, string nombre,
+                        string apellido, string dUI, string telefono,
+                        string correo, int estadoId)
+        {
+            EmpleadoId = empleadoId;
+            PuestoId = puestoId;
+            Nombre = nombre;
+            Apellido = apellido;
+            DUI = dUI;
+            Telefono = telefono;
+            Correo = correo;
+            EstadoId = estadoId;
+        }
+    }
+}namespace AutoParts.Entity
+{
+    public class Estado
+    {
+        public int EstadoId { get; set; }
+        public string Nombre { get; set; }
+
+        public Estado()
+        {
+        }
+
+        public Estado(int estadoId, string nombre)
+        {
+            EstadoId = estadoId;
+            Nombre = nombre;
+        }
+    }
+}
+namespace AutoParts.Entity
+{
+    public class Puesto
+    {
+        public int PuestoId { get; set; }
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public int EstadoId { get; set; }
+
+        public Puesto()
+        {
+        }
+
+        public Puesto(int puestoId, string nombre, string descripcion, int estadoId)
+        {
+            PuestoId = puestoId;
+            Nombre = nombre;
+            Descripcion = descripcion;
+            EstadoId = estadoId;
+        }
+    }
+}
+namespace AutoParts.Entity
+{
+    public class Rol
+    {
+        public int RolId { get; set; }
+        public string Nombre { get; set; }
+        public int EstadoId { get; set; }
+
+        public Rol()
+        {
+        }
+
+        public Rol(int rolId, string nombre)
+        {
+            RolId = rolId;
+            Nombre = nombre;
+        }
+    }
+}
+namespace AutoParts.Entity
+{
+    public class Usuario
+    {
+        public int UsuarioId { get; set; }
+        public int EmpleadoId { get; set; }
+        public int RolId { get; set; }
+        public string NombreUsuario { get; set; }
+        public string Contrasena { get; set; }
+        public int? EstadoId { get; set; }
+
+        public Usuario()
+        {
+        }
+
+        public Usuario(int usuarioId, int empleadoId, int rolId, string nombreUsuario, string contrasena, int? estadoId)
+        {
+            UsuarioId = usuarioId;
+            EmpleadoId = empleadoId;
+            RolId = rolId;
+            NombreUsuario = nombreUsuario;
+            Contrasena = contrasena;
+            EstadoId = estadoId;
+        }
+    }
+}
+using System;
+
+namespace AutoParts.Entity
+{
+    public class Garantia
+    {
+        public int GarantiaId { get; set; }
+        public int DetalleVentaId { get; set; }
+        public int EmpleadoId { get; set; }
+        public DateTime FechaSolicitud { get; set; }
+        public int CantidadReclamada { get; set; }
+        public string DescripcionFalla { get; set; }
+        public string? ResultadoEvaluacion { get; set; }
+        public DateTime? FechaResolucion { get; set; }
+        public string? Observaciones { get; set; }
+        public int EstadoId { get; set; }
+
+        public Garantia()
+        {
+
+        }
+
+        public Garantia(int garantiaId, int detalleVentaId,
+                        int empleadoId, DateTime fechaSolicitud,
+                        int cantidadReclamada, string descripcionFalla,
+                        string? resultadoEvaluacion,
+                        DateTime? fechaResolucion,
+                        string? observaciones, int estadoId)
+        {
+            GarantiaId = garantiaId;
+            DetalleVentaId = detalleVentaId;
+            EmpleadoId = empleadoId;
+            FechaSolicitud = fechaSolicitud;
+            CantidadReclamada = cantidadReclamada;
+            DescripcionFalla = descripcionFalla;
+            ResultadoEvaluacion = resultadoEvaluacion;
+            FechaResolucion = fechaResolucion;
+            Observaciones = observaciones;
+            EstadoId = estadoId;
+        }
+    }
+}using System;
+
+namespace AutoParts.Entity
+{
+    public class ReemplazoGarantia
+    {
+        public int ReemplazoId { get; set; }
+        public int GarantiaId { get; set; }
+        public int EmpleadoId { get; set; }
+        public DateTime FechaReemplazo { get; set; }
+        public int Cantidad { get; set; }
+        public string Observaciones { get; set; }
+
+        public ReemplazoGarantia()
+        {
+        }
+
+        public ReemplazoGarantia(int reemplazoId, int garantiaId, int empleadoId, DateTime fechaReemplazo, int cantidad, string observaciones)
+        {
+            ReemplazoId = reemplazoId;
+            GarantiaId = garantiaId;
+            EmpleadoId = empleadoId;
+            FechaReemplazo = fechaReemplazo;
+            Cantidad = cantidad;
+            Observaciones = observaciones;
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Categoria
+    {
+        public int CategoriaId { get; set; }
+        public string Nombre { get; set; }
+
+        public int EstadoId { get; set; }
+        public Categoria()
+        {
+                
+        }
+        public Categoria(int categoriaId, string nombre, int estadoId)
+        {
+            CategoriaId = categoriaId;
+            Nombre = nombre;
+            EstadoId = estadoId;
+        }
+    }
+
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Inventario
+    {
+        public int InventarioId { get; set; }
+        public int StockActual { get; set; }
+        public int StockMinimo { get; set; }
+        public int StockMaximo { get; set; }
+
+        public int ProductoId { get; set; }
+        public int EstadoId { get; set; }
+        public Inventario()
+        {
+            
+        }
+        public Inventario(int inventarioId, int stockActual, int stockMinimo, int stockMaximo, int productoId, int estadoId)
+        {
+            InventarioId = inventarioId;
+            StockActual = stockActual;
+            StockMinimo = stockMinimo;
+            StockMaximo = stockMaximo;
+            ProductoId = productoId;
+            EstadoId = estadoId;
+        }
+    }
+    
+}using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Producto
+    {
+        public int ProductoId { get; set; }
+        public string CodigoOEM { get; set; }
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public decimal PrecioVenta { get; set; }
+        public int DiasGarantia { get; set; }
+        public string? Imagen { get; set; }
+        public string? CodigoBarras { get; set; }
+
+        public int SubcategoriaId { get; set; }
+        public int EstadoId { get; set; }
+
+        public Producto()
+        {
+
+        }
+
+        public Producto(int productoId, string codigoOEM,
+                        string nombre, string descripcion,
+                        decimal precioVenta, int diasGarantia, string? imagen, string? codigoBarras,
+                        int subcategoriaId, int estadoId)
+        {
+            ProductoId = productoId;
+            CodigoOEM = codigoOEM;
+            Nombre = nombre;
+            Descripcion = descripcion;
+            PrecioVenta = precioVenta;
+            DiasGarantia = diasGarantia;
+            Imagen = imagen;
+            CodigoBarras = codigoBarras;
+            SubcategoriaId = subcategoriaId;
+            EstadoId = estadoId;
+        }
+    }
+}using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity.Productos
+{
+    public class Subcategoria
+    {
+        public int SubcategoriaId { get; set; }
+        public int CategoriaId { get; set; }
+        public string Nombre { get; set; }
+        public int EstadoId { get; set; }
+
+        public Subcategoria()
+        {
+
+        }
+
+        public Subcategoria(int subcategoriaId, int categoriaId,
+                           string nombre, int estadoId)
+        {
+            SubcategoriaId = subcategoriaId;
+            CategoriaId = categoriaId;
+            Nombre = nombre;
+            EstadoId = estadoId;
+        }
+    }
+}using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class CompatibilidadRepuesto
+    {
+        public int CompatibilidadId { get; set; }
+        public int ProductoId { get; set; }
+        public int? VehiculoId { get; set; }
+
+        public CompatibilidadRepuesto()
+        {
+
+        }
+
+        public CompatibilidadRepuesto(int compatibilidadId,
+                                      int productoId, int? vehiculoId)
+        {
+            CompatibilidadId = compatibilidadId;
+            ProductoId = productoId;
+            VehiculoId = vehiculoId;
+        }
+    }
+}using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Marca
+    {
+        public int MarcaId { get; set; }
+        public string Nombre { get; set; }
+        public int EstadoId { get; set; }
+        public Marca()
+        {
+                
+        }
+
+        public Marca(int marcaId, string nombre, int estadoId)
+        {
+            MarcaId = marcaId;
+            Nombre = nombre;
+            EstadoId = estadoId;
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Modelo
+    {
+        public int ModeloId { get; set; }
+        public int MarcaId { get; set; }
+        public string Nombre { get; set; }
+        public int EstadoId { get; set; }
+
+        public Modelo()
+        {
+
+        }
+
+        public Modelo(int modeloId, int marcaId, string nombre, int estadoId)
+        {
+            ModeloId = modeloId;
+            MarcaId = marcaId;
+            Nombre = nombre;
+            EstadoId = estadoId;
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Vehiculo
+    {
+        public int VehiculoId { get; set; }
+        public int ModeloId { get; set; }
+        public short Anio { get; set; }
+        public decimal Cilindrada { get; set; }
+        public string TipoMotor { get; set; }
+        public int EstadoId { get; set; }
+
+        public Vehiculo()
+        {
+
+        }
+
+        public Vehiculo(int vehiculoId, int modeloId, short anio,
+                        decimal cilindrada, string tipoMotor, int estadoId)
+        {
+            VehiculoId = vehiculoId;
+            ModeloId = modeloId;
+            Anio = anio;
+            Cilindrada = cilindrada;
+            TipoMotor = tipoMotor;
+            EstadoId = estadoId;
+        }
+    }
+}using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Cliente
+    {
+        public int ClienteId { get; set; }
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string DUI { get; set; }
+        public string NIT { get; set; }
+        public string Telefono { get; set; }
+        public string Correo { get; set; }
+        public string Direccion { get; set; }
+
+        public Cliente()
+        {
+
+        }
+
+        public Cliente(int clienteId, string nombre, string apellido, string dui, string nit, string telefono, string correo, string direccion)
+        {
+            ClienteId = clienteId;
+            Nombre = nombre;
+            Apellido = apellido;
+            DUI = dui;
+            NIT = nit;
+            Telefono = telefono;
+            Correo = correo;
+            Direccion = direccion;
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace AutoParts.Entity
+{
+    public class Detalle_Venta
+    {
+        public int DetalleVentaId { get; set; }
+        public int VentaId { get; set; }
+        public int ProductoId { get; set; }
+        public int Cantidad { get; set; }
+        public decimal PrecioUnitario { get; set; }
+        public decimal? Descuento { get; set; }
+        public decimal Subtotal { get; set; }
+        public int? DiasGarantiaVenta { get; set; }
+
+        public Detalle_Venta()
+        {
+
+        }
+
+        public Detalle_Venta(int detalleVentaId, int ventaId,
+                             int productoId, int cantidad,
+                             decimal precioUnitario, decimal? descuento,
+                             decimal subtotal, int? diasGarantiaVenta)
+        {
+            DetalleVentaId = detalleVentaId;
+            VentaId = ventaId;
+            ProductoId = productoId;
+            Cantidad = cantidad;
+            PrecioUnitario = precioUnitario;
+            Descuento = descuento;
+            Subtotal = subtotal;
+            DiasGarantiaVenta = diasGarantiaVenta;
+        }
+    }
+}using System;
+using System.Collections.Generic;
+using System.Text;
+
+using System;
+
+namespace AutoParts.Entity
+{
+    public class Venta
+    {
+        public int VentaId { get; set; }
+        public int ClienteId { get; set; }
+        public int EmpleadoId { get; set; }
+        public string NumeroFactura { get; set; }
+        public DateTime FechaVenta { get; set; }
+        public decimal Total { get; set; }
+        public int EstadoId { get; set; }
+
+        public Venta()
+        {
+
+        }
+
+        public Venta(int ventaId, int clienteId, int empleadoId,
+                     string numeroFactura, DateTime fechaVenta,
+                     decimal total, int estadoId)
+        {
+            VentaId = ventaId;
+            ClienteId = clienteId;
+            EmpleadoId = empleadoId;
+            NumeroFactura = numeroFactura;
+            FechaVenta = fechaVenta;
+            Total = total;
+            EstadoId = estadoId;
+        }
+    }
+}
+using System.Collections.Generic;
+
+namespace AutoParts.Entity
+{
+    public class VentaRegistroCompleto
+    {
+        public int ClienteId { get; set; }
+        public int EmpleadoId { get; set; }
+        public string NumeroFactura { get; set; } = string.Empty;
+        public int EstadoId { get; set; }
+
+        public List<VentaLineaRegistro> Lineas { get; set; } = new();
+    }
+
+    public class VentaLineaRegistro
+    {
+        public int ProductoId { get; set; }
+        public int Cantidad { get; set; }
+    }
+
+
+    public class VentaRegistroResultado
+    {
+        public int VentaId { get; set; }
+
+        public string NumeroFactura { get; set; } = string.Empty;
+
+        public decimal Total { get; set; }
+    }
+
+}

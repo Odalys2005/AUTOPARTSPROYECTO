@@ -1,249 +1,171 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoParts | Nuevo cliente</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: radial-gradient(circle at 100% 0%, #581016 0%, transparent 45%), #0a0a0d;
-            color: white;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-        .contenedor { max-width: 900px; margin: auto; padding: 29px; }
-        .encabezado {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .subtitulo {
-            color: #ffbd35;
-            font-size: 11px;
-            letter-spacing: 3px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        h1 { margin: 0; font-size: 27px; }
-        .descripcion { color: #a9a7ae; font-size: 13px; line-height: 1.5; }
-        .icono {
-            width: 47px;
-            height: 47px;
-            border: 1px solid #ee3642;
-            border-radius: 12px;
-            background: #5c111a;
-            display: grid;
-            place-items: center;
-            font-size: 24px;
-            color: #ffc42f;
-            box-shadow: 0 0 20px #ca263044;
-            flex-shrink: 0;
-        }
-        .panel {
-            background: linear-gradient(145deg, #171418, #0e0e12);
-            border: 1px solid #5a3139;
-            border-radius: 14px;
-            padding: 25px;
-        }
-        .campos {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0 18px;
-        }
-        .campo { margin-bottom: 21px; min-width: 0; }
-        .campo.ancho { grid-column: 1 / -1; }
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 9px;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 13px 14px;
-            background: #111216;
-            color: white;
-            border: 1px solid #554c55;
-            border-radius: 9px;
-            font: inherit;
-            outline: none;
-            transition: border-color .2s, box-shadow .2s;
-        }
-        textarea { min-height: 86px; resize: vertical; }
-        input:focus, textarea:focus {
-            border-color: #ff3d46;
-            box-shadow: 0 0 10px #e41b303b;
-        }
-        input::placeholder, textarea::placeholder { color: #85858f; }
-        .ayuda { color: #898a94; font-size: 11px; margin-top: 7px; }
-        .requerido { color: #ff4753; }
-        .mensaje { color: #ffb64e; min-height: 18px; font-size: 12px; margin-bottom: 12px; }
-        .acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
-        button {
-            padding: 13px 23px;
-            border-radius: 9px;
-            font-weight: 700;
-            border: 0;
-            cursor: pointer;
-            transition: .2s;
-        }
-        .cancelar { background: #242328; color: #e5e5e5; border: 1px solid #56535b; }
-        .cancelar:hover { background: #353039; }
-        .guardar {
-            color: #140c0d;
-            background: linear-gradient(105deg, #ff3543, #ffbd2b);
-            box-shadow: 0 0 16px #e5233533;
-        }
-        .guardar:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-2px); }
-        .guardar:disabled { opacity: .55; cursor: not-allowed; }
-        @media (max-width: 620px) {
-            .contenedor { padding: 17px; }
-            .panel { padding: 18px; }
-            .campos { grid-template-columns: 1fr; }
-            .acciones { flex-wrap: wrap; }
-        }
-    </style>
-</head>
-<body>
-    <div class="contenedor">
-        <div class="encabezado">
-            <div>
-                <div class="subtitulo">AUTOPARTS · ADMINISTRACIÓN</div>
-                <h1>Nuevo cliente</h1>
-                <p class="descripcion">Registra los datos de un nuevo cliente en el sistema.</p>
-            </div>
-            <div class="icono">+</div>
-        </div>
-
-        <div class="panel">
-            <form id="formCliente">
-                <div class="campos">
-                    <div class="campo">
-                        <label for="nombre">Nombre <span class="requerido">*</span></label>
-                        <input id="nombre" type="text" maxlength="100" autocomplete="given-name" placeholder="Ej. María" required>
-                    </div>
-                    <div class="campo">
-                        <label for="apellido">Apellido <span class="requerido">*</span></label>
-                        <input id="apellido" type="text" maxlength="100" autocomplete="family-name" placeholder="Ej. Rodríguez" required>
-                    </div>
-                    <div class="campo">
-                        <label for="dui">DUI <span class="requerido">*</span></label>
-                        <input id="dui" type="text" maxlength="20" placeholder="Ej. 01234567-8" required>
-                    </div>
-                    <div class="campo">
-                        <label for="nit">NIT</label>
-                        <input id="nit" type="text" maxlength="20" placeholder="NIT del cliente (opcional)">
-                    </div>
-                    <div class="campo">
-                        <label for="telefono">Teléfono</label>
-                        <input id="telefono" type="tel" maxlength="25" autocomplete="tel" placeholder="Ej. 7777-8888">
-                    </div>
-                    <div class="campo">
-                        <label for="correo">Correo electrónico</label>
-                        <input id="correo" type="email" maxlength="150" autocomplete="email" placeholder="Ej. cliente@correo.com">
-                    </div>
-                    <div class="campo ancho">
-                        <label for="direccion">Dirección</label>
-                        <textarea id="direccion" maxlength="250" autocomplete="street-address" placeholder="Dirección del cliente (opcional)"></textarea>
-                        <div class="ayuda">Los campos marcados con * son obligatorios.</div>
-                    </div>
-                </div>
-
-                <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
-
-                <div class="acciones">
-                    <button class="cancelar" type="button" id="cancelar">Cancelar</button>
-                    <button class="guardar" type="submit" id="guardar">Guardar cliente</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        const formulario = document.getElementById("formCliente");
-        const guardar = document.getElementById("guardar");
-        const mensaje = document.getElementById("mensaje");
-
-        function valor(id) {
-            return document.getElementById(id).value.trim();
-        }
-
-        function enviar(datos) {
-            if (window.parent !== window) {
-                window.parent.postMessage(datos, "*");
-                return true;
-            }
-
-            if (window.chrome?.webview?.postMessage) {
-                window.chrome.webview.postMessage(datos);
-                return true;
-            }
-
-            mensaje.textContent = "No hay conexión con Windows Forms.";
-            return false;
-        }
-
-        document.getElementById("cancelar").addEventListener("click", () => {
-            enviar({ type: "cancelar" });
-        });
-
-        formulario.addEventListener("submit", e => {
-            e.preventDefault();
-
-            const datos = {
-                Nombre: valor("nombre"),
-                Apellido: valor("apellido"),
-                DUI: valor("dui"),
-                NIT: valor("nit") || null,
-                Telefono: valor("telefono") || null,
-                Correo: valor("correo") || null,
-                Direccion: valor("direccion") || null
-            };
-
-            if (!datos.Nombre || !datos.Apellido || !datos.DUI) {
-                mensaje.textContent = "Completa el nombre, apellido y DUI.";
-                return;
-            }
-
-            guardar.disabled = true;
-            guardar.textContent = "Guardando...";
-            mensaje.textContent = "";
-
-            if (!enviar({ type: "guardar", data: datos })) {
-                guardar.disabled = false;
-                guardar.textContent = "Guardar cliente";
-            }
-        });
-
-        function recibirMensajeClienteNuevo(evento) {
-            let respuesta = evento.data;
-
-            if (typeof respuesta === "string") {
-                try {
-                    respuesta = JSON.parse(respuesta);
-                } catch {
-                    return;
-                }
-            }
-
-            if (!respuesta || typeof respuesta !== "object") return;
-
-            if (respuesta.type === "error") {
-                mensaje.textContent = respuesta.message || "No se pudo guardar el cliente.";
-                guardar.disabled = false;
-                guardar.textContent = "Guardar cliente";
-            }
-        }
-
-        if (window.chrome?.webview?.addEventListener) {
-            window.chrome.webview.addEventListener("message", recibirMensajeClienteNuevo);
-        }
-
-        window.addEventListener("message", recibirMensajeClienteNuevo);
-    </script>
-</body>
+	<head>
+		<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>AutoParts | Nuevo cliente</title>
+				<style>
+					:root{color-scheme:dark}*{box-sizing:border-box}
+					body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 100% 0%,rgba(136,16,25,.2),transparent 44%),#090a0d;color:#f5f5f7;font-family:'Segoe UI',Arial,sans-serif}
+					button,input{font:inherit}.contenedor{max-width:1080px;margin:0 auto;padding:34px}
+					h1{margin:0 0 27px;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}h1 span{color:#ffbd2e}
+					.panel{background:linear-gradient(140deg,#171519,#0d0e11 70%,#140f12);border:1px solid #56323c;border-radius:15px;padding:30px;box-shadow:0 12px 35px #0005}
+					.campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 24px}.campo{min-width:0}.campo.ancho{grid-column:1/-1}
+					.campo label{display:block;font-size:13px;font-weight:650;margin-bottom:9px;color:#f4f4f6}.requerido{color:#ff4653}
+					.campo input{width:100%;height:47px;border-radius:9px;border:1px solid #554a52;background:#111216;padding:0 14px;color:#fff;outline:0;transition:border-color .2s,box-shadow .2s}
+					.campo input:focus{border-color:#ff3543;box-shadow:0 0 14px #ff354333}
+					.mensaje{margin-top:18px;color:#ffc075;font-size:12px;line-height:1.5}.mensaje:empty{display:none}
+					.acciones{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;border-top:1px solid #382d34;padding-top:23px;margin-top:24px}
+					.acciones button,.boton-aceptar{border-radius:9px;border:1px solid transparent;padding:13px 25px;font-weight:750;font-size:13px;cursor:pointer;transition:filter .2s,transform .2s}
+					.cancelar{color:#e6e6eb;background:#25232a;border-color:#58535c!important}.cancelar:hover{background:#37313a}
+					.guardar,.boton-aceptar{color:#190d0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);box-shadow:0 0 16px #e5233533}
+					.guardar:hover:not(:disabled),.boton-aceptar:hover{filter:brightness(1.12);transform:translateY(-2px)}.guardar:disabled{opacity:.5;cursor:not-allowed}
+					.modal[hidden]{display:none!important}.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.78);display:grid;place-items:center;padding:20px}
+					.modal-panel{width:min(100%,430px);background:linear-gradient(145deg,#21161b,#111115);border:1px solid #81424a;border-radius:16px;padding:29px;text-align:center;box-shadow:0 25px 80px #000a}
+					.icono-exito{width:65px;height:65px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;border:1px solid #318d61;background:#113925;color:#8cf0af;font-size:33px;font-weight:800}
+					.modal-panel h2{margin:0 0 11px;font-size:22px}.modal-panel p{color:#c6c3c9;font-size:14px;line-height:1.6;margin:0 0 24px}.boton-aceptar{min-width:125px}
+					@media(max-width:720px){.contenedor{padding:20px}.panel{padding:20px}.campos{grid-template-columns:1fr;gap:18px}.campo.ancho{grid-column:auto}}
+				</style>
+			</head>
+	<body>
+		<main class="contenedor">
+			<h1>
+				Nuevo <span>Cliente</span>
+			</h1>
+			<section class="panel">
+				<form id="formCliente">
+					<div class="campos">
+						<div class="campo">
+							<label for="nombre">
+								Nombre <span class="requerido">*</span>
+							</label>
+							<input id="nombre" type="text" maxlength="100" autocomplete="given-name" required="">
+						</div>
+						<div class="campo">
+							<label for="apellido">
+								Apellido <span class="requerido">*</span>
+							</label>
+							<input id="apellido" type="text" maxlength="100" autocomplete="family-name" required="">
+						</div>
+						<div class="campo">
+							<label for="dui">
+								DUI <span class="requerido">*</span>
+							</label>
+							<input id="dui" type="text" maxlength="10" autocomplete="off" required="">
+						</div>
+						<div class="campo">
+							<label for="telefono">
+								Teléfono <span class="requerido">*</span>
+							</label>
+							<input id="telefono" type="tel" maxlength="25" autocomplete="tel" required="">
+						</div>
+						<div class="campo">
+							<label for="correo">
+								Correo electrónico <span class="requerido">*</span>
+							</label>
+							<input id="correo" type="email" maxlength="150" autocomplete="email" required="">
+						</div>
+						<div class="campo">
+							<label for="nit">NIT</label>
+							<input id="nit" type="text" maxlength="20" autocomplete="off">
+						</div>
+						<div class="campo ancho">
+							<label for="direccion">Dirección</label>
+							<input id="direccion" type="text" maxlength="50" autocomplete="street-address">
+						</div>
+					</div>
+					<div id="mensaje" class="mensaje" role="status" aria-live="polite"></div>
+					<div class="acciones">
+						<button type="button" class="cancelar" id="cancelar">Cancelar</button>
+						<button type="submit" class="guardar" id="guardar">Guardar cliente</button>
+					</div>
+				</form>
+			</section>
+		</main>
+		<div id="modalExito" class="modal" hidden="">
+			<div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="tituloExito" aria-describedby="descripcionExito">
+				<div class="icono-exito" aria-hidden="true">✓</div>
+				<h2 id="tituloExito">¡Cliente guardado!</h2>
+				<p id="descripcionExito">El cliente se registró correctamente.</p>
+				<button type="button" id="aceptarExito" class="boton-aceptar">Aceptar</button>
+			</div>
+		</div>
+		<script>
+			'use strict';
+			const $ = id => document.getElementById(id);
+			const formulario = $('formCliente');
+			const guardar = $('guardar');
+			const mensaje = $('mensaje');
+			let guardando = false;
+			let guardadoExitoso = false;
+			let temporizadorGuardado;
+			function enviar(datos) {
+			if (window.parent !== window) { window.parent.postMessage(datos, '*'); return true; }
+			if (window.chrome?.webview?.postMessage) { window.chrome.webview.postMessage(datos); return true; }
+			mensaje.textContent = 'Abre el formulario desde AutoParts.';
+			return false;
+			}
+			function restaurarGuardado() {
+			clearTimeout(temporizadorGuardado);
+			guardando = false;
+			guardar.disabled = false;
+			guardar.textContent = 'Guardar cliente';
+			}
+			function recibirMensaje(evento) {
+			if (window.parent !== window && evento.source && evento.source !== window.parent) return;
+			let respuesta = evento.data;
+			if (typeof respuesta === 'string') { try { respuesta = JSON.parse(respuesta); } catch { return; } }
+			if (!respuesta || typeof respuesta !== 'object') return;
+			if (respuesta.type === 'clientes:guardado' && guardando) {
+			clearTimeout(temporizadorGuardado);
+			guardando = false;
+			guardadoExitoso = true;
+			mensaje.textContent = '';
+			$('modalExito').hidden = false;
+			$('aceptarExito').focus();
+			} else if ((respuesta.type === 'clientes:error' || respuesta.type === 'error') && !guardadoExitoso) {
+			mensaje.textContent = respuesta.message || 'No se pudo guardar el cliente.';
+			if (guardando) restaurarGuardado();
+			}
+			}
+			$('cancelar').addEventListener('click', () => { if (!guardando && !guardadoExitoso) enviar({ type: 'cancelar' }); });
+			$('aceptarExito').addEventListener('click', () => enviar({ type: 'cancelar' }));
+			formulario.addEventListener('submit', evento => {
+			evento.preventDefault();
+			if (guardando || guardadoExitoso) return;
+			const Nombre = $('nombre').value.trim();
+			const Apellido = $('apellido').value.trim();
+			const DUI = $('dui').value.trim();
+			const Telefono = $('telefono').value.trim();
+			const Correo = $('correo').value.trim();
+			const NIT = $('nit').value.trim() || null;
+			const Direccion = $('direccion').value.trim() || null;
+			if (!Nombre || !Apellido || !DUI || !Telefono || !Correo) {
+			mensaje.textContent = 'Completa los campos obligatorios.';
+			return;
+			}
+			if (!/^\d{8}-\d$/.test(DUI)) {
+			mensaje.textContent = 'Ingresa el DUI con formato 00000000-0.';
+			$('dui').focus();
+			return;
+			}
+			if (!formulario.reportValidity()) return;
+			guardando = true;
+			guardar.disabled = true;
+			guardar.textContent = 'Guardando...';
+			mensaje.textContent = '';
+			if (!enviar({ type: 'guardar', data: { Nombre, Apellido, DUI, NIT, Telefono, Correo, Direccion } })) {
+			restaurarGuardado();
+			return;
+			}
+			temporizadorGuardado = setTimeout(() => {
+			if (!guardando) return;
+			restaurarGuardado();
+			mensaje.textContent = 'No llegó la confirmación del servidor. Consulta el listado antes de intentar guardar otra vez.';
+			}, 15000);
+			});
+			window.addEventListener('message', recibirMensaje);
+			if (window.chrome?.webview?.addEventListener) window.chrome.webview.addEventListener('message', recibirMensaje);
+		</script>
+	</body>
 </html>

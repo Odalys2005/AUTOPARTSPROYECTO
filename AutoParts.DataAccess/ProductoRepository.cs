@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -100,14 +99,12 @@ namespace AutoParts.DataAccess
                     .Value = entity.DiasGarantia;
 
                 cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                    .Value = entity.EstadoId;
+                    .Value = 1;
 
                 cmd.Parameters.Add("@Imagen", SqlDbType.NVarChar, 500)
                     .Value = string.IsNullOrWhiteSpace(entity.Imagen)
                         ? DBNull.Value
                         : entity.Imagen;
-
-                // SQL Server genera CodigoBarras automáticamente.
 
                 conn.Open();
 
@@ -120,11 +117,13 @@ namespace AutoParts.DataAccess
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
+            if (entity.ProductoId <= 0)
+                throw new ArgumentException("Selecciona un producto válido.", nameof(entity));
+
             using (SqlConnection conn = _connectionFactory.CreateConnection())
             using (SqlCommand cmd = new SqlCommand("spProductoUpdate", conn))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-
 
                 cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
                     .Value = entity.ProductoId;
@@ -159,8 +158,6 @@ namespace AutoParts.DataAccess
                         ? DBNull.Value
                         : entity.Imagen;
 
-                // SQL Server genera CodigoBarras automáticamente.
-
                 conn.Open();
 
                 return cmd.ExecuteNonQuery();
@@ -169,33 +166,35 @@ namespace AutoParts.DataAccess
 
         public int Delete(Producto entity)
         {
-            using (SqlConnection conn =
-                _connectionFactory.CreateConnection())
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.ProductoId <= 0)
+                throw new ArgumentException("Selecciona un producto válido.", nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("spProductoDelete", conn))
             {
-                using (SqlCommand cmd =
-                    new SqlCommand("spProductoDelete", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
+                    .Value = entity.ProductoId;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (!dr.Read())
+                        throw new InvalidOperationException(
+                            "SQL Server no confirmó el cambio de estado.");
 
-                    cmd.Parameters.Add("@ProductoId", SqlDbType.Int)
-                        .Value = entity.ProductoId;
+                    int estadoId = dr.GetInt32(dr.GetOrdinal("EstadoId"));
 
-                    conn.Open();
+                    if (estadoId != 1 && estadoId != 2)
+                        throw new InvalidOperationException(
+                            "SQL Server devolvió un estado no válido.");
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (!dr.Read())
-                            throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
-
-                        int estadoId = dr.GetInt32(
-                            dr.GetOrdinal("EstadoId"));
-
-                        if (estadoId != 2)
-                            throw new InvalidOperationException(
-                                "El Producto no quedó inactivo.");
-                        return estadoId;
-                    }
+                    return estadoId;
                 }
             }
         }

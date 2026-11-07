@@ -49,9 +49,14 @@
             border-radius: 14px;
             padding: 25px;
         }
-        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 9px; }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
         .campo { margin-bottom: 21px; }
-        input, select {
+        input {
             width: 100%;
             padding: 13px 14px;
             background: #111216;
@@ -61,16 +66,24 @@
             font: inherit;
             outline: none;
         }
-        input:focus, select:focus {
+        input:focus {
             border-color: #ff3d46;
             box-shadow: 0 0 10px #e41b303b;
         }
         input::placeholder { color: #85858f; }
-        select:disabled { opacity: .6; }
-        .ayuda { color: #898a94; font-size: 11px; margin-top: 7px; }
         .requerido { color: #ff4753; }
-        .mensaje { color: #ffb64e; min-height: 18px; font-size: 12px; margin-bottom: 12px; }
-        .acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
+        .mensaje {
+            color: #ffb64e;
+            min-height: 18px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+        .acciones {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 22px;
+        }
         button {
             padding: 13px 23px;
             border-radius: 9px;
@@ -79,60 +92,99 @@
             cursor: pointer;
             transition: .2s;
         }
-        .cancelar { background: #242328; color: #e5e5e5; border: 1px solid #56535b; }
+        .cancelar {
+            background: #242328;
+            color: #e5e5e5;
+            border: 1px solid #56535b;
+        }
         .cancelar:hover { background: #353039; }
         .guardar {
             color: #140c0d;
             background: linear-gradient(105deg, #ff3543, #ffbd2b);
             box-shadow: 0 0 16px #e5233533;
         }
-        .guardar:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-2px); }
+        .guardar:hover:not(:disabled) {
+            filter: brightness(1.12);
+            transform: translateY(-2px);
+        }
         .guardar:disabled { opacity: .55; cursor: not-allowed; }
         @media (max-width: 500px) {
             .contenedor { padding: 17px; }
             .panel { padding: 18px; }
             .acciones { flex-wrap: wrap; }
         }
+        .modal-exito[hidden] { display: none; }
+        .modal-exito {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .8);
+            display: grid;
+            place-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        .modal-exito-panel {
+            width: min(100%, 420px);
+            padding: 32px 26px;
+            text-align: center;
+            background: linear-gradient(145deg, #22161b, #101115);
+            border: 1px solid #79404a;
+            border-radius: 16px;
+            box-shadow: 0 20px 65px #000b;
+        }
+        .exito-simbolo {
+            width: 62px;
+            height: 62px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            margin: 0 auto 18px;
+            background: #113d29;
+            border: 1px solid #34855d;
+            color: #83edab;
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .modal-exito-panel h2 { margin: 0 0 10px; font-size: 23px; }
+        .modal-exito-panel p { color: #c9c5cb; font-size: 13px; margin: 0 0 24px; }
+        .modal-exito-panel button { min-width: 124px; }
     </style>
 </head>
 <body>
     <div class="contenedor">
         <div class="encabezado">
             <div>
-                <div class="subtitulo">AUTOPARTS · ADMINISTRACIÓN</div>
+                
                 <h1>Nueva marca</h1>
-                <p class="descripcion">Registra una nueva marca en el catálogo de AutoParts.</p>
+                
             </div>
-            <div class="icono">+</div>
+            
         </div>
-
         <div class="panel">
             <form id="formMarca">
                 <div class="campo">
                     <label for="nombre">Nombre de la marca <span class="requerido">*</span></label>
-                    <input type="text" id="nombre" maxlength="100" placeholder="Ej. Toyota" required>
-                    <div class="ayuda">Ingresa el nombre con el que se identificará la marca.</div>
+                    <input type="text" id="nombre" maxlength="100" required>
                 </div>
-                <div class="campo">
-                    <label for="estado">Estado <span class="requerido">*</span></label>
-                    <select id="estado" required disabled>
-                        <option value="">Cargando estados...</option>
-                    </select>
-                    <div class="ayuda">Selecciona el estado de la marca.</div>
-                </div>
-                <div id="mensaje" class="mensaje" role="alert" aria-live="polite"></div>
+                <div id="mensaje" class="mensaje" role="alert"></div>
                 <div class="acciones">
                     <button class="cancelar" type="button" id="cancelar">Cancelar</button>
-                    <button class="guardar" type="submit" id="guardar" disabled>Guardar marca</button>
+                    <button class="guardar" type="submit" id="guardar">Guardar marca</button>
                 </div>
             </form>
         </div>
     </div>
-
+    <div id="modalExito" class="modal-exito" hidden>
+        <div class="modal-exito-panel" role="dialog" aria-modal="true" aria-labelledby="tituloExito">
+            <div class="exito-simbolo" aria-hidden="true">✓</div>
+            <h2 id="tituloExito">¡Marca guardada!</h2>
+            <p>La marca se registró correctamente.</p>
+            <button type="button" class="guardar" id="aceptarExito">Aceptar</button>
+        </div>
+    </div>
     <script>
         const formulario = document.getElementById("formMarca");
         const nombre = document.getElementById("nombre");
-        const estado = document.getElementById("estado");
         const guardar = document.getElementById("guardar");
         const mensaje = document.getElementById("mensaje");
         let guardando = false;
@@ -150,10 +202,6 @@
             return false;
         }
 
-        function actualizarBoton() {
-            guardar.disabled = guardando || estado.disabled;
-        }
-
         document.getElementById("cancelar").addEventListener("click", () => {
             enviar({ type: "cancelar" });
         });
@@ -161,72 +209,56 @@
         formulario.addEventListener("submit", e => {
             e.preventDefault();
             if (guardando) return;
-
             const nombreValor = nombre.value.trim();
-            const estadoId = Number(estado.value);
 
-            if (!nombreValor || nombreValor.length > 100 || !Number.isInteger(estadoId) || estadoId <= 0) {
-                mensaje.textContent = "Ingresa el nombre y selecciona un estado.";
+            if (!nombreValor || nombreValor.length > 100) {
+                mensaje.textContent = "Ingresa un nombre válido de hasta 100 caracteres.";
+                nombre.focus();
                 return;
             }
+            if (!formulario.reportValidity()) return;
 
             guardando = true;
-            actualizarBoton();
+            guardar.disabled = true;
             guardar.textContent = "Guardando...";
             mensaje.textContent = "";
 
-            if (!enviar({
-                type: "guardar",
-                data: { Nombre: nombreValor, EstadoId: estadoId }
-            })) {
-                guardando = false;
-                actualizarBoton();
-                guardar.textContent = "Guardar marca";
+            if (!enviar({ type: "guardar", data: { Nombre: nombreValor } })) {
+                restaurarGuardado();
             }
         });
 
-        function recibirRespuesta(e) {
-            let respuesta = e.data;
+        function restaurarGuardado() {
+            guardando = false;
+            guardar.disabled = false;
+            guardar.textContent = "Guardar marca";
+        }
+
+        document.getElementById("aceptarExito").addEventListener("click", () => {
+            enviar({ type: "cancelar" });
+        });
+
+        function recibirRespuesta(evento) {
+            let respuesta = evento.data;
             if (typeof respuesta === "string") {
                 try { respuesta = JSON.parse(respuesta); } catch { return; }
             }
             if (!respuesta || typeof respuesta !== "object") return;
-
-            if (respuesta.type === "estados") {
-                const lista = Array.isArray(respuesta.data) ? respuesta.data : [];
-                estado.innerHTML = "";
-
-                const opcionInicial = document.createElement("option");
-                opcionInicial.value = "";
-                opcionInicial.textContent = "Selecciona un estado";
-                estado.appendChild(opcionInicial);
-
-                for (const item of lista) {
-                    const id = item.EstadoId ?? item.estadoId;
-                    const texto = item.Nombre ?? item.nombre;
-                    if (id == null) continue;
-                    const opcion = document.createElement("option");
-                    opcion.value = id;
-                    opcion.textContent = texto ?? "";
-                    estado.appendChild(opcion);
-                }
-
-                estado.disabled = estado.options.length <= 1;
-                actualizarBoton();
-                mensaje.textContent = estado.disabled ? "No hay estados disponibles." : "";
+            if (respuesta.type === "marcas:guardado") {
+                document.getElementById("modalExito").hidden = false;
+                document.getElementById("aceptarExito").focus();
+                return;
             }
-
-            if (respuesta.type === "error") {
+            if (respuesta.type === "error" || respuesta.type === "marcas:error") {
                 mensaje.textContent = respuesta.message || "No se pudo guardar la marca.";
-                guardando = false;
-                actualizarBoton();
-                guardar.textContent = "Guardar marca";
+                restaurarGuardado();
             }
         }
 
         window.addEventListener("message", recibirRespuesta);
-        window.chrome?.webview?.addEventListener?.("message", recibirRespuesta);
-        enviar({ type: "obtenerEstados" });
+        if (window.chrome?.webview?.addEventListener) {
+            window.chrome.webview.addEventListener("message", recibirRespuesta);
+        }
     </script>
 </body>
 </html>

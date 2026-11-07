@@ -1,6 +1,5 @@
 ﻿
 using AutoParts.DataAccess;
-using AutoParts.Entity;
 using AutoParts.Entity.Productos;
 using System;
 using System.Collections.Generic;
@@ -18,50 +17,30 @@ namespace AutoParts.BusinessLogic
 
         public List<Subcategoria> SelectAll()
         {
-            List<Subcategoria> result = new List<Subcategoria>();
-
-            try
-            {
-                result = _repository.SelectAll();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            return result;
+            return _repository.SelectAll();
         }
 
         public int Insert(Subcategoria entity)
         {
-            int result = 0;
+            Validar(entity);
 
-            try
-            {
-                result = _repository.Insert(entity);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            entity.EstadoId = 1;
 
-            return result;
+            return _repository.Insert(entity);
         }
 
         public int Update(Subcategoria entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
-            try
-            {
-                result = _repository.Update(entity);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            if (entity.SubcategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una subcategoría válida.");
 
-            return result;
+            Validar(entity);
+
+            return _repository.Update(entity);
         }
 
         public int Delete(Subcategoria entity)
@@ -71,9 +50,29 @@ namespace AutoParts.BusinessLogic
 
             if (entity.SubcategoriaId <= 0)
                 throw new ArgumentException(
-                    "Selecciona una SubCategoria válida.");
+                    "Selecciona una subcategoría válida.");
 
             return _repository.Delete(entity);
+        }
+
+        private static void Validar(Subcategoria entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.CategoriaId <= 0)
+                throw new ArgumentException(
+                    "Selecciona una categoría válida.");
+
+            if (string.IsNullOrWhiteSpace(entity.Nombre))
+                throw new ArgumentException(
+                    "El nombre de la subcategoría es obligatorio.");
+
+            entity.Nombre = entity.Nombre.Trim();
+
+            if (entity.Nombre.Length > 120)
+                throw new ArgumentException(
+                    "El nombre de la subcategoría no puede superar los 120 caracteres.");
         }
     }
 }

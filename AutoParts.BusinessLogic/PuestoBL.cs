@@ -1,6 +1,6 @@
-﻿
-using AutoParts.DataAccess;
+﻿using AutoParts.DataAccess;
 using AutoParts.Entity;
+using System;
 using System.Collections.Generic;
 
 namespace AutoParts.BusinessLogic
@@ -11,7 +11,7 @@ namespace AutoParts.BusinessLogic
 
         public PuestoBL(PuestoRepository repository)
         {
-            _repository = repository;
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         public List<Puesto> SelectAll()
@@ -21,23 +21,26 @@ namespace AutoParts.BusinessLogic
 
         public int Insert(Puesto entity)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            ValidarCampos(entity);
+            entity.EstadoId = 1;
+
             return _repository.Insert(entity);
         }
 
         public int Update(Puesto entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
-            try
-            {
-                result = _repository.Update(entity);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            if (entity.PuestoId <= 0)
+                throw new ArgumentException("Selecciona un puesto válido.");
 
-            return result;
+            ValidarCampos(entity);
+
+            return _repository.Update(entity);
         }
 
         public int Delete(Puesto entity)
@@ -46,10 +49,28 @@ namespace AutoParts.BusinessLogic
                 throw new ArgumentNullException(nameof(entity));
 
             if (entity.PuestoId <= 0)
-                throw new ArgumentException(
-                    "Selecciona un Puesto válido.");
+                throw new ArgumentException("Selecciona un puesto válido.");
 
             return _repository.Delete(entity);
+        }
+
+        private static void ValidarCampos(Puesto entity)
+        {
+            if (string.IsNullOrWhiteSpace(entity.Nombre))
+                throw new ArgumentException("El nombre del puesto es obligatorio.");
+
+            entity.Nombre = entity.Nombre.Trim();
+
+            if (entity.Nombre.Length > 100)
+                throw new ArgumentException("El nombre no puede superar los 100 caracteres.");
+
+            if (string.IsNullOrWhiteSpace(entity.Descripcion))
+                throw new ArgumentException("La descripción del puesto es obligatoria.");
+
+            entity.Descripcion = entity.Descripcion.Trim();
+
+            if (entity.Descripcion.Length > 500)
+                throw new ArgumentException("La descripción no puede superar los 500 caracteres.");
         }
     }
 }

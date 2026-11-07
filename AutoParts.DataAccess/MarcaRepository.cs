@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using AutoParts.Entity;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,8 @@ namespace AutoParts.DataAccess
 
         public MarcaRepository(ConnectionFactory connectionFactory)
         {
-            _connectionFactory = connectionFactory;
+            _connectionFactory = connectionFactory
+                ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         public List<Marca> SelectAll()
@@ -21,25 +21,27 @@ namespace AutoParts.DataAccess
             List<Marca> result = new List<Marca>();
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spMarcaSelectAll", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spMarcaSelectAll", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    int marcaIdOrdinal = dr.GetOrdinal("MarcaId");
+                    int nombreOrdinal = dr.GetOrdinal("Nombre");
+                    int estadoIdOrdinal = dr.GetOrdinal("EstadoId");
 
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleResult))
+                    while (dr.Read())
                     {
-                        while (dr.Read())
+                        Marca entity = new Marca
                         {
-                            Marca entity = new Marca();
+                            MarcaId = dr.GetInt32(marcaIdOrdinal),
+                            Nombre = dr.GetString(nombreOrdinal),
+                            EstadoId = dr.GetInt32(estadoIdOrdinal)
+                        };
 
-                            entity.MarcaId = dr.GetInt32(0);
-                            entity.Nombre = dr.GetString(1);
-                            entity.EstadoId = dr.GetInt32(2);
-
-                            result.Add(entity);
-                        }
+                        result.Add(entity);
                     }
                 }
             }
@@ -49,88 +51,80 @@ namespace AutoParts.DataAccess
 
         public int Insert(Marca entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spMarcaInsert", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spMarcaInsert", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
-                        .Value = entity.Nombre;
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                    .Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
+                cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
+                    .Value = 1;
 
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                conn.Open();
+                return cmd.ExecuteNonQuery();
             }
-
-            return result;
         }
 
         public int Update(Marca entity)
         {
-            int result = 0;
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.MarcaId <= 0)
+                throw new ArgumentException("Selecciona una marca válida.", nameof(entity));
 
             using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spMarcaUpdate", conn))
             {
-                using (SqlCommand cmd = new SqlCommand("spMarcaUpdate", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@MarcaId", SqlDbType.VarChar, 100)
-                        .Value = entity.MarcaId;
+                cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
+                    .Value = entity.MarcaId;
 
-                    cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
-                        .Value = entity.Nombre;
+                cmd.Parameters.Add("@Nombre", SqlDbType.VarChar, 100)
+                    .Value = entity.Nombre;
 
-                    cmd.Parameters.Add("@EstadoId", SqlDbType.Int)
-                        .Value = entity.EstadoId;
-
-                    conn.Open();
-
-                    result = cmd.ExecuteNonQuery();
-                }
+                conn.Open();
+                return cmd.ExecuteNonQuery();
             }
-
-            return result;
         }
-
-        //Cambia de estado, no es que se elimine
 
         public int Delete(Marca entity)
         {
-            using (SqlConnection conn =
-                _connectionFactory.CreateConnection())
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.MarcaId <= 0)
+                throw new ArgumentException("Selecciona una marca válida.", nameof(entity));
+
+            using (SqlConnection conn = _connectionFactory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("dbo.spMarcaDelete", conn))
             {
-                using (SqlCommand cmd =
-                    new SqlCommand("spMarcaDelete", conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
+                    .Value = entity.MarcaId;
+
+                conn.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (!dr.Read())
+                        throw new InvalidOperationException(
+                            "SQL Server no confirmó el cambio de estado de la marca.");
 
-                    cmd.Parameters.Add("@MarcaId", SqlDbType.Int)
-                        .Value = entity.MarcaId;
+                    int estadoId = dr.GetInt32(dr.GetOrdinal("EstadoId"));
 
-                    conn.Open();
+                    if (estadoId != 1 && estadoId != 2)
+                        throw new InvalidOperationException(
+                            "SQL Server devolvió un estado no válido para la marca.");
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (!dr.Read())
-                            throw new InvalidOperationException(
-                                "SQL Server no confirmó la desactivación.");
-
-                        int estadoId = dr.GetInt32(
-                            dr.GetOrdinal("EstadoId"));
-
-                        if (estadoId != 2)
-                            throw new InvalidOperationException(
-                                "La Marca no quedó inactiva.");
-                        return estadoId;
-                    }
+                    return estadoId;
                 }
             }
         }

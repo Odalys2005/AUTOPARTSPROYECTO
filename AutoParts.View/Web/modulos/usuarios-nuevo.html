@@ -40,21 +40,22 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
 .ver-contrasena:focus-visible{outline:2px solid #ffbd35;outline-offset:1px}
 .campo.span-dos{grid-column:1/-1}
 @media(max-width:720px){.campo.span-dos{grid-column:auto}}
+
+.modal[hidden]{display:none!important}.modal{position:fixed;inset:0;z-index:100;background:#000c;display:grid;place-items:center;padding:20px}
+.modal-panel{width:min(100%,425px);border:1px solid #673841;border-radius:16px;background:linear-gradient(145deg,#21171d,#101115);padding:32px;text-align:center;box-shadow:0 24px 75px #000a}
+.modal-panel h2{font-size:22px;margin:0 0 12px}.modal-panel p{font-size:13px;color:#c7c0c9;margin:0 0 24px}.verificado{display:grid;place-items:center;width:62px;height:62px;margin:0 auto 18px;border-radius:50%;border:1px solid #399b69;background:#123725;color:#8defb2;font-size:30px}
+#aceptarExito{padding:12px 32px;border-radius:9px;border:0;color:#fff;background:linear-gradient(110deg,#bd1b31,#efa528);font-weight:750;cursor:pointer}
 </style>
 </head>
 <body>
 <main class="contenedor">
     <header class="encabezado">
         <div>
-            <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
             <h1>Nuevo <span>Usuario</span></h1>
-            <p class="descripcion">Crear una cuenta de acceso a AutoParts.</p>
         </div>
-        <div class="icono" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3z"/></svg></div>
     </header>
     <section class="panel">
         <form id="formUsuario" novalidate>
-            <p class="seccion">INFORMACIÓN DE LA CUENTA</p>
             <div class="campos">
                 <div class="campo">
                     <label for="empleado">Empleado <span class="requerido">*</span></label>
@@ -66,23 +67,19 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
                 </div>
                 <div class="campo">
                     <label for="nombreUsuario">Nombre de usuario <span class="requerido">*</span></label>
-                    <input id="nombreUsuario" type="text" minlength="3" maxlength="50" placeholder="Nombre de usuario" autocomplete="off" autocapitalize="none" spellcheck="false" required>
-                </div>
-                <div class="campo">
-                    <label for="estado">Estado <span class="requerido">*</span></label>
-                    <select id="estado" disabled required><option value="">Cargando estados...</option></select>
+                    <input id="nombreUsuario" type="text" minlength="3" maxlength="50" autocomplete="off" autocapitalize="none" spellcheck="false" required>
                 </div>
                 <div class="campo">
                     <label for="contrasena">Contraseña <span class="requerido">*</span></label>
                     <div class="contrasena-wrap">
-                        <input id="contrasena" type="password" minlength="8" maxlength="72" placeholder="Contraseña" autocomplete="new-password" required>
+                        <input id="contrasena" type="password" minlength="8" maxlength="72" autocomplete="new-password" required>
                         <button type="button" class="ver-contrasena" data-ver="contrasena" aria-label="Mostrar contraseña" aria-pressed="false"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12S5.5 5.5 12 5.5 22 12 22 12 18.5 18.5 12 18.5 2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
                     </div>
                 </div>
                 <div class="campo">
                     <label for="confirmarContrasena">Confirmar contraseña <span class="requerido">*</span></label>
                     <div class="contrasena-wrap">
-                        <input id="confirmarContrasena" type="password" minlength="8" maxlength="72" placeholder="Confirmar contraseña" autocomplete="new-password" required>
+                        <input id="confirmarContrasena" type="password" minlength="8" maxlength="72" autocomplete="new-password" required>
                         <button type="button" class="ver-contrasena" data-ver="confirmarContrasena" aria-label="Mostrar confirmación" aria-pressed="false"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12S5.5 5.5 12 5.5 22 12 22 12 18.5 18.5 12 18.5 2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
                     </div>
                 </div>
@@ -95,19 +92,19 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
         </form>
     </section>
 </main>
+<div class="modal" id="modalExito" hidden><section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="tituloExito"><div class="verificado">✓</div><h2 id="tituloExito">¡Usuario guardado correctamente!</h2><p>La cuenta fue registrada exitosamente.</p><button type="button" id="aceptarExito">Aceptar</button></section></div>
 <script>
 "use strict";
 const formulario = document.getElementById('formUsuario');
 const empleadoSelect = document.getElementById('empleado');
 const rolSelect = document.getElementById('rol');
-const estadoSelect = document.getElementById('estado');
 const mensaje = document.getElementById('mensaje');
 const guardar = document.getElementById('guardar');
 const entradaNombre = document.getElementById('nombreUsuario');
 const entradaContrasena = document.getElementById('contrasena');
 const entradaConfirmacion = document.getElementById('confirmarContrasena');
-let empleados = [], roles = [], estados = [], usuarios = [];
-let empleadosCargados = false, rolesCargados = false, estadosCargados = false, usuariosCargados = false;
+let empleados = [], roles = [], usuarios = [];
+let empleadosCargados = false, rolesCargados = false, usuariosCargados = false;
 let guardando = false;
 let temporizadorCarga, temporizadorGuardado;
 
@@ -145,15 +142,15 @@ function llenar(select, datos, campoId, obtenerNombre, textoInicial) {
 }
 function actualizarEmpleados() {
     const yaAsignados = new Set(usuarios.map(u => id(u, 'EmpleadoId')));
-    const sinCuenta = empleados.filter(e => !usuariosCargados || !yaAsignados.has(id(e,'EmpleadoId')));
+    const sinCuenta = empleados.filter(e => id(e,'EstadoId') === 1 && usuariosCargados && !yaAsignados.has(id(e,'EmpleadoId')));
     llenar(empleadoSelect, sinCuenta, 'EmpleadoId', e => {
         const nombre = [valor(e,'Nombre','nombre'), valor(e,'Apellido','apellido')].filter(Boolean).join(' ');
         return nombre || `Empleado #${id(e,'EmpleadoId')}`;
     }, 'Selecciona un empleado');
 }
 function actualizarGuardar() {
-    guardar.disabled = guardando || !empleadosCargados || !rolesCargados || !estadosCargados ||
-        empleadoSelect.disabled || rolSelect.disabled || estadoSelect.disabled;
+    guardar.disabled = guardando || !empleadosCargados || !rolesCargados || !usuariosCargados ||
+        empleadoSelect.disabled || rolSelect.disabled;
 }
 function procesarRespuesta(evento) {
     let respuesta = evento.data;
@@ -166,16 +163,20 @@ function procesarRespuesta(evento) {
     } else if (respuesta.type === 'roles:list') {
         rolesCargados = true;
         roles = Array.isArray(respuesta.data) ? respuesta.data : [];
-        llenar(rolSelect, roles, 'RolId', r => valor(r,'Nombre','nombre'), 'Selecciona un rol');
-    } else if (respuesta.type === 'estados') {
-        estadosCargados = true;
-        estados = Array.isArray(respuesta.data) ? respuesta.data : [];
-        llenar(estadoSelect, estados, 'EstadoId', e => valor(e,'Nombre','nombre'), 'Selecciona un estado');
+        llenar(rolSelect, roles.filter(r => id(r,'EstadoId') === 1), 'RolId', r => valor(r,'Nombre','nombre'), 'Selecciona un rol');
     } else if (respuesta.type === 'usuarios:list') {
         usuariosCargados = true;
         usuarios = Array.isArray(respuesta.data) ? respuesta.data : [];
         if (empleadosCargados) actualizarEmpleados();
-    } else if (respuesta.type === 'error') {
+    } else if (respuesta.type === 'usuarios:guardado') {
+        clearTimeout(temporizadorGuardado);
+        guardando = false;
+        entradaContrasena.value = '';
+        entradaConfirmacion.value = '';
+        document.getElementById('modalExito').hidden = false;
+        actualizarGuardar();
+        return;
+    } else if (respuesta.type === 'usuarios:error' || respuesta.type === 'error') {
         clearTimeout(temporizadorGuardado);
         guardando = false;
         entradaContrasena.value = '';
@@ -185,10 +186,10 @@ function procesarRespuesta(evento) {
         return;
     }
     actualizarGuardar();
-    if (empleadosCargados && rolesCargados && estadosCargados) {
+    if (empleadosCargados && rolesCargados && usuariosCargados) {
         clearTimeout(temporizadorCarga);
-        if (empleadoSelect.disabled || rolSelect.disabled || estadoSelect.disabled) {
-            mostrar('No hay empleados disponibles, roles o estados registrados.');
+        if (empleadoSelect.disabled || rolSelect.disabled) {
+            mostrar('No hay empleados sin cuenta o roles activos disponibles.');
         } else if (!guardando) mostrar('');
     }
 }
@@ -206,6 +207,7 @@ document.querySelectorAll('[data-ver]').forEach(boton => {
         boton.setAttribute('aria-label', mostrarAhora ? 'Ocultar contraseña' : 'Mostrar contraseña');
     });
 });
+document.getElementById('aceptarExito').addEventListener('click', () => { document.getElementById('modalExito').hidden = true; enviar({type:'cancelar'}); });
 document.getElementById('cancelar').addEventListener('click', () => {
     entradaContrasena.value = '';
     entradaConfirmacion.value = '';
@@ -219,9 +221,8 @@ formulario.addEventListener('submit', evento => {
     const NombreUsuario = entradaNombre.value.trim();
     const EmpleadoId = Number(empleadoSelect.value);
     const RolId = Number(rolSelect.value);
-    const EstadoId = Number(estadoSelect.value);
     const Contrasena = entradaContrasena.value;
-    if (!NombreUsuario || !EmpleadoId || !RolId || !EstadoId || !Contrasena || !entradaConfirmacion.value) {
+    if (!NombreUsuario || !EmpleadoId || !RolId || !Contrasena || !entradaConfirmacion.value) {
         mostrar('Completa todos los campos.'); return;
     }
     if (NombreUsuario.length < 3 || NombreUsuario.length > 50 || !/^[A-Za-z0-9._-]+$/.test(NombreUsuario)) {
@@ -247,7 +248,7 @@ formulario.addEventListener('submit', evento => {
     guardando = true;
     actualizarGuardar();
     mostrar('Guardando usuario...');
-    if (!enviar({type:'guardar',data:{EmpleadoId,RolId,NombreUsuario,Contrasena,EstadoId}})) {
+    if (!enviar({type:'guardar',data:{EmpleadoId,RolId,NombreUsuario,Contrasena}})) {
         guardando = false; actualizarGuardar(); return;
     }
     clearTimeout(temporizadorGuardado);
@@ -263,11 +264,10 @@ formulario.addEventListener('submit', evento => {
 });
 if (enviar({type:'empleados:selectAll'})) {
     enviar({type:'roles:selectAll'});
-    enviar({type:'obtenerEstados'});
     enviar({type:'usuarios:selectAll'});
     temporizadorCarga = setTimeout(() => {
-        if (!empleadosCargados || !rolesCargados || !estadosCargados) {
-            mostrar('No se pudieron cargar empleados, roles o estados desde AutoParts.');
+        if (!empleadosCargados || !rolesCargados || !usuariosCargados) {
+            mostrar('No se pudieron cargar empleados, roles o usuarios desde AutoParts.');
         }
     },12000);
 }
