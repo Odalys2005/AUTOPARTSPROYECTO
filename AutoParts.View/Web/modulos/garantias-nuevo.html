@@ -32,6 +32,12 @@
     .mensaje { min-height: 22px; margin-top: 25px; color: #ffc075; font-size: 12px; line-height: 1.5; }
     .mensaje:empty { min-height: 0; }
     .mensaje.exito { color: #79eaaa; }
+    .lector-fila { display: flex; gap: 12px; flex-wrap: wrap; }
+    .lector-fila input { flex: 1; min-width: 220px; }
+    .lector-boton { border: 1px solid #75515b; background: #29232b; color: #fff; border-radius: 9px; padding: 0 18px; min-height: 47px; cursor: pointer; font-weight: 700; }
+    .lector-boton:disabled { opacity: .5; cursor: not-allowed; }
+    .venta-encontrada { margin-top: 14px; color: #90dfaa; font-size: 13px; line-height: 1.6; }
+    .venta-encontrada:empty { display: none; }
     .acciones { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; border-top: 1px solid #382d34; padding-top: 23px; margin-top: 24px; }
     .acciones button { border-radius: 9px; border: 1px solid transparent; padding: 13px 25px; font-weight: 750; font-size: 13px; cursor: pointer; transition: filter .2s, transform .2s; }
     .cancelar { color: #e6e6eb; background: #25232a; border-color: #58535c; }
@@ -46,17 +52,22 @@
   <main class="contenedor">
     <header class="encabezado">
       <div>
-        <div class="etiqueta">SERVICIO POSVENTA</div>
         <h1>Nueva <span>Garantía</span></h1>
-        <p class="descripcion">Registro de solicitud por posible defecto de fabricación.</p>
-      </div>
-      <div class="icono" aria-hidden="true">
-        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8m-8 4h8m-8 4h5"/></svg>
       </div>
     </header>
     <section class="panel">
       <form id="formRegistro" novalidate>
-        <p class="seccion">DATOS DE LA SOLICITUD</p>
+        <p class="seccion">BUSCAR VENTA POR CÓDIGO DE BARRAS</p>
+        <div class="campo ancho">
+          <label for="NumeroFacturaBuscar">Escanea el código de barras de la factura</label>
+          <div class="lector-fila">
+            <input id="NumeroFacturaBuscar" type="text" maxlength="50" autocomplete="off" spellcheck="false" placeholder="FAC-2026-000001">
+            <button type="button" class="lector-boton" id="buscarFactura">Buscar venta</button>
+            <button type="button" class="lector-boton" id="mostrarTodas">Búsqueda manual</button>
+          </div>
+          <div id="ventaEncontrada" class="venta-encontrada" role="status" aria-live="polite"></div>
+        </div>
+        <p class="seccion" style="margin-top:28px">DATOS DE LA SOLICITUD</p>
         <div class="campos">
           <div class="campo ancho">
             <label for="DetalleVentaId">Producto vendido / detalle de venta <span class="requerido">*</span></label>
@@ -92,6 +103,10 @@
     const observaciones = document.getElementById('Observaciones');
     const mensaje = document.getElementById('mensaje');
     const guardar = document.getElementById('guardar');
+    const numeroFacturaBuscar = document.getElementById('NumeroFacturaBuscar');
+    const buscarFactura = document.getElementById('buscarFactura');
+    const mostrarTodas = document.getElementById('mostrarTodas');
+    const resumenVenta = document.getElementById('ventaEncontrada');
     let detalles = [];
     let productos = [];
     let ventas = [];
@@ -99,6 +114,8 @@
     let cargaronDetalles = false;
     let esperaCarga;
     let esperaRegistro;
+    let ventaEncontrada = null;
+    let buscandoFactura = false;
 
     function campo(obj, nombre) {
       if (!obj || typeof obj !== 'object') return undefined;
@@ -128,6 +145,9 @@
 
     function pintarDetalles() {
       const anterior = selector.value;
+      const detallesVisibles = ventaEncontrada
+        ? (Array.isArray(campo(ventaEncontrada, 'Detalles')) ? campo(ventaEncontrada, 'Detalles') : [])
+        : detalles;
       selector.replaceChildren();
       const primera = document.createElement('option');
       primera.value = '';
@@ -135,7 +155,7 @@
       selector.appendChild(primera);
       const productosPorId = new Map(productos.map(p => [Number(campo(p, 'ProductoId')), p]));
       const ventasPorId = new Map(ventas.map(v => [Number(campo(v, 'VentaId')), v]));
-      for (const detalle of detalles) {
+      for (const detalle of detallesVisibles) {
         const detalleId = Number(campo(detalle, 'DetalleVentaId'));
         const ventaId = Number(campo(detalle, 'VentaId'));
         const productoId = Number(campo(detalle, 'ProductoId'));
@@ -148,7 +168,7 @@
           `Detalle #${detalleId}`,
           `Venta #${ventaId}`,
           (campo(v, 'NumeroFactura') || ''),
-          (campo(p, 'Nombre') || `Producto #${productoId}`),
+          (campo(detalle, 'ProductoNombre') || campo(p, 'Nombre') || `Producto #${productoId}`),
           `Cant. ${unidades}`,
           `${dias} días`
         ].filter(Boolean).join(' · ');
@@ -159,6 +179,10 @@
       }
       if ([...selector.options].some(o => o.value === anterior)) selector.value = anterior;
       selector.disabled = selector.options.length < 2 || guardando;
+      if (ventaEncontrada && !selector.value && selector.options.length === 2) {
+        selector.selectedIndex = 1;
+      }
+      selector.dispatchEvent(new Event('change'));
       actualizarBoton();
     }
 
@@ -181,6 +205,32 @@
       } else if (dato.type === 'ventas:list') {
         ventas = Array.isArray(dato.data) ? dato.data : [];
         pintarDetalles();
+      } else if (dato.type === 'garantias:ventaEncontrada') {
+        buscandoFactura = false;
+        buscarFactura.disabled = false;
+        const venta = dato.data || {};
+        const id = Number(campo(venta, 'VentaId'));
+        if (!Number.isInteger(id) || id <= 0) {
+          informar('SQL Server devolvió una venta no válida.');
+          return;
+        }
+        ventaEncontrada = venta;
+        cargaronDetalles = true;
+        resumenVenta.textContent = 'Factura: ' + String(campo(venta, 'NumeroFactura') || '') +
+          ' · Cliente: ' + String(campo(venta, 'ClienteNombre') || 'No identificado') +
+          ' · Fecha: ' + new Date(campo(venta, 'FechaVenta')).toLocaleDateString('es-SV') +
+          ' · Total: $' + Number(campo(venta, 'Total') || 0).toFixed(2);
+        pintarDetalles();
+        informar(selector.options.length > 1
+          ? 'Venta encontrada. Selecciona el producto para solicitar la garantía.'
+          : 'La venta encontrada no tiene productos con garantía configurada.');
+      } else if (dato.type === 'garantias:ventaNoEncontrada' || dato.type === 'garantias:busquedaError') {
+        buscandoFactura = false;
+        buscarFactura.disabled = false;
+        ventaEncontrada = { Detalles: [] };
+        resumenVenta.textContent = '';
+        pintarDetalles();
+        informar(dato.message || 'No fue posible encontrar la venta.');
       } else if (dato.type === 'garantias:solicitudRegistrada') {
         clearTimeout(esperaRegistro);
         guardando = false;
@@ -206,10 +256,48 @@
     }
 
     selector.addEventListener('change', () => {
-      const detalle = detalles.find(d => Number(campo(d, 'DetalleVentaId')) === Number(selector.value));
+      const visibles = ventaEncontrada ? (campo(ventaEncontrada, 'Detalles') || []) : detalles;
+      const detalle = visibles.find(d => Number(campo(d, 'DetalleVentaId')) === Number(selector.value));
       const maximo = Number(campo(detalle, 'Cantidad'));
       cantidad.max = maximo > 0 ? String(maximo) : '';
       if (maximo > 0 && Number(cantidad.value) > maximo) cantidad.value = String(maximo);
+    });
+
+    function buscarVentaPorFactura() {
+      if (guardando || buscandoFactura) return;
+      const factura = numeroFacturaBuscar.value.trim();
+      if (!factura || factura.length > 50) {
+        informar('Escanea o ingresa un número de factura válido.');
+        numeroFacturaBuscar.focus();
+        return;
+      }
+      ventaEncontrada = { Detalles: [] };
+      resumenVenta.textContent = '';
+      pintarDetalles();
+      buscandoFactura = true;
+      buscarFactura.disabled = true;
+      informar('Buscando factura en SQL Server...');
+      if (!emitir({ type: 'garantias:buscarPorFactura', data: { NumeroFactura: factura } })) {
+        buscandoFactura = false;
+        buscarFactura.disabled = false;
+        ventaEncontrada = null;
+        pintarDetalles();
+        informar('Abre este formulario dentro de AutoParts.');
+      }
+    }
+
+    buscarFactura.addEventListener('click', buscarVentaPorFactura);
+    numeroFacturaBuscar.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); buscarVentaPorFactura(); }
+    });
+    mostrarTodas.addEventListener('click', () => {
+      buscandoFactura = false;
+      buscarFactura.disabled = false;
+      ventaEncontrada = null;
+      numeroFacturaBuscar.value = '';
+      resumenVenta.textContent = '';
+      pintarDetalles();
+      informar('Búsqueda manual de ventas disponible.');
     });
 
     formulario.addEventListener('submit', e => {
@@ -219,7 +307,8 @@
       const unidades = Number(cantidad.value);
       const falla = descripcion.value.trim();
       const obs = observaciones.value.trim();
-      const detalle = detalles.find(d => Number(campo(d, 'DetalleVentaId')) === detalleId);
+      const visibles = ventaEncontrada ? (campo(ventaEncontrada, 'Detalles') || []) : detalles;
+      const detalle = visibles.find(d => Number(campo(d, 'DetalleVentaId')) === detalleId);
       if (!detalleId || !detalle) return informar('Selecciona un detalle de venta válido.');
       if (!Number.isSafeInteger(unidades) || unidades <= 0) return informar('Ingresa una cantidad válida.');
       if (unidades > Number(campo(detalle, 'Cantidad'))) return informar('La cantidad excede las unidades de la venta.');

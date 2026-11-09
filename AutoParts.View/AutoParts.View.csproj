@@ -17,6 +17,8 @@
 	  <None Remove="Web\img\Muscle car roja bajo luces de neón.png" />
 	  <None Remove="Web\img\sidebar-repuestos.png" />
 	  <None Remove="Web\index.html" />
+	  <None Remove="Web\logo-autoparts.png" />
+	  <None Remove="Web\Logotipo.png" />
 	  <None Remove="Web\modulos\categorias-nuevo.html" />
 	  <None Remove="Web\modulos\categorias.html" />
 	  <None Remove="Web\modulos\clientes-nuevo.html" />
@@ -63,6 +65,12 @@
 
 	<ItemGroup>
 	  <Content Include="Web\categorias-integradas.js">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\logo-autoparts.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Web\Logotipo.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Web\modulos\clientes-nuevo.html">
@@ -225,6 +233,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.13" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
+		<PackageReference Include="QuestPDF" Version="2026.9.1" />
 	</ItemGroup>
 
 	<ItemGroup>

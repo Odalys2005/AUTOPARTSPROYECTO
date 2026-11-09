@@ -179,7 +179,13 @@ window.addEventListener('message', evento => {
         return;
     }
 
+    if (modulo === 'ventas' && mensaje.type === 'ventas:generarPdf') {
+        enviarACSharp(mensaje);
+        return;
+    }
+
     const operacionesGarantia = {
+        'garantias:buscarPorFactura': 'garantias',
         'garantias:registrarSolicitud': 'garantias',
         'garantias:evaluar': 'garantias',
         'reemplazos-garantia:entregar': 'reemplazos-garantia'
@@ -362,7 +368,18 @@ if (window.chrome?.webview?.addEventListener) {
             return;
         }
 
+        if (modulo === 'ventas' && (
+            mensaje.type === 'ventas:pdfGenerado' ||
+            mensaje.type === 'ventas:pdfError'
+        )) {
+            marco.contentWindow?.postMessage(mensaje, '*');
+            return;
+        }
+
         const respuestasGarantias = new Set([
+            'garantias:ventaEncontrada',
+            'garantias:ventaNoEncontrada',
+            'garantias:busquedaError',
             'garantias:solicitudRegistrada',
             'garantias:solicitudError',
             'garantias:evaluada',

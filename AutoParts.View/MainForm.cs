@@ -589,6 +589,7 @@ namespace AutoParts.View
                                 type = "ventas:registrada",
                                 data = new { resultadoVenta.VentaId, resultadoVenta.NumeroFactura, resultadoVenta.Total }
                             });
+                            await ProcesarCorreoFacturaNuevaAsync(resultadoVenta.VentaId);
                         }
                         catch (Exception ex)
                         {
@@ -600,6 +601,51 @@ namespace AutoParts.View
                         }
                         break;
 
+
+                    case "ventas:generarPdf":
+                        try
+                        {
+                            if (!raiz.TryGetProperty("data", out JsonElement datosPdf) ||
+                                datosPdf.ValueKind != JsonValueKind.Object ||
+                                !datosPdf.TryGetProperty("VentaId", out JsonElement idPdfJson) ||
+                                !idPdfJson.TryGetInt32(out int idVentaPdf) || idVentaPdf <= 0)
+                                throw new ArgumentException("Selecciona una venta registrada válida.");
+
+                            var servicioPdf = new FacturaPdfService(
+                                _ventaBL, _detalleVentaBL, _productoBL, _clienteBL, _empleadoBL);
+                            string rutaPdf = await Task.Run(() => servicioPdf.Generar(idVentaPdf));
+                            string? enlaceDigital = null;
+                            string mensajePdf = "Factura PDF generada correctamente.";
+                            try
+                            {
+                                var ventaPdf = _ventaBL.SelectAll()
+                                    .FirstOrDefault(v => v.VentaId == idVentaPdf)
+                                    ?? throw new InvalidOperationException("No se encontró la venta para publicar.");
+                                enlaceDigital = await ObtenerOPublicarFacturaDigitalAsync(
+                                    idVentaPdf, rutaPdf, ventaPdf.NumeroFactura ?? "");
+                                mensajePdf = "Factura PDF generada y publicada correctamente en Supabase.";
+                            }
+                            catch (Exception errorPublicacion)
+                            {
+                                mensajePdf = "PDF guardado localmente. No se pudo publicar en Supabase: "
+                                    + errorPublicacion.Message;
+                            }
+                            EnviarAlDashboard(new
+                            {
+                                type = "ventas:pdfGenerado",
+                                data = new { VentaId = idVentaPdf, RutaPdf = rutaPdf, EnlaceDigital = enlaceDigital },
+                                message = mensajePdf
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "ventas:pdfError",
+                                message = "No se pudo generar el PDF: " + ex.Message
+                            });
+                        }
+                        break;
 
                     case "ventas:imprimirTicket":
                         try
@@ -628,6 +674,78 @@ namespace AutoParts.View
                         }
                         break;
 
+
+                    case "garantias:buscarPorFactura":
+                        try
+                        {
+                            if (!raiz.TryGetProperty("data", out JsonElement datosBusqueda) ||
+                                datosBusqueda.ValueKind != JsonValueKind.Object ||
+                                !datosBusqueda.TryGetProperty("NumeroFactura", out JsonElement facturaJson) ||
+                                facturaJson.ValueKind != JsonValueKind.String)
+                                throw new ArgumentException("Escanea o ingresa un número de factura válido.");
+
+                            string numeroFactura = (facturaJson.GetString() ?? string.Empty).Trim();
+                            int? ventaIdEncontrada = await Task.Run(() =>
+                                _ventaBL.BuscarVentaIdPorFactura(numeroFactura));
+
+                            if (!ventaIdEncontrada.HasValue)
+                            {
+                                EnviarAlDashboard(new
+                                {
+                                    type = "garantias:ventaNoEncontrada",
+                                    message = "No se encontró ninguna venta con ese número de factura."
+                                });
+                                break;
+                            }
+
+                            var ventaEncontrada = _ventaBL.SelectAll()
+                                .FirstOrDefault(v => v.VentaId == ventaIdEncontrada.Value)
+                                ?? throw new InvalidOperationException("No fue posible recuperar la venta encontrada.");
+                            var detallesVenta = _detalleVentaBL.SelectAll()
+                                .Where(d => d.VentaId == ventaEncontrada.VentaId)
+                                .ToList();
+                            var productosVenta = _productoBL.SelectAll()
+                                .ToDictionary(p => p.ProductoId);
+                            var clienteVenta = _clienteBL.SelectAll()
+                                .FirstOrDefault(c => c.ClienteId == ventaEncontrada.ClienteId);
+
+                            EnviarAlDashboard(new
+                            {
+                                type = "garantias:ventaEncontrada",
+                                data = new
+                                {
+                                    ventaEncontrada.VentaId,
+                                    ventaEncontrada.NumeroFactura,
+                                    ventaEncontrada.FechaVenta,
+                                    ventaEncontrada.ClienteId,
+                                    ClienteNombre = clienteVenta == null
+                                        ? "Cliente no identificado"
+                                        : (clienteVenta.Nombre + " " + clienteVenta.Apellido).Trim(),
+                                    ventaEncontrada.Total,
+                                    Detalles = detallesVenta.Select(d => new
+                                    {
+                                        d.DetalleVentaId,
+                                        d.ProductoId,
+                                        ProductoNombre = productosVenta.TryGetValue(d.ProductoId, out var producto)
+                                            ? producto.Nombre
+                                            : "Producto #" + d.ProductoId,
+                                        d.Cantidad,
+                                        d.PrecioUnitario,
+                                        d.Subtotal,
+                                        d.DiasGarantiaVenta
+                                    }).ToList()
+                                }
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            EnviarAlDashboard(new
+                            {
+                                type = "garantias:busquedaError",
+                                message = ex.Message
+                            });
+                        }
+                        break;
 
                     case "garantias:registrarSolicitud":
                     case "garantias:evaluar":
@@ -727,6 +845,12 @@ namespace AutoParts.View
         {
             if (_sesionActual == null)
                 return false;
+
+            if (tipo == "ventas:generarPdf")
+                return PermisosSistema.PuedeRealizar(_sesionActual, "ventas", "imprimirTicket");
+
+            if (tipo == "garantias:buscarPorFactura")
+                return _sesionActual.RolId == PermisosSistema.RolTecnico;
 
             if (tipo == "obtenerEstados" || tipo == "estados:selectAll" ||
                 tipo == "categorias:selectAll" || tipo == "subcategorias:selectAll" ||
@@ -1470,7 +1594,76 @@ namespace AutoParts.View
         }
 
 
+        private async Task ProcesarCorreoFacturaNuevaAsync(int ventaId)
+        {
+            try
+            {
+                var venta = await Task.Run(() => _ventaBL.SelectAll()
+                    .FirstOrDefault(v => v.VentaId == ventaId))
+                    ?? throw new InvalidOperationException("No se encontró la venta registrada.");
+                var cliente = await Task.Run(() => _clienteBL.SelectAll()
+                    .FirstOrDefault(c => c.ClienteId == venta.ClienteId));
+
+                if (cliente == null || string.IsNullOrWhiteSpace(cliente.Correo))
+                {
+                    EnviarAlDashboard(new
+                    {
+                        type = "ventas:correoEstado",
+                        data = new { VentaId = ventaId, Enviado = false },
+                        message = "Venta registrada. El cliente no tiene correo para enviar la factura."
+                    });
+                    MessageBox.Show(
+                        "La venta se registró, pero el cliente no tiene correo configurado. No se envió ninguna factura.",
+                        "AutoParts - Correo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var servicioPdf = new FacturaPdfService(
+                    _ventaBL, _detalleVentaBL, _productoBL, _clienteBL, _empleadoBL);
+                string rutaPdf = await Task.Run(() => servicioPdf.Generar(ventaId));
+                string enlace = await ObtenerOPublicarFacturaDigitalAsync(
+                    ventaId, rutaPdf, venta.NumeroFactura ?? "");
+
+                var servicioCorreo = new FacturaCorreoService();
+                bool enviado = await servicioCorreo.EnviarSiPendienteAsync(
+                    ventaId,
+                    venta.NumeroFactura ?? "",
+                    cliente.Correo,
+                    (cliente.Nombre + " " + cliente.Apellido).Trim(),
+                    rutaPdf,
+                    enlace);
+
+                EnviarAlDashboard(new
+                {
+                    type = "ventas:correoEstado",
+                    data = new { VentaId = ventaId, Enviado = enviado },
+                    message = enviado
+                        ? "Factura PDF enviada automáticamente al correo del cliente."
+                        : "La factura ya había sido enviada por correo."
+                });
+                MessageBox.Show(
+                    enviado
+                        ? "Gmail aceptó el envío de la factura " + venta.NumeroFactura + " a " + cliente.Correo + ". Revisa también Spam si no aparece en Recibidos."
+                        : "Esta venta ya figura como enviada en el registro local. No se volvió a enviar el correo.",
+                    "AutoParts - Correo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                EnviarAlDashboard(new
+                {
+                    type = "ventas:correoEstado",
+                    data = new { VentaId = ventaId, Enviado = false },
+                    message = "Venta registrada. No se pudo enviar el correo automático: " + ex.Message
+                });
+                MessageBox.Show(
+                    "La venta se registró, pero no se pudo enviar la factura por Gmail.\n\n" + ex.Message,
+                    "AutoParts - Correo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
         private const string NombreImpresoraPt210 = "AutoParts PT-210";
+        private const string PuertoBluetoothPt210 = "COM4";
+        private const bool UsarBluetoothCom4Pt210 = true;
         private const int AnchoTicketPt210 = 32;
 
         private void ImprimirTicketVentaPt210(int ventaId)
@@ -1485,12 +1678,10 @@ namespace AutoParts.View
             var cliente = _clienteBL.SelectAll().FirstOrDefault(c => c.ClienteId == venta.ClienteId);
             var empleado = _empleadoBL.SelectAll().FirstOrDefault(e => e.EmpleadoId == venta.EmpleadoId);
             var t = new StringBuilder();
-            AgregarCentradoPt210(t, "AUTOPARTS");
             AgregarCentradoPt210(t, "REPUESTOS Y ACCESORIOS");
             AgregarCentradoPt210(t, "COMPROBANTE INTERNO");
             t.AppendLine(new string('-', AnchoTicketPt210));
             AgregarPartidoPt210(t, "Factura: " + venta.NumeroFactura);
-            t.AppendLine("Venta: " + venta.VentaId);
             t.AppendLine("Fecha: " + venta.FechaVenta.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
             AgregarPartidoPt210(t, "Cliente: " + (cliente == null ? "No identificado" : cliente.Nombre + " " + cliente.Apellido));
             AgregarPartidoPt210(t, "Atendio: " + (empleado == null ? "No identificado" : empleado.Nombre + " " + empleado.Apellido));
@@ -1506,18 +1697,283 @@ namespace AutoParts.View
                 AgregarDosColumnasPt210(t, izquierda,
                     "$" + detalle.Subtotal.ToString("0.00", CultureInfo.InvariantCulture));
             }
+
             t.AppendLine(new string('-', AnchoTicketPt210));
             AgregarDosColumnasPt210(t, "TOTAL", "$" + venta.Total.ToString("0.00", CultureInfo.InvariantCulture));
             t.AppendLine(new string('-', AnchoTicketPt210));
-            AgregarCentradoPt210(t, "GRACIAS POR SU COMPRA!");
-            AgregarCentradoPt210(t, "Conserve su comprobante");
-            t.AppendLine();
-            t.AppendLine();
-            t.AppendLine();
+            AgregarCentradoPt210(t, "COD");
 
+            string codigoEscaneable = (venta.NumeroFactura ?? string.Empty).Trim().Replace("-", "");
+            if (codigoEscaneable.Length == 0 || codigoEscaneable.Length > 40 ||
+                codigoEscaneable.Any(c => c < 32 || c > 126 || c == '{'))
+                throw new InvalidOperationException("El número de factura no se puede codificar en Code 128.");
 
-            byte[] datos = Encoding.ASCII.GetBytes(t.ToString().Replace("\n", "\r\n"));
-            EnviarTextoCrudoPt210(NombreImpresoraPt210, datos);
+            string? enlaceQr = ObtenerEnlaceFacturaDigitalGuardado(ventaId);
+            if (string.IsNullOrWhiteSpace(enlaceQr))
+            {
+                try
+                {
+                    var servicioPdf = new FacturaPdfService(
+                        _ventaBL, _detalleVentaBL, _productoBL, _clienteBL, _empleadoBL);
+                    string rutaPdf = servicioPdf.Generar(ventaId);
+                    enlaceQr = ObtenerOPublicarFacturaDigitalAsync(
+                        ventaId, rutaPdf, venta.NumeroFactura ?? "")
+                        .GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Factura digital no disponible: " + ex.Message);
+                }
+            }
+
+            using (var bytes = new MemoryStream())
+            {
+                bytes.WriteByte(0x1B);
+                bytes.WriteByte(0x40);
+                if (!IntentarEscribirLogoPt210(bytes))
+                    EscribirTextoCentradoPt210(bytes, "AUTOPARTS\n");
+                EscribirTextoPt210(bytes, t.ToString());
+                EscribirCodigoBarrasPt210(bytes, codigoEscaneable);
+                EscribirTextoCentradoPt210(bytes, codigoEscaneable + "\n\n");
+
+                if (!string.IsNullOrWhiteSpace(enlaceQr))
+                {
+                    EscribirTextoPt210(bytes, new string('-', AnchoTicketPt210) + "\n");
+                    EscribirTextoCentradoPt210(bytes, "ESCANEA TU FACTURA DIGITAL\n");
+                    EscribirQrPt210(bytes, enlaceQr);
+                    EscribirTextoCentradoPt210(bytes, "Consulta tu factura PDF\n\n");
+                }
+
+                var pie = new StringBuilder();
+                AgregarCentradoPt210(pie, "GRACIAS POR SU COMPRA!");
+                AgregarCentradoPt210(pie, "Conserve su comprobante");
+                pie.AppendLine();
+                pie.AppendLine();
+                pie.AppendLine();
+                EscribirTextoPt210(bytes, pie.ToString());
+
+                byte[] datos = bytes.ToArray();
+                if (UsarBluetoothCom4Pt210)
+                    EnviarPuertoBluetoothPt210(PuertoBluetoothPt210, datos);
+                else
+                    EnviarTextoCrudoPt210(NombreImpresoraPt210, datos);
+            }
+        }
+
+        private static readonly object CandadoEnlacesFactura = new object();
+
+        private static string RutaEnlacesFacturaDigital => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "AutoParts", "Facturas", "enlaces-digitales.json");
+
+        private static Dictionary<string, string> LeerEnlacesFacturaDigital()
+        {
+            if (!File.Exists(RutaEnlacesFacturaDigital))
+                return new Dictionary<string, string>();
+            string contenido = File.ReadAllText(RutaEnlacesFacturaDigital);
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(contenido)
+                ?? new Dictionary<string, string>();
+        }
+
+        private static string? ObtenerEnlaceFacturaDigitalGuardado(int ventaId)
+        {
+            lock (CandadoEnlacesFactura)
+            {
+                var enlaces = LeerEnlacesFacturaDigital();
+                return enlaces.TryGetValue(ventaId.ToString(CultureInfo.InvariantCulture), out var url)
+                    && Uri.TryCreate(url, UriKind.Absolute, out var uri)
+                    && uri.Scheme == Uri.UriSchemeHttps
+                    && uri.Host.Equals("guiaqhvpitswyusrjpzj.supabase.co", StringComparison.OrdinalIgnoreCase)
+                    ? url : null;
+            }
+        }
+
+        private static void GuardarEnlaceFacturaDigital(int ventaId, string enlace)
+        {
+            if (!Uri.TryCreate(enlace, UriKind.Absolute, out Uri? uri)
+                || uri.Scheme != Uri.UriSchemeHttps
+                || !uri.Host.Equals("guiaqhvpitswyusrjpzj.supabase.co", StringComparison.OrdinalIgnoreCase)
+                || !uri.AbsolutePath.Equals("/functions/v1/consultar-factura", StringComparison.Ordinal))
+                throw new InvalidOperationException("Supabase devolvió una dirección de factura no válida.");
+
+            lock (CandadoEnlacesFactura)
+            {
+                var enlaces = LeerEnlacesFacturaDigital();
+                enlaces[ventaId.ToString(CultureInfo.InvariantCulture)] = enlace;
+                string ruta = RutaEnlacesFacturaDigital;
+                Directory.CreateDirectory(Path.GetDirectoryName(ruta)!);
+                string temporal = ruta + ".tmp";
+                File.WriteAllText(temporal, JsonSerializer.Serialize(enlaces));
+                File.Move(temporal, ruta, true);
+            }
+        }
+
+        private async Task<string> ObtenerOPublicarFacturaDigitalAsync(
+            int ventaId, string rutaPdf, string numeroFactura)
+        {
+            string? guardado = ObtenerEnlaceFacturaDigitalGuardado(ventaId);
+            if (!string.IsNullOrWhiteSpace(guardado)) return guardado;
+
+            var servicio = new FacturaDigitalService();
+            string enlace = await servicio.PublicarAsync(rutaPdf, numeroFactura);
+            GuardarEnlaceFacturaDigital(ventaId, enlace);
+            return enlace;
+        }
+
+        private static void EscribirTextoCentradoPt210(Stream destino, string texto)
+        {
+            destino.WriteByte(0x1B);
+            destino.WriteByte(0x61);
+            destino.WriteByte(0x01);
+            EscribirTextoPt210(destino, texto);
+            destino.WriteByte(0x1B);
+            destino.WriteByte(0x61);
+            destino.WriteByte(0x00);
+        }
+
+        private static void EscribirQrPt210(Stream destino, string enlace)
+        {
+            byte[] datos = Encoding.ASCII.GetBytes(enlace);
+            int longitud = datos.Length + 3;
+            if (datos.Length == 0 || longitud > 65535)
+                throw new InvalidOperationException("El enlace QR no es válido.");
+
+            destino.WriteByte(0x1B);
+            destino.WriteByte(0x61);
+            destino.WriteByte(0x01);
+            destino.Write(new byte[] { 0x1D, 0x28, 0x6B, 0x04, 0x00, 0x31, 0x41, 0x32, 0x00 });
+            destino.Write(new byte[] { 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x04 });
+            destino.Write(new byte[] { 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, 0x31 });
+            destino.Write(new byte[] {
+                0x1D, 0x28, 0x6B,
+                (byte)(longitud & 0xFF), (byte)((longitud >> 8) & 0xFF),
+                0x31, 0x50, 0x30
+            });
+            destino.Write(datos, 0, datos.Length);
+            destino.Write(new byte[] { 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x51, 0x30, 0x0A });
+            destino.WriteByte(0x1B);
+            destino.WriteByte(0x61);
+            destino.WriteByte(0x00);
+        }
+
+        private static bool IntentarEscribirLogoPt210(Stream destino)
+        {
+            string rutaLogo = Path.Combine(AppContext.BaseDirectory, "Web", "Logotipo.png");
+            if (!File.Exists(rutaLogo)) return false;
+
+            try
+            {
+                using var imagen = System.Drawing.Image.FromFile(rutaLogo);
+                int ancho = 288;
+                int alto = Math.Min(160, Math.Max(1, (int)Math.Round(
+                    imagen.Height * (double)ancho / imagen.Width)));
+                using var lienzo = new System.Drawing.Bitmap(ancho, alto);
+                using (var grafico = System.Drawing.Graphics.FromImage(lienzo))
+                {
+                    grafico.Clear(System.Drawing.Color.White);
+                    grafico.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    grafico.DrawImage(imagen, 0, 0, ancho, alto);
+                }
+
+                int anchoBytes = (ancho + 7) / 8;
+                byte[] pixeles = new byte[anchoBytes * alto];
+                for (int y = 0; y < alto; y++)
+                {
+                    for (int x = 0; x < ancho; x++)
+                    {
+                        var pixel = lienzo.GetPixel(x, y);
+                        int intensidad = (pixel.R * 299 + pixel.G * 587 + pixel.B * 114) / 1000;
+                        if (intensidad < 160)
+                            pixeles[y * anchoBytes + x / 8] |= (byte)(0x80 >> (x % 8));
+                    }
+                }
+
+                destino.Write(new byte[] { 0x1B, 0x61, 0x01 });
+                destino.Write(new byte[] {
+                    0x1D, 0x76, 0x30, 0x00,
+                    (byte)(anchoBytes & 0xFF), (byte)(anchoBytes >> 8),
+                    (byte)(alto & 0xFF), (byte)(alto >> 8)
+                });
+                destino.Write(pixeles, 0, pixeles.Length);
+                destino.WriteByte(0x0A);
+                destino.Write(new byte[] { 0x1B, 0x61, 0x00 });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Logo PT-210 no disponible: " + ex.Message);
+                return false;
+            }
+        }
+
+        private static void EscribirTextoPt210(Stream destino, string texto)
+        {
+            byte[] datos = Encoding.ASCII.GetBytes(texto.Replace("\r\n", "\n").Replace("\n", "\r\n"));
+            destino.Write(datos, 0, datos.Length);
+        }
+
+        private static void EscribirCodigoBarrasPt210(Stream destino, string codigo)
+        {
+            byte[] contenido = Encoding.ASCII.GetBytes("{B" + codigo);
+            if (contenido.Length > 255)
+                throw new ArgumentException("El código de barras supera el tamaño permitido.");
+
+            destino.WriteByte(0x1B);
+            destino.WriteByte(0x61);
+            destino.WriteByte(0x01);
+            destino.WriteByte(0x1D);
+            destino.WriteByte(0x77);
+            destino.WriteByte(0x02);
+            destino.WriteByte(0x1D);
+            destino.WriteByte(0x68);
+            destino.WriteByte(0x58);
+            destino.WriteByte(0x1D);
+            destino.WriteByte(0x48);
+            destino.WriteByte(0x00);
+            destino.WriteByte(0x1D);
+            destino.WriteByte(0x6B);
+            destino.WriteByte(0x49);
+            destino.WriteByte((byte)contenido.Length);
+            destino.Write(contenido, 0, contenido.Length);
+            destino.WriteByte(0x0A);
+            destino.WriteByte(0x1B);
+            destino.WriteByte(0x61);
+            destino.WriteByte(0x00);
+        }
+
+        [DllImport("kernel32.dll", EntryPoint = "CreateFileW", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern Microsoft.Win32.SafeHandles.SafeFileHandle AbrirPuertoBluetoothPt210(
+            string nombre, uint acceso, uint compartir, IntPtr seguridad, uint creacion,
+            uint atributos, IntPtr plantilla);
+
+        [DllImport("kernel32.dll", EntryPoint = "WriteFile", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool EscribirPuertoBluetoothPt210(
+            Microsoft.Win32.SafeHandles.SafeFileHandle puerto,
+            byte[] datos, uint longitud, out uint escritos, IntPtr superpuesto);
+
+        private static void EnviarPuertoBluetoothPt210(string puerto, byte[] datos)
+        {
+            using (var manejador = AbrirPuertoBluetoothPt210(
+                @"\\.\" + puerto, 0xC0000000u, 0, IntPtr.Zero, 3, 0, IntPtr.Zero))
+            {
+                if (manejador.IsInvalid)
+                    throw new InvalidOperationException("No se pudo abrir " + puerto +
+                        ". Comprueba que la PT-210 esté conectada y que el puerto no esté ocupado. Error " +
+                        Marshal.GetLastWin32Error());
+
+                const int lote = 256;
+                for (int pos = 0; pos < datos.Length; pos += lote)
+                {
+                    int longitud = Math.Min(lote, datos.Length - pos);
+                    byte[] fragmento = new byte[longitud];
+                    Buffer.BlockCopy(datos, pos, fragmento, 0, longitud);
+                    if (!EscribirPuertoBluetoothPt210(manejador, fragmento,
+                            (uint)longitud, out uint escritos, IntPtr.Zero) || escritos != (uint)longitud)
+                        throw new InvalidOperationException("No se pudo enviar el ticket completo por " + puerto + ".");
+                    System.Threading.Thread.Sleep(45);
+                }
+            }
         }
 
         private static string LimpiarPt210(string? texto)

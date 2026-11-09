@@ -268,8 +268,7 @@ const moduleDescriptions = {
     'Puestos': 'Administración de puestos de trabajo.',
     'Usuarios': 'Accesos y cuentas de usuario del sistema.',
     'Roles': 'Administración de roles y permisos del sistema.',
-    'Estados': 'Consulta de estados registrados en el sistema.',
-    'Configuración': 'Opciones de AutoParts.'
+    'Estados': 'Consulta de estados registrados en el sistema.'
 };
 
 /* El slug corresponde al archivo Web/modulos/<slug>.html.
@@ -330,11 +329,6 @@ function actualizarMenuPorRol() {
         elemento.hidden = !permitido;
         elemento.style.display = permitido ? '' : 'none';
     });
-    const configuracion = document.getElementById('profileSettings');
-    if (configuracion) {
-        configuracion.hidden = !puedeAbrirSeccion('Configuración');
-        configuracion.style.display = puedeAbrirSeccion('Configuración') ? '' : 'none';
-    }
 }
 
 actualizarMenuPorRol();
@@ -434,7 +428,7 @@ function showSection(section) {
         return;
     }
 
-    // Inicio y Configuración (sin HTML específico todavía).
+    // Inicio sin HTML específico todavía.
     if (typeof restaurarEncabezado === 'function') {
         restaurarEncabezado();
     }
@@ -580,15 +574,6 @@ profileButton.onclick = () => {
 };
 
 
-/* Abrir configuración */
-
-document.getElementById('profileSettings').onclick = () => {
-
-    profileMenu.hidden = true;
-
-    showSection('Configuración');
-
-};
 
 
 /* Cerrar sesión real desde el botón que ya existe en el Dashboard */

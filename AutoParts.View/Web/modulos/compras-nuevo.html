@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -44,17 +43,26 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
 .agregar{background:#29232b;border:1px solid #75515b;border-radius:9px;padding:12px 18px;color:#fff;cursor:pointer;font-weight:700}
 .estado-ok{color:#90dfaa}.estado-error{color:#ffa4a4}
 @media(max-width:720px){.tabla-scroll{overflow-x:auto}.lineas{min-width:620px}}
+.modal-compra{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:22px}
+.modal-compra[hidden]{display:none}
+.modal-compra-contenido{width:min(430px,100%);background:#181519;border:1px solid #6b3942;border-radius:15px;box-shadow:0 22px 65px #000a;padding:30px;text-align:center}
+.modal-compra-icono{width:58px;height:58px;margin:0 auto 15px;border-radius:50%;display:grid;place-items:center;background:#173b2b;border:1px solid #399e6b;color:#91efb4;font-size:29px;font-weight:800}
+.modal-compra-contenido h2{margin:0 0 12px;font-size:21px;color:#fff}
+.modal-compra-contenido p{margin:8px 0;color:#c9c5ca;font-size:13px;line-height:1.6}
+.modal-compra-contenido strong{color:#ffbd35}
+.modal-compra-contenido .advertencia-stock{color:#ffbf7d}
+.modal-compra-aceptar{margin-top:18px;min-width:130px;border:0;border-radius:9px;padding:12px 22px;font-weight:750;color:#1b0c0d;background:linear-gradient(110deg,#ff3543,#ffbd2b);cursor:pointer}
 </style>
 </head>
 <body>
 <main class="contenedor">
 <header class="encabezado">
 <div>
-<div class="etiqueta">COMPRAS Y ABASTECIMIENTO</div>
+
 <h1>Nueva <span>Compra</span></h1>
-<p class="descripcion">Registra los productos recibidos y actualiza las existencias en una operación.</p>
+
 </div>
-<div class="icono" aria-hidden="true">▣</div>
+
 </header>
 <section class="panel">
 <form id="formCompra" novalidate>
@@ -81,7 +89,7 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
 </div>
 <div id="vacia" class="lineas-vacia">Todavía no agregaste productos.</div>
 <div class="total" id="total">TOTAL: $0.00</div>
-<p class="descripcion">Si las existencias superan el máximo recomendado, la compra se permitirá y se mostrará una advertencia.</p>
+
 </div>
 <div id="mensaje" class="mensaje" role="status" aria-live="polite"></div>
 <div class="acciones">
@@ -91,6 +99,16 @@ h1{margin:0;font-size:clamp(27px,3vw,36px);font-weight:800;letter-spacing:-.6px}
 </form>
 </section>
 </main>
+<div class="modal-compra" id="modalCompra" role="dialog" aria-modal="true" aria-labelledby="tituloModalCompra" hidden>
+<div class="modal-compra-contenido">
+<div class="modal-compra-icono" aria-hidden="true">✓</div>
+<h2 id="tituloModalCompra">¡Compra realizada correctamente!</h2>
+<p id="comprobanteModalCompra"></p>
+<p id="totalModalCompra"></p>
+<p id="advertenciaModalCompra" class="advertencia-stock" hidden></p>
+<button type="button" id="aceptarModalCompra" class="modal-compra-aceptar">Aceptar</button>
+</div>
+</div>
 <script>
 'use strict';
 const $ = x => document.getElementById(x);
@@ -108,8 +126,9 @@ function llenar(tipo){const s=campos[tipo],previo=s.value;s.replaceChildren();co
 function pintar(){const cuerpo=$('cuerpoDetalles');cuerpo.replaceChildren();let centavos=0;detalles.forEach((d,i)=>{const sub=Math.round(d.Cantidad*Math.round(d.PrecioCosto*100));centavos+=sub;const fila=document.createElement('tr');const nombre=document.createElement('td');nombre.textContent=d.Nombre;fila.appendChild(nombre);for(const texto of [String(d.Cantidad),dinero(d.PrecioCosto),dinero(sub/100)]){const td=document.createElement('td');td.textContent=texto;td.className='numero';fila.appendChild(td);}const acciones=document.createElement('td'),b=document.createElement('button');b.type='button';b.textContent='Quitar';b.disabled=guardando||confirmada;b.addEventListener('click',()=>{if(guardando||confirmada)return;detalles.splice(i,1);pintar();});acciones.appendChild(b);fila.appendChild(acciones);cuerpo.appendChild(fila);});$('vacia').hidden=detalles.length>0;$('total').textContent='TOTAL: '+dinero(centavos/100);actualizar();}
 $('agregar').addEventListener('click',()=>{if(guardando||confirmada)return;const ProductoId=Number($('ProductoId').value),Cantidad=Number($('Cantidad').value),PrecioCosto=Number($('PrecioCosto').value);if(!ProductoId){aviso('Selecciona un producto.','estado-error');return;}if(!Number.isSafeInteger(Cantidad)||Cantidad<=0){aviso('Ingresa una cantidad entera mayor que cero.','estado-error');return;}if($('PrecioCosto').value.trim()===''||!Number.isFinite(PrecioCosto)||PrecioCosto<0||!/^\d+(?:\.\d{1,2})?$/.test($('PrecioCosto').value.trim())){aviso('El costo debe tener hasta dos decimales y no ser negativo.','estado-error');return;}if(detalles.some(d=>d.ProductoId===ProductoId)){aviso('Ese producto ya está agregado. Quítalo para cambiar su cantidad.','estado-error');return;}const producto=listas.productos.find(p=>identificador(p,'ProductoId')===ProductoId);if(!producto){aviso('Producto no encontrado.','estado-error');return;}if(Number(campo(producto,'EstadoId'))!==1){aviso('No puedes comprar un producto inactivo.','estado-error');return;}detalles.push({ProductoId,Cantidad,PrecioCosto,Nombre:nombreRegistro('productos',producto)});$('ProductoId').value='';$('Cantidad').value='1';$('PrecioCosto').value='';aviso('');pintar();});
 $('cancelar').addEventListener('click',()=>{if(guardando)return;emitir({type:'cancelar'});});
+$('aceptarModalCompra').addEventListener('click',()=>emitir({type:'cancelar'}));
 $('formCompra').addEventListener('submit',e=>{e.preventDefault();if(guardando||confirmada)return;if(!$('formCompra').checkValidity()){aviso('Completa los datos obligatorios.','estado-error');$('formCompra').reportValidity();return;}const ProveedorId=Number($('ProveedorId').value),EmpleadoId=Number($('EmpleadoId').value),NumeroComprobante=$('NumeroComprobante').value.trim(),FechaCompra=$('FechaCompra').value;if(!ProveedorId||!EmpleadoId||!NumeroComprobante||NumeroComprobante.length>50||!FechaCompra){aviso('Revisa proveedor, empleado, comprobante y fecha.','estado-error');return;}if(detalles.length===0){aviso('Agrega al menos un producto.','estado-error');return;}const mensaje={type:'compras:registrarCompleta',data:{Compra:{ProveedorId,EmpleadoId,NumeroComprobante,FechaCompra},Detalles:detalles.map(({ProductoId,Cantidad,PrecioCosto})=>({ProductoId,Cantidad,PrecioCosto}))}};guardando=true;actualizar();aviso('Registrando compra y actualizando inventario...');if(!emitir(mensaje)){guardando=false;actualizar();aviso('Abre este formulario desde AutoParts.','estado-error');return;}clearTimeout(timeoutGuardar);timeoutGuardar=setTimeout(()=>{if(!guardando)return;guardando=false;actualizar();aviso('No se recibió confirmación. Verifica las compras existentes antes de volver a intentar: podría haberse guardado.','estado-error');},20000);});
-function recibir(e){let m=e.data;if(typeof m==='string'){try{m=JSON.parse(m);}catch{return;}}if(!m||typeof m!=='object')return;if(m.type==='compras:registrada'){clearTimeout(timeoutGuardar);guardando=false;confirmada=true;actualizar();const d=m.data||{};aviso('Compra registrada correctamente. ID: '+String(d.CompraId??'—')+' · Comprobante: '+String(d.NumeroComprobante??'')+' · Total: '+dinero(d.TotalCompra??0)+(d.AdvertenciasStockMaximo?' · ADVERTENCIA DE STOCK: '+String(d.AdvertenciasStockMaximo):''),'estado-ok');return;}if(m.type==='compras:error'||m.type==='error'){if(guardando||m.type==='compras:error'){clearTimeout(timeoutGuardar);guardando=false;actualizar();}aviso(String(m.message||'Error al registrar compra. Comprueba los datos.'),'estado-error');return;}if(m.type?.endsWith(':list')){const tipo=m.type.slice(0,-5);if(tipo in listas){listas[tipo]=Array.isArray(m.data)?m.data:[];cargado[tipo]=true;llenar(tipo);}}if(Object.values(cargado).every(Boolean))clearTimeout(timeoutCarga);}
+function recibir(e){let m=e.data;if(typeof m==='string'){try{m=JSON.parse(m);}catch{return;}}if(!m||typeof m!=='object')return;if(m.type==='compras:registrada'){clearTimeout(timeoutGuardar);guardando=false;confirmada=true;actualizar();const d=m.data||{};aviso('');$('comprobanteModalCompra').textContent='Comprobante: '+String(d.NumeroComprobante??'—');$('totalModalCompra').textContent='Total: '+dinero(d.TotalCompra??0);const advertencia=String(d.AdvertenciasStockMaximo??'').trim();$('advertenciaModalCompra').textContent=advertencia?'Advertencia de stock: '+advertencia:'';$('advertenciaModalCompra').hidden=!advertencia;$('modalCompra').hidden=false;$('aceptarModalCompra').focus();return;}if(m.type==='compras:error'||m.type==='error'){if(guardando||m.type==='compras:error'){clearTimeout(timeoutGuardar);guardando=false;actualizar();}aviso(String(m.message||'Error al registrar compra. Comprueba los datos.'),'estado-error');return;}if(m.type?.endsWith(':list')){const tipo=m.type.slice(0,-5);if(tipo in listas){listas[tipo]=Array.isArray(m.data)?m.data:[];cargado[tipo]=true;llenar(tipo);}}if(Object.values(cargado).every(Boolean))clearTimeout(timeoutCarga);}
 window.addEventListener('message',recibir);if(window.parent===window&&window.chrome?.webview?.addEventListener)window.chrome.webview.addEventListener('message',recibir);
 const ahora=new Date();$('FechaCompra').value=new Date(ahora.getTime()-ahora.getTimezoneOffset()*60000).toISOString().slice(0,16);
 for(const tipo of Object.keys(campos))emitir({type:tipo+':selectAll'});timeoutCarga=setTimeout(()=>{const faltan=Object.keys(cargado).filter(k=>!cargado[k]);if(faltan.length)aviso('No se pudieron cargar las listas: '+faltan.join(', ')+'.','estado-error');},12000);actualizar();

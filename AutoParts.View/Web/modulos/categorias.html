@@ -599,7 +599,7 @@
                 categoriaCambioId = 0;
                 operacionPendiente = true;
                 ultimaAccionCategoria = activo ? 'desactivar' : 'habilitar';
-                aviso(activo ? 'Desactivando categoría...' : 'Habilitando categoría...');
+                aviso(activo ? '' : '');
                 if (!enviarACSharp({ type: 'categorias:desactivarIntegrado', data: { CategoriaId: id } })) {
                     operacionPendiente = false;
                 }
@@ -670,7 +670,7 @@
                 operacionPendiente = true;
                 ultimaAccionCategoria = 'actualizar';
                 $('guardarEditarCategoria').disabled = true;
-                aviso('Guardando cambios...');
+                aviso('');
                 if (!enviarACSharp({
                     type: 'categorias:actualizarIntegrado',
                     data: { CategoriaId: categoriaEditandoId, Nombre: nombre, EstadoId: Number(obtener(original, 'EstadoId', 'estadoId')) }

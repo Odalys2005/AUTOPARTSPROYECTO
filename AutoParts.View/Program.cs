@@ -15,6 +15,9 @@ namespace AutoParts.View
         [STAThread]
         static void Main()
         {
+
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
             ApplicationConfiguration.Initialize();
 
             var configuration = new ConfigurationBuilder()

@@ -107,7 +107,7 @@
 					.herramientas {
 					display: flex;
 					align-items: center;
-					flex-wrap: wrap;
+					flex-wrap: nowrap;
 					gap: 11px;
 					}
 					.buscador {
@@ -140,10 +140,12 @@
 					.buscador input::placeholder { color: #898992; }
 					.btn-actualizar {
 					height: 44px;
-					padding: 0 14px;
+					width: 44px;
+					flex: 0 0 44px;
+					padding: 0;
 					display: flex;
 					align-items: center;
-					gap: 8px;
+					justify-content: center;
 					color: #e8e8eb;
 					background: #211a1f;
 					border: 1px solid #60444d;
@@ -281,16 +283,16 @@
         <main class="contenedor">
             <header class="encabezado">
                 <div>
-                    <div class="etiqueta">AUTOPARTS · ADMINISTRACIÓN</div>
+
                     <h1>Consulta de <span>Estados</span></h1>
-                    <p class="subtitulo">Consulta los estados registrados en el sistema. Este catálogo es de solo lectura.</p>
+
                 </div>
             </header>
             <section class="panel">
                 <div class="panel-superior">
                     <div class="panel-titulo">
                         <h2>Listado de estados</h2>
-                        <p>Visualiza y consulta los estados existentes.</p>
+
                     </div>
                     <div class="herramientas">
                         <div class="buscador">
@@ -299,11 +301,10 @@
                             </svg>
                             <input id="buscarEstado" type="search" autocomplete="off" placeholder="Buscar estados..." aria-label="Buscar estados">
                         </div>
-                        <button class="btn-actualizar" type="button" id="btnActualizar">
+                        <button class="btn-actualizar" type="button" id="btnActualizar" title="Actualizar" aria-label="Actualizar estados">
                             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 11a8 8 0 1 0-2 6"/><path d="M20 4v7h-7"/>
                             </svg>
-                            Actualizar
                         </button>
                     </div>
                 </div>

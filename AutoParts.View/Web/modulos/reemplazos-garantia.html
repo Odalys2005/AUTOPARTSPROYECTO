@@ -45,15 +45,15 @@ td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-alig
 </head>
 <body>
 <main class="contenedor">
-<header class="encabezado"><div><div class="etiqueta">SERVICIO POSVENTA</div><h1>Gestión de <span>Reemplazos de garantía</span></h1><p class="subtitulo">Entrega repuestos aprobados y consulta los reemplazos realizados.</p></div></header>
+<header class="encabezado"><div><h1>Gestión de <span>Reemplazos de garantía</span></h1></div></header>
 <section class="panel">
-<div class="panel-cabecera"><div><h2>Garantías listas para entrega</h2><p>Garantías aprobadas o pendientes por falta de existencias.</p></div><button id="btnActualizar" class="btn-actualizar" type="button">Actualizar</button></div>
+<div class="panel-cabecera"><div><h2>Garantías listas para entrega</h2></div><button id="btnActualizar" class="btn-actualizar" type="button">Actualizar</button></div>
 <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
 <div class="tabla-wrap"><table><thead><tr><th>Garantía</th><th>Detalle venta</th><th>Cantidad</th><th>Fecha solicitud</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="filasPendientes"><tr><td colspan="6" class="vacio">Cargando...</td></tr></tbody></table></div>
 <div class="pie"><span>Garantías por entregar: <strong id="conteoPendientes">0</strong></span></div>
 </section>
 <section class="panel">
-<div class="panel-cabecera"><div><h2>Reemplazos realizados</h2><p>Historial de entregas registradas en SQL Server.</p></div><label class="buscador"><input id="buscar" type="search" placeholder="Buscar garantía, empleado o fecha..." autocomplete="off" aria-label="Buscar reemplazos"></label></div>
+<div class="panel-cabecera"><div><h2>Reemplazos realizados</h2></div><label class="buscador"><input id="buscar" type="search" placeholder="Buscar garantía, empleado o fecha..." autocomplete="off" aria-label="Buscar reemplazos"></label></div>
 <div class="tabla-wrap"><table><thead><tr><th>ID</th><th>Garantía</th><th>Empleado</th><th>Fecha de reemplazo</th><th>Cantidad</th><th>Observaciones</th></tr></thead><tbody id="filas"><tr><td colspan="6" class="vacio">Cargando...</td></tr></tbody></table></div>
 <div class="pie"><span>Registros mostrados: <strong id="conteo">0</strong></span><span>AutoParts · Reemplazos de garantía</span></div>
 </section>

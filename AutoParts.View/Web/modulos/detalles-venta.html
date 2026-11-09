@@ -16,11 +16,11 @@ h1{margin:0;font-size:clamp(28px,3vw,38px);letter-spacing:-.8px;font-weight:800}
 .panel{border:1px solid #4d3038;border-radius:15px;background:linear-gradient(140deg,#171519,#0d0e11 65%,#140f12);box-shadow:0 12px 35px #0005;overflow:hidden}
 .panel-cabecera{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:17px;padding:24px 25px;border-bottom:1px solid #352c32}
 .panel-cabecera h2{font-size:18px;margin:0 0 7px}.panel-cabecera p{font-size:12px;color:#9a9aa4;margin:0}
-.herramientas{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
+.herramientas{display:flex;flex-wrap:nowrap;align-items:center;gap:11px}
 .buscador{display:flex;align-items:center;gap:10px;height:44px;border:1px solid #51454c;background:#111216;border-radius:9px;padding:0 13px;width:min(345px,100%)}
 .buscador:focus-within{border-color:#ff3d46;box-shadow:0 0 12px #ff334022}.buscador svg{color:#aba9b0;flex-shrink:0}
 .buscador input{width:100%;border:0;outline:0;background:transparent;color:white;font-size:12px}.buscador input::placeholder{color:#898992}
-.btn-actualizar{display:flex;align-items:center;gap:8px;height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0 15px;color:#eee;font-size:12px;transition:.2s}.btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
+.btn-actualizar{display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #60444d;background:#211a1f;border-radius:9px;padding:0;color:#eee;font-size:12px;transition:.2s}.btn-actualizar:hover{background:#3a2027;border-color:#ee4247}
 .aviso{padding:0 25px;font-size:12px;color:#ffbd69;line-height:1.6}.aviso:empty{display:none}.aviso:not(:empty){padding-top:14px;padding-bottom:12px}
 .tabla-wrap{overflow-x:auto;min-height:240px}table{width:100%;min-width:940px;border-collapse:collapse;font-size:12px}thead{background:#1b1b21}
 th{text-align:left;color:#bcbcc6;border-bottom:1px solid #373035;padding:16px 18px;font-size:11px;font-weight:750;letter-spacing:.25px;white-space:nowrap}
@@ -31,14 +31,14 @@ td{border-bottom:1px solid #2d2a30;padding:16px 18px;color:#e5e5e9;vertical-alig
 .vacio{text-align:center;padding:66px 20px;color:#9ea0ab}.vacio svg{color:#ffbd35;margin-bottom:11px}.vacio strong{display:block;color:#e8e8ee;margin-bottom:7px;font-size:14px}.vacio p{font-size:12px;margin:0}
 .pie{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;padding:16px 25px;border-top:1px solid #34292e;color:#9999a3;font-size:12px}.pie strong{color:#ffbd35}
 @media(max-width:960px){.contenedor{padding:22px}}
-@media(max-width:600px){.encabezado{align-items:flex-start}.panel-cabecera{padding:18px}.herramientas{width:100%}.buscador{flex:1;min-width:190px}.pie{padding:16px 18px}}
+@media(max-width:600px){.encabezado{align-items:flex-start}.panel-cabecera{padding:18px}.herramientas{width:100%}.buscador{flex:1;min-width:0}.pie{padding:16px 18px}}
 </style></head><body>
-<main class="contenedor"><header class="encabezado"><div><div class="etiqueta">VENTAS Y FACTURACIÓN</div>
-<h1>Gestión de <span>Detalles de venta</span></h1><p class="subtitulo">Consulta los artículos incluidos en cada factura.</p></div>
-<button type="button" class="btn-principal" id="btnNuevo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nuevo detalle de venta</button></header>
-<section class="panel"><div class="panel-cabecera"><div><h2>Listado de detalles de venta</h2><p>Productos y valores por venta.</p></div>
+<main class="contenedor"><header class="encabezado"><div>
+<h1>Gestión de <span>Detalles de venta</span></h1></div>
+</header>
+<section class="panel"><div class="panel-cabecera"><div><h2>Listado de detalles de venta</h2></div>
 <div class="herramientas"><label class="buscador" aria-label="Buscar registro"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="buscar" type="search" placeholder="Buscar factura, producto o código OEM..." autocomplete="off"></label>
-<button id="btnActualizar" type="button" class="btn-actualizar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg> Actualizar</button></div></div>
+<button id="btnActualizar" type="button" class="btn-actualizar" title="Actualizar" aria-label="Actualizar listado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button></div></div>
 <div id="aviso" class="aviso" role="status" aria-live="polite"></div>
 <div class="tabla-wrap"><table><thead><tr><th>ID</th><th>Venta</th><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Descuento</th><th>Subtotal</th><th>Garantía</th></tr></thead><tbody id="filas"><tr><td colspan="8" class="vacio"><strong>Cargando...</strong></td></tr></tbody></table></div>
 <div class="pie"><span>Registros mostrados: <strong id="conteo">0</strong></span><span>AutoParts · Detalles de venta</span></div></section></main>
@@ -113,7 +113,6 @@ function cargar(){cargado=false;aviso.textContent='';conteo.textContent='0';fila
   clearTimeout(espera);espera=setTimeout(()=>{if(!cargado){vacio('No se recibió respuesta del sistema.');aviso.textContent='Comprueba la conexión con MainForm.cs.';}},12000);
   if(!ok){clearTimeout(espera);vacio('Abre el listado desde AutoParts.');aviso.textContent='Este listado necesita WebView2 para consultar SQL Server.';}
 }
-document.getElementById('btnNuevo').addEventListener('click',()=>emitir({type:`${CFG.slug}:abrirNuevo`}));
 document.getElementById('btnActualizar').addEventListener('click',cargar);
 buscar.addEventListener('input',pintar);
 cargar();
