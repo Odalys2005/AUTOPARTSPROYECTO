@@ -248,8 +248,4 @@
 	  </None>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Web\img\productos\" />
-	</ItemGroup>
-
 </Project>
